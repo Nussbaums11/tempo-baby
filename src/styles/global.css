@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens repris du design system de l'app (direction-design.md, Hugo, 04/07/2026)
+ * Piste 2 "Éditoriale chaleureuse", partagés entre le site et l'app.
+ */
+@theme {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Palette jour */
+  --color-cream: hsl(40 33% 97%);
+  --color-ink: hsl(240 22% 16%);
+  --color-terracotta: hsl(16 62% 54%);
+  --color-terracotta-dark: hsl(16 62% 44%);
+  --color-sage: hsl(150 22% 42%);
+  --color-border: hsl(40 20% 88%);
+
+  /* Couleurs sémantiques par module (identiques app <-> site) */
+  --color-module-sommeil: hsl(243 45% 58%);
+  --color-module-repas: hsl(33 85% 55%);
+  --color-module-sante: hsl(150 22% 42%);
+  --color-module-eveil: hsl(8 75% 62%);
+  --color-module-coach: hsl(265 40% 55%);
+
+  /* Mode nuit (réservé, pas utilisé sur le site vitrine pour l'instant) */
+  --color-night-bg: hsl(247 30% 8%);
+  --color-night-text: hsl(35 25% 72%);
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+}
+
+.prose-tempo :where(h2) {
+  margin-top: 2em;
+  font-size: 1.5rem;
+}
+.prose-tempo :where(h3) {
+  margin-top: 1.4em;
+  font-size: 1.2rem;
+}
+.prose-tempo :where(p) {
+  margin-bottom: 1.1em;
+  line-height: 1.7;
+}
+.prose-tempo :where(ul) {
+  margin-bottom: 1.1em;
+  padding-left: 1.4em;
+  list-style: disc;
+}
+.prose-tempo :where(li) {
+  margin-bottom: 0.4em;
+}
+.prose-tempo :where(a) {
+  color: var(--color-terracotta);
+  text-decoration: underline;
+}

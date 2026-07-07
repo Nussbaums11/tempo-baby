@@ -1,0 +1,47 @@
+---
+// Composant de maillage interne automatique par cocon.
+//
+// C'est LE composant qui fait tenir la stratégie de cocons sémantiques sans
+// dossier ni URL dédiés : il recalcule, à chaque build (donc à chaque
+// publication puisque le déploiement est automatique), la liste de tous les
+// articles qui partagent le même champ `cocon`. Sandra n'a jamais besoin de
+// retoucher les anciens articles à la main quand elle en publie un nouveau
+// dans le même cocon : il apparaît ici automatiquement partout où c'est
+// pertinent.
+import { getCollection } from 'astro:content';
+
+interface Props {
+  cocon: string;
+  currentSlug: string;
+}
+
+const { cocon, currentSlug } = Astro.props;
+
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+
+const sameCocon = allArticles
+  .filter((a) => a.data.cocon === cocon && a.id !== currentSlug)
+  // Le pilier du cocon toujours en premier dans la liste.
+  .sort((a, b) => Number(b.data.pilier) - Number(a.data.pilier));
+---
+
+{
+  sameCocon.length > 0 && (
+    <section class="bg-cream py-16">
+      <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-center text-2xl mb-8">Tout le cocon</h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          {sameCocon.map((article) => (
+            <a
+              href={`/${article.id}/`}
+              class="block bg-white border border-border rounded-xl px-5 py-4 font-semibold text-ink hover:border-terracotta hover:text-terracotta no-underline"
+            >
+              {article.data.pilier ? '📍 ' : ''}
+              {article.data.title}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

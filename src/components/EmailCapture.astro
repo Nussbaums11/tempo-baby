@@ -1,0 +1,47 @@
+---
+// Zone de capture email (liste d'attente).
+//
+// PLACEHOLDER : à remplacer par le snippet d'embed fourni par Brevo ou
+// Mailerlite une fois le compte créé (Sandra). Aucune logique de soumission
+// n'est branchée pour l'instant, le formulaire ci-dessous ne fait rien.
+//
+// Marche à suivre :
+// 1. Créer un compte Brevo (ou Mailerlite) + une liste "liste d'attente Tempo"
+// 2. Récupérer le snippet d'embed du formulaire d'inscription
+// 3. Remplacer tout le contenu de <div id="email-capture-embed"> ci-dessous
+//    par ce snippet (généralement un <form> ou un <script> fourni par l'outil)
+---
+<div id="liste-attente" class="bg-white rounded-2xl shadow-xl p-10 text-center">
+  <span class="inline-block bg-terracotta/10 text-terracotta text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+    En préparation — liste d'attente ouverte
+  </span>
+  <h1 class="font-display text-3xl md:text-4xl mb-4">Votre bébé n'est pas le bébé moyen.</h1>
+  <p class="text-ink/70 max-w-xl mx-auto mb-6 text-lg">
+    Tempo centralise sommeil, alimentation, développement et émotions de votre enfant,
+    avec des conseils personnalisés fondés sur la recherche scientifique, pas sur des
+    templates génériques par âge.
+  </p>
+
+  <div id="email-capture-embed" class="max-w-md mx-auto">
+    {/* TODO Sandra : remplacer ce formulaire par l'embed Brevo/Mailerlite */}
+    <form class="flex gap-2" action="#" method="post">
+      <label for="email" class="sr-only">Adresse email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Votre email"
+        required
+        class="flex-1 border border-border rounded-lg px-4 py-3"
+      />
+      <button
+        type="submit"
+        class="bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-5 py-3 rounded-lg"
+      >
+        Je rejoins la liste
+      </button>
+    </form>
+  </div>
+
+  <p class="text-xs text-ink/50 mt-3">Zéro spam. On vous écrit quand l'app ouvre ses premières places bêta.</p>
+</div>

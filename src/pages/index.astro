@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EmailCapture from '../components/EmailCapture.astro';
+
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Tempo',
+  description: 'Application de parentalité personnalisée par l\'IA, fondée sur la recherche scientifique.',
+  url: 'https://www.tempo-baby.com/',
+};
+
+const pillars = [
+  { icon: '🌙', title: 'Sommeil bébé', href: '/sommeil-bebe/', text: "Rythmes, siestes, régressions : comprendre le sommeil réel de votre enfant, pas la moyenne des livres.", live: true },
+  { icon: '🥕', title: 'Diversification alimentaire', href: '/diversification-alimentaire/', text: "DME ou purées, allergies, refus de manger : un guide complet par âge, sourcé et à jour.", live: true },
+  { icon: '🧠', title: 'Développement & motricité', href: '#', text: "Motricité libre, étapes réelles (pas de moyenne) : bientôt en ligne.", live: false },
+  { icon: '💬', title: 'Émotions & éducation', href: '#', text: "Langage des signes, gestion des pleurs, communication bienveillante : bientôt en ligne.", live: false },
+  { icon: '🩺', title: 'Santé & suivi pratique', href: '#', text: "Courbes de croissance, fièvre, vaccins : bientôt en ligne.", live: false },
+  { icon: '✨', title: 'Mon bébé n\'est pas dans la moyenne', href: '#', text: "Le cocon signature Tempo : pour les bébés en avance, en retard, prématurés : bientôt en ligne.", live: false, signature: true },
+];
+---
+
+<BaseLayout
+  title="Tempo — L'app qui s'adapte à votre bébé, pas au bébé moyen"
+  description="Tempo centralise sommeil, alimentation, développement et émotions de votre bébé, avec des conseils personnalisés fondés sur la recherche scientifique, pas sur des templates génériques."
+  path="/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+
+  <section class="bg-gradient-to-b from-ink from-55% to-cream to-55% pt-16">
+    <div class="max-w-4xl mx-auto px-6">
+      <EmailCapture />
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-center text-2xl md:text-3xl mb-3">Cinq pans de la vie de bébé, un seul endroit fiable</h2>
+      <p class="text-center text-ink/60 max-w-xl mx-auto mb-10">
+        Aujourd'hui, les parents jonglent entre 5 à 6 sources pour trouver une info fiable. On a commencé à tout
+        regrouper ici, en attendant l'app.
+      </p>
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {pillars.map((p) => (
+          <a
+            href={p.href}
+            aria-disabled={!p.live}
+            class={`block rounded-xl border p-6 no-underline transition hover:-translate-y-0.5 ${
+              p.signature ? 'border-terracotta bg-terracotta/10' : 'border-border bg-white hover:shadow-lg'
+            }`}
+          >
+            <div class="text-2xl">{p.icon}</div>
+            <h3 class="mt-2 text-lg text-ink">{p.title}</h3>
+            <p class="text-sm text-ink/60">{p.text}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-ink text-white/90 py-16">
+    <div class="max-w-4xl mx-auto px-6">
+      <h2 class="text-2xl md:text-3xl text-white mb-4">Pourquoi un nouveau site, une nouvelle app ?</h2>
+      <p class="text-white/70">
+        Parce que les conseils génériques "à 6 mois, bébé fait ceci" ne servent à rien à un bébé en avance ou en
+        retard sur sa tranche d'âge. Tempo part de la recherche scientifique, et de votre bébé réel.
+      </p>
+      <div class="grid sm:grid-cols-2 gap-6 mt-6">
+        <div class="bg-white/5 rounded-xl p-6">
+          <h4 class="text-white mt-0 mb-3">Ce qu'on ne fait pas</h4>
+          <ul class="pl-5 space-y-2 text-sm text-white/75">
+            <li>Des templates génériques par âge, identiques pour tous les bébés</li>
+            <li>Du contenu qui reprend la doxa sans sourcer</li>
+            <li>Un silo par sujet (sommeil ici, alimentation ailleurs, développement encore ailleurs)</li>
+          </ul>
+        </div>
+        <div class="bg-white/5 border border-terracotta rounded-xl p-6">
+          <h4 class="text-white mt-0 mb-3">Ce qu'on fait</h4>
+          <ul class="pl-5 space-y-2 text-sm text-white/75">
+            <li>Des conseils qui s'adaptent à l'âge, au poids, au développement réel de votre enfant</li>
+            <li>Des sources vérifiables : recherche scientifique, pas la doxa Instagram</li>
+            <li>Un seul endroit pour tous les pans de la vie de bébé</li>
+          </ul>
+        </div>
+      </div>
+      <p class="mt-6">
+        <a href="/notre-methode/" class="text-terracotta hover:underline">Lire notre méthode et nos critères de sélection →</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

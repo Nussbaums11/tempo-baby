@@ -1,0 +1,88 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import RelatedArticles from '../components/RelatedArticles.astro';
+import '../styles/global.css';
+
+interface Faq {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  cocon: string;
+  updated: Date;
+  readingTime?: string;
+  faq?: Faq[];
+}
+
+const { title, description, slug, cocon, updated, readingTime, faq = [] } = Astro.props;
+
+const faqSchema =
+  faq.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: { '@type': 'Answer', text: item.answer },
+        })),
+      }
+    : null;
+
+const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} — Tempo</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(`/${slug}/`, Astro.site)} />
+    <meta property="og:title" content={`${title} — Tempo`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="article" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+  </head>
+  <body>
+    <Header />
+
+    <div class="bg-ink text-white pt-12 pb-10">
+      <div class="max-w-3xl mx-auto px-6">
+        <div class="text-sm text-white/60 mb-3">
+          <a href="/" class="hover:text-terracotta">Accueil</a> / {title}
+        </div>
+        <h1 class="text-3xl md:text-4xl text-white">{title}</h1>
+        <div class="flex gap-3 text-sm text-white/60 mt-3">
+          <span>Mis à jour le {formattedDate}</span>
+          {readingTime && (
+            <>
+              <span>·</span>
+              <span>{readingTime}</span>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white pt-10 pb-4">
+      <div class="max-w-3xl mx-auto px-6 prose-tempo">
+        <slot />
+      </div>
+    </div>
+
+    <RelatedArticles cocon={cocon} currentSlug={slug} />
+
+    <Footer />
+  </body>
+</html>
