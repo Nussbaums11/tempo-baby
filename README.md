@@ -2,7 +2,7 @@
 
 Ce dossier remplace `Tempo/site-web/` (le prototype HTML statique) par la vraie stack tranchée avec Hugo le 07/07/2026 : Astro + Tailwind v4 + MDX + Cloudflare Pages.
 
-Build vérifié le 07/07/2026 : `astro build` tourne sans erreur, 5 pages générées, maillage interne testé et fonctionnel.
+Build vérifié le 07/07/2026 (soir) : `astro build` tourne sans erreur, 11 pages générées, maillage interne + hub ressources testés et fonctionnels.
 
 ## Structure
 
@@ -10,6 +10,8 @@ Build vérifié le 07/07/2026 : `astro build` tourne sans erreur, 5 pages géné
 src/
   content.config.ts        # schéma des articles (cocon, pilier, faq...)
   content/articles/*.mdx   # tous les articles, à plat (pas de dossier par cocon, choix de Sandra)
+  data/
+    cocons.ts              # source unique des 6 cocons (titre, icône, description) : accueil + /ressources/
   components/
     Header.astro
     Footer.astro
@@ -20,14 +22,24 @@ src/
     FaqSection.astro       # affichage de la FAQ, rendu auto par ArticleLayout
     AuthorBox.astro        # encart "Rédigé par l'équipe Tempo", rendu auto par ArticleLayout
   layouts/
-    BaseLayout.astro       # pages simples (accueil, méthode)
+    BaseLayout.astro       # pages simples (accueil, ressources, application, tarifs, qui-sommes-nous)
     ArticleLayout.astro    # articles : header, FAQ schema.org, maillage auto
   pages/
     index.astro
-    notre-methode.astro
+    application.astro      # LP app (placeholder), CTA "Essayer Tempo"
+    tarifs.astro            # LP tarifs (placeholder), 4,99€/mois ou 39,99€/an
+    qui-sommes-nous.astro  # manifeste (ex "notre-methode", renommé le 07/07/2026)
+    notre-methode.astro    # redirection 301 vers /qui-sommes-nous/, conservée pour ne pas casser un lien
+    ressources/
+      index.astro          # hub : 3 articles récents + catégories (cocons) existantes
+      [cocon].astro        # archive par catégorie, générée seulement pour les cocons ayant du contenu
     [...slug].astro        # route unique qui génère chaque article à plat (/sommeil-bebe/, /regression-sommeil/...)
   styles/global.css        # tokens de design (palette + typo du design system de l'app, direction-design.md de Hugo)
 ```
+
+## Nav du header (07/07/2026)
+
+Application · Ressources · Tarifs · Qui sommes-nous, + CTA primaire "Essayer Tempo" (renvoie vers `/application/#essayer`). Les pages `/application/` et `/tarifs/` sont des placeholders de structure, copy à affiner avec Hugo.
 
 ## Le maillage interne (important, relire avant de publier un article)
 

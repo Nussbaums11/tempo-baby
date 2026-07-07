@@ -1,0 +1,64 @@
+---
+// Page d'archive par catégorie (cocon). Générée uniquement pour les cocons
+// ayant au moins un article publié, pour ne jamais produire de page vide.
+// Ceci n'est PAS l'URL des articles (qui restent à plat, /slug-article/,
+// choix de Sandra) : uniquement une page de listing par thème.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { cocons } from '../../data/cocons';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles', ({ data }) => !data.draft);
+  const usedSlugs = [...new Set(articles.map((a) => a.data.cocon))];
+
+  return usedSlugs.map((slug) => ({
+    params: { cocon: slug },
+    props: {
+      articles: articles
+        .filter((a) => a.data.cocon === slug)
+        .sort((a, b) => Number(b.data.pilier) - Number(a.data.pilier)),
+    },
+  }));
+}
+
+const { cocon } = Astro.params;
+const { articles } = Astro.props;
+const meta = cocons.find((c) => c.slug === cocon);
+const title = meta?.title ?? cocon;
+const description = meta?.description ?? `Tous les articles Tempo sur ${title}.`;
+---
+
+<BaseLayout
+  title={`${title} — Ressources Tempo`}
+  description={description}
+  path={`/ressources/${cocon}/`}
+>
+  <div class="bg-ink text-white pt-12 pb-10">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-sm text-white/60 mb-3">
+        <a href="/" class="hover:text-terracotta">Accueil</a> / <a href="/ressources/" class="hover:text-terracotta">Ressources</a> / {title}
+      </div>
+      <h1 class="text-3xl md:text-4xl text-white">{meta?.icon} {title}</h1>
+      <p class="text-white/70 mt-3">{description}</p>
+    </div>
+  </div>
+
+  <section class="py-16">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="grid gap-4">
+        {articles.map((a) => (
+          <a
+            href={`/${a.id}/`}
+            class="block bg-white border border-border rounded-xl px-5 py-4 no-underline hover:border-terracotta hover:shadow-lg transition"
+          >
+            <span class="font-semibold text-ink">
+              {a.data.pilier ? '📍 ' : ''}
+              {a.data.title}
+            </span>
+            <p class="text-sm text-ink/60 mt-1">{a.data.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

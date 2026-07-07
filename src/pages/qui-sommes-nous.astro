@@ -1,0 +1,70 @@
+---
+// Manifeste Tempo (anciennement "Notre méthode", renommé le 07/07/2026
+// pour correspondre au libellé de nav "Qui sommes-nous"). L'ancienne URL
+// /notre-methode/ redirige ici (voir notre-methode.astro).
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Qui sommes-nous — Tempo"
+  description="Pourquoi Tempo existe, ce qu'on ne fait pas, ce qu'on fait, et qui est derrière le projet."
+  path="/qui-sommes-nous/"
+>
+  <div class="bg-ink text-white pt-12 pb-10">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-sm text-white/60 mb-3"><a href="/" class="hover:text-terracotta">Accueil</a> / Qui sommes-nous</div>
+      <h1 class="text-3xl md:text-4xl text-white">Qui sommes-nous</h1>
+    </div>
+  </div>
+
+  <div class="bg-white py-10">
+    <div class="max-w-3xl mx-auto px-6 prose-tempo">
+      <p>
+        On a créé Tempo après avoir vécu, comme beaucoup de parents, le même problème : naviguer entre cinq ou six
+        sources différentes pour trouver une info fiable sur son bébé, une appli pour le sommeil, une autre pour les
+        courbes, un blog pour la diversification, des comptes Instagram glanés au fil des recommandations. Et au bout
+        du compte, des conseils écrits pour un bébé moyen qui n'existe pas.
+      </p>
+
+      <h2>Ce qu'on ne fait pas</h2>
+      <p>
+        On ne republie pas la doxa parentale. On ne propose pas de fiches génériques "à tel âge, bébé fait ceci" sans
+        préciser que ce ne sont que des repères moyens, avec une variabilité individuelle normale et parfois large. On
+        ne prétend pas non plus remplacer un pédiatre, une sage-femme ou un médecin : sur les sujets de santé, Tempo
+        est un point de départ pour poser les bonnes questions, jamais un diagnostic.
+      </p>
+
+      <h2>Ce qu'on fait</h2>
+      <p>
+        Chaque contenu Tempo part d'une question simple : qu'est-ce que la recherche dit vraiment, et comment cette
+        réponse doit-elle s'ajuster selon l'âge, le poids, le contexte (prématurité, tempérament, rythme familial) de
+        votre enfant ? Concrètement :
+      </p>
+      <ul>
+        <li><strong>On source.</strong> Quand un article s'appuie sur une recommandation, on cite l'organisme ou le type d'étude derrière (OMS, Santé publique France / PNNS, sociétés savantes de pédiatrie), plutôt que d'énoncer une règle sans origine.</li>
+        <li><strong>On donne des fourchettes, pas des couperets.</strong> "La plupart des bébés de cet âge..." plutôt que "votre bébé doit...".</li>
+        <li><strong>On construit pour être vérifié, pas juste cru.</strong> Nos contenus sont pensés pour qu'un parent, ou une IA, puisse retracer d'où vient l'information.</li>
+        <li><strong>On sélectionne nos partenaires marques avec les mêmes critères</strong> : qualité, fabrication française quand c'est pertinent, cohérence avec une parentalité qui ne culpabilise pas.</li>
+      </ul>
+
+      <h2>Notre référence de ton</h2>
+      <p>
+        On s'inspire de comptes et marques qui démocratisent une connaissance exigeante sans se prendre pour des
+        professionnels de santé : sérieux sur le fond, chaleureux sur la forme. Ni "startup tech" froide, ni
+        influenceur qui affirme sans sourcer.
+      </p>
+
+      <div class="bg-[#FCF6EC] border-l-4 border-terracotta rounded-lg px-5 py-4 my-7 text-sm text-[#6B5B44]">
+        Le contenu de ce site est fourni à titre informatif et éducatif. Il ne remplace pas une consultation médicale.
+        En cas de doute sur la santé ou le développement de votre enfant, consultez un professionnel de santé.
+      </div>
+
+      <h2>Qui est derrière Tempo</h2>
+      <p>
+        Tempo est construit par Hugo (produit &amp; développement) et Sandra (produit, contenu &amp; acquisition),
+        tous deux parents, avec l'ambition de faire pour la parentalité ce que d'autres ont fait pour la santé
+        féminine : rendre une information de qualité accessible, sans jargon et sans culpabilisation.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

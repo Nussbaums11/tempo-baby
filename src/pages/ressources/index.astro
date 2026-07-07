@@ -1,0 +1,73 @@
+---
+// Hub des ressources : 3 articles récents + catégories (cocons) existantes.
+// Les catégories sans article publié n'apparaissent pas ici (pas de lien mort).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { cocons } from '../../data/cocons';
+
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+
+const recent = [...allArticles]
+  .sort((a, b) => b.data.updated.valueOf() - a.data.updated.valueOf())
+  .slice(0, 3);
+
+const liveCocons = cocons
+  .map((c) => ({ ...c, count: allArticles.filter((a) => a.data.cocon === c.slug).length }))
+  .filter((c) => c.count > 0);
+
+const formatDate = (d: Date) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout
+  title="Ressources — Tempo"
+  description="Tous les guides Tempo sur le sommeil, l'alimentation, le développement et les émotions de bébé, sourcés et sans jugement."
+  path="/ressources/"
+>
+  <div class="bg-ink text-white pt-12 pb-10">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-sm text-white/60 mb-3"><a href="/" class="hover:text-terracotta">Accueil</a> / Ressources</div>
+      <h1 class="text-3xl md:text-4xl text-white">Ressources</h1>
+      <p class="text-white/70 mt-3 max-w-xl">
+        Tous nos guides, classés par thème. Sourcés, sans jugement, écrits pour un bébé réel plutôt qu'un bébé moyen.
+      </p>
+    </div>
+  </div>
+
+  <section class="py-16">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-2xl mb-8">Articles récents</h2>
+      <div class="grid gap-5 sm:grid-cols-3">
+        {recent.map((a) => (
+          <a
+            href={`/${a.id}/`}
+            class="block bg-white border border-border rounded-xl p-6 no-underline hover:border-terracotta hover:shadow-lg transition"
+          >
+            <p class="text-xs text-ink/50 mb-2">{formatDate(a.data.updated)}</p>
+            <h3 class="text-lg text-ink mb-1">{a.data.title}</h3>
+            <p class="text-sm text-ink/60">{a.data.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-cream py-16">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-2xl mb-8">Toutes les catégories</h2>
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {liveCocons.map((c) => (
+          <a
+            href={`/ressources/${c.slug}/`}
+            class={`block rounded-xl border p-6 no-underline transition hover:-translate-y-0.5 ${
+              c.signature ? 'border-terracotta bg-terracotta/10' : 'border-border bg-white hover:shadow-lg'
+            }`}
+          >
+            <div class="text-2xl">{c.icon}</div>
+            <h3 class="mt-2 text-lg text-ink">{c.title}</h3>
+            <p class="text-sm text-ink/60">{c.count} article{c.count > 1 ? 's' : ''}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

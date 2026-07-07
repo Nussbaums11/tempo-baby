@@ -1,0 +1,47 @@
+---
+// LP Tarifs. PLACEHOLDER : un seul plan pour l'instant (celui acté par
+// Hugo dans arbitrages.md, 07/07/2026). À enrichir si plusieurs formules
+// sont introduites plus tard (essai gratuit, palier famille, etc.).
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Tarifs — Tempo"
+  description="Le prix de l'application Tempo : un abonnement simple, sans frais cachés."
+  path="/tarifs/"
+>
+  <div class="bg-ink text-white pt-12 pb-10">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-sm text-white/60 mb-3"><a href="/" class="hover:text-terracotta">Accueil</a> / Tarifs</div>
+      <h1 class="text-3xl md:text-4xl text-white">Un tarif simple, sans surprise</h1>
+      <p class="text-white/70 mt-3 max-w-xl">
+        Un seul abonnement, tout inclus : sommeil, alimentation, développement, émotions, conseils personnalisés par l'IA.
+      </p>
+    </div>
+  </div>
+
+  <section class="py-16">
+    <div class="max-w-md mx-auto px-6">
+      <div class="rounded-2xl border border-terracotta bg-terracotta/5 p-8 text-center">
+        <h2 class="text-xl text-ink mb-1">Tempo</h2>
+        <p class="text-4xl font-display text-ink mb-1">4,99&nbsp;€<span class="text-base font-sans text-ink/60">/mois</span></p>
+        <p class="text-sm text-ink/60 mb-6">ou 39,99&nbsp;€/an (soit environ 3,33&nbsp;€/mois)</p>
+        <ul class="text-left text-sm text-ink/70 space-y-2 mb-8 pl-1">
+          <li>✓ Suivi sommeil, alimentation, développement, émotions</li>
+          <li>✓ Conseils personnalisés par l'IA, adaptés à votre bébé réel</li>
+          <li>✓ Contenu sourcé, fondé sur la recherche scientifique</li>
+          <li>✓ Sans engagement, résiliable à tout moment</li>
+        </ul>
+        <a
+          href="/application/#essayer"
+          class="block bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-5 py-3 rounded-lg"
+        >
+          Rejoindre la liste d'attente
+        </a>
+      </div>
+      <p class="text-xs text-ink/50 text-center mt-4">
+        L'app est en préparation. Les premières places bêta seront proposées aux inscrits de la liste d'attente.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

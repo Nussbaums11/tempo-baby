@@ -1,0 +1,97 @@
+---
+// LP de l'app Tempo. PLACEHOLDER : structure et CTA en place, copy à
+// affiner avec Hugo (produit) une fois les captures d'écran / la maquette
+// finalisées. Le formulaire d'email en bas de page est le même
+// placeholder Brevo/Mailerlite que sur le reste du site (voir
+// EmailCapture.astro pour la marche à suivre de remplacement).
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const features = [
+  { icon: '🌙', title: 'Sommeil', text: "Suivi des siestes et des nuits, repères adaptés à l'âge réel de votre bébé." },
+  { icon: '🥕', title: 'Alimentation', text: "Diversification, quantités, allergies : un suivi qui s'ajuste à son rythme." },
+  { icon: '🧠', title: 'Développement', text: "Étapes motrices et cognitives, sans comparaison anxiogène avec la moyenne." },
+  { icon: '💬', title: 'Émotions', text: "Des pistes concrètes pour les pleurs, les colères, l'angoisse de séparation." },
+];
+---
+
+<BaseLayout
+  title="L'application Tempo — bientôt disponible"
+  description="Tempo est l'application qui centralise sommeil, alimentation, développement et émotions de votre bébé, avec des conseils personnalisés par l'IA fondés sur la recherche scientifique."
+  path="/application/"
+>
+  <section class="bg-gradient-to-b from-ink from-55% to-cream to-55% pt-16 pb-10">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <span class="inline-block bg-terracotta/10 text-terracotta text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+        En préparation
+      </span>
+      <h1 class="font-display text-3xl md:text-4xl text-white mb-4">
+        Une app qui s'adapte à votre bébé, pas à la moyenne
+      </h1>
+      <p class="text-white/70 max-w-xl mx-auto mb-6 text-lg">
+        Tempo centralise sommeil, alimentation, développement et émotions de votre enfant, avec des conseils
+        personnalisés par l'IA, fondés sur la recherche scientifique plutôt que sur des repères génériques par âge.
+      </p>
+      <a
+        href="#essayer"
+        class="inline-block bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-3 rounded-lg"
+      >
+        Essayer Tempo
+      </a>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-center text-2xl md:text-3xl mb-10">Un seul endroit pour tous les pans de sa vie</h2>
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {features.map((f) => (
+          <div class="rounded-xl border border-border bg-white p-6">
+            <div class="text-2xl">{f.icon}</div>
+            <h3 class="mt-2 text-lg text-ink">{f.title}</h3>
+            <p class="text-sm text-ink/60">{f.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-ink text-white/90 py-16">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="text-2xl md:text-3xl text-white mb-4">Fondée sur la recherche, pas sur des templates</h2>
+      <p class="text-white/70">
+        Chaque conseil s'ajuste à l'âge, au poids et au développement réel de votre enfant, avec des sources
+        vérifiables plutôt qu'une doxa parentale reprise sans recul.
+      </p>
+      <p class="mt-6">
+        <a href="/qui-sommes-nous/" class="text-terracotta hover:underline">En savoir plus sur notre approche →</a>
+      </p>
+    </div>
+  </section>
+
+  <section id="essayer" class="py-16">
+    <div class="max-w-md mx-auto px-6 text-center">
+      <h2 class="text-2xl mb-3">Rejoindre la liste d'attente</h2>
+      <p class="text-ink/60 mb-6 text-sm">Zéro spam. On vous écrit quand l'app ouvre ses premières places bêta.</p>
+      <div id="email-capture-embed">
+        {/* TODO Sandra : remplacer ce formulaire par l'embed Brevo/Mailerlite, comme sur la page d'accueil */}
+        <form class="flex gap-2" action="#" method="post">
+          <label for="email-app" class="sr-only">Adresse email</label>
+          <input
+            type="email"
+            id="email-app"
+            name="email"
+            placeholder="Votre email"
+            required
+            class="flex-1 border border-border rounded-lg px-4 py-3"
+          />
+          <button
+            type="submit"
+            class="bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-5 py-3 rounded-lg"
+          >
+            Je rejoins
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

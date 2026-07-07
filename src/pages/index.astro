@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EmailCapture from '../components/EmailCapture.astro';
+import { getCollection } from 'astro:content';
+import { cocons } from '../data/cocons';
 
 const orgSchema = {
   '@context': 'https://schema.org',
@@ -10,14 +12,19 @@ const orgSchema = {
   url: 'https://www.tempo-baby.com/',
 };
 
-const pillars = [
-  { icon: '🌙', title: 'Sommeil bébé', href: '/sommeil-bebe/', text: "Rythmes, siestes, régressions : comprendre le sommeil réel de votre enfant, pas la moyenne des livres.", live: true },
-  { icon: '🥕', title: 'Diversification alimentaire', href: '/diversification-alimentaire/', text: "DME ou purées, allergies, refus de manger : un guide complet par âge, sourcé et à jour.", live: true },
-  { icon: '🧠', title: 'Développement & motricité', href: '#', text: "Motricité libre, étapes réelles (pas de moyenne) : bientôt en ligne.", live: false },
-  { icon: '💬', title: 'Émotions & éducation', href: '#', text: "Langage des signes, gestion des pleurs, communication bienveillante : bientôt en ligne.", live: false },
-  { icon: '🩺', title: 'Santé & suivi pratique', href: '#', text: "Courbes de croissance, fièvre, vaccins : bientôt en ligne.", live: false },
-  { icon: '✨', title: 'Mon bébé n\'est pas dans la moyenne', href: '#', text: "Le cocon signature Tempo : pour les bébés en avance, en retard, prématurés : bientôt en ligne.", live: false, signature: true },
-];
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+
+const pillars = cocons.map((c) => {
+  const live = allArticles.some((a) => a.data.cocon === c.slug);
+  return {
+    icon: c.icon,
+    title: c.title,
+    href: live ? `/ressources/${c.slug}/` : '#',
+    text: c.description,
+    live,
+    signature: c.signature,
+  };
+});
 ---
 
 <BaseLayout
@@ -84,7 +91,7 @@ const pillars = [
         </div>
       </div>
       <p class="mt-6">
-        <a href="/notre-methode/" class="text-terracotta hover:underline">Lire notre méthode et nos critères de sélection →</a>
+        <a href="/qui-sommes-nous/" class="text-terracotta hover:underline">Lire notre méthode et nos critères de sélection →</a>
       </p>
     </div>
   </section>
