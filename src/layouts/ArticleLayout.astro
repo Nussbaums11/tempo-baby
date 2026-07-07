@@ -57,9 +57,11 @@ const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', mont
     <meta property="og:title" content={`${title} — Tempo`} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="article" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Source+Sans+3:wght@400;600&family=Space+Grotesk:wght@600&display=swap"
       rel="stylesheet"
     />
     {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
