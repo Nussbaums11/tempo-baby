@@ -2,6 +2,8 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import RelatedArticles from '../components/RelatedArticles.astro';
+import FaqSection from '../components/FaqSection.astro';
+import AuthorBox from '../components/AuthorBox.astro';
 import '../styles/global.css';
 
 interface Faq {
@@ -78,6 +80,8 @@ const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', mont
     <div class="bg-white pt-10 pb-4">
       <div class="max-w-3xl mx-auto px-6 prose-tempo">
         <slot />
+        <FaqSection faq={faq} />
+        <AuthorBox />
       </div>
     </div>
 

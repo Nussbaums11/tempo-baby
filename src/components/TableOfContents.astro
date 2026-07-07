@@ -1,0 +1,16 @@
+---
+// Sommaire "Dans ce guide", à utiliser uniquement sur les pages PILIER
+// (longues, structurées). Usage dans un article MDX :
+// <TableOfContents items={["Partie 1", "Partie 2", "Questions fréquentes"]} />
+// Changer le style ici le change sur tous les sommaires du site.
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+---
+<div class="bg-cream border border-border rounded-xl px-6 py-5 my-7">
+  <h4 class="mt-0 mb-2">Dans ce guide</h4>
+  <ol class="pl-5 mb-0">
+    {items.map((item) => <li>{item}</li>)}
+  </ol>
+</div>

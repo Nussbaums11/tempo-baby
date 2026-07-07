@@ -15,6 +15,10 @@ src/
     Footer.astro
     EmailCapture.astro     # PLACEHOLDER capture email, voir plus bas
     RelatedArticles.astro  # le composant de maillage auto par cocon
+    Disclaimer.astro       # bloc disclaimer médical, importé dans les .mdx
+    TableOfContents.astro  # sommaire "Dans ce guide", importé dans les pages pilier
+    FaqSection.astro       # affichage de la FAQ, rendu auto par ArticleLayout
+    AuthorBox.astro        # encart "Rédigé par l'équipe Tempo", rendu auto par ArticleLayout
   layouts/
     BaseLayout.astro       # pages simples (accueil, méthode)
     ArticleLayout.astro    # articles : header, FAQ schema.org, maillage auto
@@ -37,15 +41,35 @@ pilier: true         # true pour LA page pilier du cocon, false pour les satelli
 
 **La seule chose à ne jamais oublier en écrivant un article : mettre le bon `cocon`.** Si tu mets un nouveau nom de cocon par erreur (faute de frappe), l'article se retrouve isolé, sans lien, sans que rien ne plante.
 
-## Ce qui reste à faire (voir aussi la note projet `1 PROJETS/Tempo - App bébé.md`)
+## Publier un nouvel article (façon CMS, sans coder)
 
-1. ~~Trancher le nom définitif~~ ✅ **tempo-baby.com**, tranché le 07/07/2026 (déjà mis à jour dans `astro.config.mjs` et `public/robots.txt`)
-2. Acheter le domaine tempo-baby.com (Cloudflare Registrar ou Porkbun)
-3. Créer un repo GitHub et y pousser ce dossier (sans `node_modules`, déjà ignoré par `.gitignore`)
-4. Brancher le repo à Cloudflare Pages : build command `npm run build`, output directory `dist`
-5. Pointer le domaine sur Cloudflare
-6. **Capture email** : `src/components/EmailCapture.astro` contient un formulaire qui ne fait rien pour l'instant. Une fois un compte Brevo ou Mailerlite créé, remplacer le contenu de `<div id="email-capture-embed">` par leur snippet d'embed
-7. Keystatic (interface visuelle d'édition) seulement si besoin plus tard, pas au lancement
+Un template prêt à remplir existe dans `templates/article-template.mdx`, avec toutes les instructions en commentaires. Le workflow, à faire dans Claude Code :
+
+1. Duplique `templates/article-template.mdx` dans `src/content/articles/`
+2. Renomme le fichier avec le slug de l'article (ex: `rituel-coucher-bebe.mdx`) → ce nom devient l'URL (`/rituel-coucher-bebe/`)
+3. Remplis les champs du frontmatter et le contenu, en suivant les commentaires du template
+4. Supprime les lignes de commentaires (`# ...` et `{/* ... */}`)
+5. Demande à Claude Code de commit et pousser (`git add`, `git commit`, `git push`) : le site se redéploie tout seul sur Cloudflare Pages
+
+Tu n'as jamais besoin de toucher au code des composants pour publier un article, seulement au contenu du fichier `.mdx`.
+
+## Changer le design de tous les articles d'un coup
+
+Rien n'est jamais écrit en dur (HTML/style copié-collé) dans un article. Tout ce qui se répète d'un article à l'autre est un composant partagé dans `src/components/`, utilisé de deux façons :
+
+- **Composants importés dans le `.mdx`** (`Disclaimer`, `TableOfContents`) : présents explicitement dans le texte de l'article. Changer leur style (couleur, bordure, espacement...) dans le fichier composant met à jour tous les articles qui l'utilisent, d'un coup.
+- **Composants rendus automatiquement par `ArticleLayout.astro`** (`FaqSection`, `AuthorBox`) : tu n'as rien à écrire dans le `.mdx`, ils apparaissent après le contenu sur chaque article. Changer leur texte ou leur style dans le fichier composant les change partout, sans toucher à aucun article.
+
+Concrètement : si demain tu veux par exemple mettre le disclaimer en bleu au lieu de terracotta, tu modifies uniquement `src/components/Disclaimer.astro`, une fois — tous les articles existants et futurs suivent automatiquement au prochain build. Même chose pour l'encart auteur ou l'affichage de la FAQ.
+
+## État du déploiement (07/07/2026)
+
+Tout est en place et fonctionnel :
+- Domaine **tempo-baby.com** acheté via Cloudflare Registrar
+- Repo GitHub : https://github.com/Nussbaums11/tempo-baby
+- Déployé sur Cloudflare Pages (build auto à chaque push sur `main`), live sur `tempo-baby.pages.dev`
+- Domaine personnalisé branché sur le projet Cloudflare Pages
+- **Reste à faire** : créer un compte Brevo ou Mailerlite et remplacer le formulaire placeholder de `src/components/EmailCapture.astro` (`<div id="email-capture-embed">`) par leur snippet d'embed. Keystatic (interface visuelle d'édition) reste en réserve, pas nécessaire pour l'instant.
 
 ## Faire tourner le site en local
 

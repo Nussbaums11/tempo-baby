@@ -34,9 +34,11 @@ body {
   font-family: var(--font-sans);
 }
 
-h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  color: var(--color-ink);
+@layer base {
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    color: var(--color-ink);
+  }
 }
 
 .prose-tempo :where(h2) {

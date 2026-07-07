@@ -16,3 +16,5 @@ npm-debug.log*
 
 # macOS
 .DS_Store
+testfile.txt
+astro.config.mjs.bak

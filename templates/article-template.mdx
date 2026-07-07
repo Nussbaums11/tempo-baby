@@ -1,0 +1,91 @@
+---
+# ============================================================
+# TEMPLATE D'ARTICLE — à dupliquer, jamais à éditer directement
+# ============================================================
+# Marche à suivre :
+# 1. Copie ce fichier dans src/content/articles/
+# 2. Renomme-le avec le slug de l'article (ex: rituel-coucher-bebe.mdx)
+#    → le nom du fichier devient l'URL : /rituel-coucher-bebe/
+# 3. Remplis les champs ci-dessous et le contenu plus bas
+# 4. Supprime tous les commentaires (les lignes qui commencent par #)
+# 5. Commit + push → le site se redéploie tout seul
+#
+# LE CHAMP LE PLUS IMPORTANT : `cocon`
+# Il doit être IDENTIQUE (même orthographe) sur tous les articles d'un
+# même cocon pour que le maillage interne se fasse automatiquement.
+# Valeurs déjà utilisées à ce jour : sommeil, diversification
+#
+# DESIGN : le disclaimer, le sommaire, la FAQ affichée et l'encart auteur
+# sont des composants réutilisables (src/components/). Tu n'as JAMAIS à
+# retaper leur HTML/style dans un article — si un jour tu veux changer
+# leur apparence sur TOUT le site, tu modifies un seul fichier composant,
+# pas chaque article. Voir le README pour le détail.
+# ============================================================
+
+title: "Titre de l'article (celui qui s'affiche en H1 et dans l'onglet)"
+description: "Résumé en 1-2 phrases, utilisé pour la balise meta description et les résultats Google. ~150-160 caractères idéalement."
+cocon: sommeil
+# true UNIQUEMENT si c'est LA page pilier du cocon (une seule par cocon).
+# false pour tous les articles satellites.
+pilier: false
+updated: 2026-07-07
+readingTime: "X min de lecture"
+# Liste de questions/réponses pour le schema.org FAQPage (aide au
+# référencement et aux citations dans les IA type AI Overviews) ET pour
+# la section "Questions fréquentes" affichée en bas de l'article : une
+# seule source de vérité, tu ne l'écris qu'ici, jamais dans le corps du
+# texte. Optionnel mais fortement recommandé, mets-en 2 à 3 minimum.
+faq:
+  - question: "Première question fréquente ?"
+    answer: "Réponse concise et sourcée."
+  - question: "Deuxième question fréquente ?"
+    answer: "Réponse concise et sourcée."
+---
+
+import Disclaimer from '../../components/Disclaimer.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+
+{/* Paragraphe d'intro : reformule le problème du parent, pose le sujet.
+    2-4 phrases, pas plus. C'est ce qui donne envie de continuer à lire. */}
+
+Paragraphe d'introduction ici.
+
+{/* Sommaire optionnel : uniquement sur les pages PILIER (longues,
+    structurées en plusieurs parties). Pas la peine sur un satellite court.
+    Ne liste QUE les sections du corps de l'article — pas "Questions
+    fréquentes", elle est ajoutée automatiquement après le contenu. */}
+
+<TableOfContents items={[
+  "Première partie",
+  "Deuxième partie",
+]} />
+
+## 1. Premier titre de section (H2)
+
+Contenu de la section. Reste factuel, source ce qui doit l'être, garde
+des fourchettes plutôt que des affirmations absolues ("la plupart des
+bébés..." plutôt que "votre bébé doit...").
+
+## 2. Deuxième titre de section (H2)
+
+{/* Tu peux utiliser des listes à puces pour les points factuels */}
+
+- **Point important en gras :** explication.
+- **Autre point :** explication.
+
+{/* Le bloc disclaimer, à garder sur tout article à contenu santé */}
+
+<Disclaimer>
+  Ces informations sont données à titre indicatif et ne remplacent pas l'avis d'un professionnel de santé.
+</Disclaimer>
+
+{/* Rien à ajouter ici pour la FAQ ni l'encart auteur : ArticleLayout.astro
+    les affiche automatiquement après ce point, à partir du frontmatter
+    `faq` ci-dessus. */}
+
+{/* Sources, optionnel mais recommandé pour la crédibilité GEO */}
+
+### Sources et pour aller plus loin
+
+- Source 1
+- Source 2

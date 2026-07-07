@@ -1,0 +1,24 @@
+---
+// Affiche automatiquement la FAQ visible à partir du frontmatter `faq`
+// de l'article (ArticleLayout.astro le passe directement). L'auteur n'a
+// JAMAIS besoin de retaper les questions/réponses dans le corps de
+// l'article : une seule source de vérité (le frontmatter) alimente à la
+// fois cet affichage ET le schema.org FAQPage utilisé pour le GEO.
+interface Props {
+  faq: { question: string; answer: string }[];
+}
+const { faq } = Astro.props;
+---
+{
+  faq.length > 0 && (
+    <>
+      <h2>Questions fréquentes</h2>
+      {faq.map((item) => (
+        <div>
+          <h4>{item.question}</h4>
+          <p>{item.answer}</p>
+        </div>
+      ))}
+    </>
+  )
+}

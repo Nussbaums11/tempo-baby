@@ -12,18 +12,17 @@ faq:
     answer: "La DME consiste à proposer directement des morceaux de nourriture adaptés que bébé porte lui-même à la bouche, plutôt que des purées à la cuillère. Les deux approches, ou un mélange des deux, sont validées tant que la texture est adaptée et la surveillance présente."
 ---
 
+import Disclaimer from '../../components/Disclaimer.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+
 La diversification alimentaire, le passage du lait exclusif à une alimentation variée, est une étape aussi excitante qu'anxiogène pour beaucoup de parents : par où commencer, quelles quantités, quels risques d'allergie, DME ou purées ? Ce guide reprend les recommandations généralement admises en France, en les reliant au rythme réel de votre enfant.
 
-<div class="bg-cream border border-border rounded-xl px-6 py-5 my-7">
-  <h4 class="mt-0 mb-2">Dans ce guide</h4>
-  <ol class="pl-5 mb-0">
-    <li>Quand commencer : 4 mois, 6 mois, ou "quand bébé est prêt" ?</li>
-    <li>DME ou purées : deux approches, pas une bonne et une mauvaise</li>
-    <li>Allergies alimentaires : ce qu'on recommande aujourd'hui</li>
-    <li>Bébé refuse de manger : les causes les plus fréquentes</li>
-    <li>Questions fréquentes</li>
-  </ol>
-</div>
+<TableOfContents items={[
+  "Quand commencer : 4 mois, 6 mois, ou \"quand bébé est prêt\" ?",
+  "DME ou purées : deux approches, pas une bonne et une mauvaise",
+  "Allergies alimentaires : ce qu'on recommande aujourd'hui",
+  "Bébé refuse de manger : les causes les plus fréquentes",
+]} />
 
 ## 1. Quand commencer : 4 mois, 6 mois, ou "quand bébé est prêt" ?
 
@@ -41,22 +40,9 @@ Les recommandations ont évolué ces dernières années : on ne recommande plus 
 
 Un refus ponctuel de la diversification est fréquent et rarement inquiétant : le lait reste l'aliment principal les premiers mois de diversification, la nourriture solide est avant tout un apprentissage sensoriel au démarrage. Les causes les plus courantes d'un refus qui persiste : une texture proposée trop en avance sur ce que bébé sait gérer, une poussée dentaire qui rend la bouche sensible, ou simplement un désintérêt passager. Un refus accompagné d'une stagnation de poids ou de croissance justifie en revanche d'en parler à votre pédiatre.
 
-<div class="bg-[#FCF6EC] border-l-4 border-terracotta rounded-lg px-5 py-4 my-7 text-sm text-[#6B5B44]">
+<Disclaimer>
   Ces informations sont données à titre indicatif et générales. Pour toute question sur les allergies, la texture, ou une situation médicale particulière (prématurité, reflux, trouble de l'oralité), consultez votre pédiatre ou un professionnel de santé spécialisé.
-</div>
-
-## Questions fréquentes
-
-#### Faut-il diversifier à 4 mois ou à 6 mois ?
-Entre les deux, selon les signes de développement de bébé (tenue de tête, intérêt pour la nourriture, disparition du réflexe d'extrusion), voir la section 1.
-
-#### Qu'est-ce que la DME ?
-La diversification menée par l'enfant : bébé porte lui-même des morceaux adaptés à sa bouche, en complément ou à la place des purées.
-
-<div class="flex gap-3 items-start bg-cream rounded-xl px-5 py-4 my-7">
-  <div class="w-11 h-11 rounded-full bg-terracotta text-white flex items-center justify-center font-display font-semibold shrink-0">T</div>
-  <p class="text-sm text-ink/70 m-0"><strong class="text-ink">Rédigé par l'équipe Tempo</strong>, contenu construit à partir des recommandations de santé publique françaises. Contenu à visée informative, ne remplace pas une consultation médicale.</p>
-</div>
+</Disclaimer>
 
 ### Sources et pour aller plus loin
 

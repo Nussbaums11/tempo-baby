@@ -14,20 +14,19 @@ faq:
     answer: "Il n'y a pas d'âge universel : cela dépend du poids, de l'alimentation, du tempérament et du contexte familial. Certains bébés espacent leurs prises la nuit dès 3-4 mois, d'autres plus tard, sans que ce soit anormal dans un sens ou dans l'autre."
 ---
 
+import Disclaimer from '../../components/Disclaimer.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+
 Le sommeil de bébé est, avec l'alimentation, la première grande source de fatigue et de questionnement des jeunes parents. Ce guide rassemble les repères généralement admis par âge, en insistant à chaque étape sur ce qui varie normalement d'un bébé à l'autre, parce qu'un bébé qui s'écarte de la moyenne n'est pas nécessairement un bébé qui a un problème.
 
-<div class="bg-cream border border-border rounded-xl px-6 py-5 my-7">
-  <h4 class="mt-0 mb-2">Dans ce guide</h4>
-  <ol class="pl-5 mb-0">
-    <li>Les repères de sommeil par âge</li>
-    <li>Comprendre les siestes et leur évolution</li>
-    <li>Les régressions du sommeil : pourquoi, et jusqu'à quand</li>
-    <li>Poser un rituel du coucher qui fonctionne</li>
-    <li>Cododo ou lit séparé : ce que dit la recherche</li>
-    <li>Quand s'inquiéter (et quand ne pas s'inquiéter)</li>
-    <li>Questions fréquentes</li>
-  </ol>
-</div>
+<TableOfContents items={[
+  "Les repères de sommeil par âge",
+  "Comprendre les siestes et leur évolution",
+  "Les régressions du sommeil : pourquoi, et jusqu'à quand",
+  "Poser un rituel du coucher qui fonctionne",
+  "Cododo ou lit séparé : ce que dit la recherche",
+  "Quand s'inquiéter (et quand ne pas s'inquiéter)",
+]} />
 
 ## 1. Les repères de sommeil par âge
 
@@ -62,25 +61,9 @@ C'est un sujet où les recommandations officielles (sécurité) et les pratiques
 
 Un sommeil différent de la moyenne n'est, dans l'immense majorité des cas, pas un problème en soi. Ce qui justifie d'en parler à un professionnel de santé : une fatigue diurne qui empêche l'éveil et les interactions, une stagnation ou perte de poids associée, des signes respiratoires pendant le sommeil (ronflement marqué, pauses respiratoires), ou une détresse parentale qui s'installe durablement, dans ce dernier cas c'est aussi une bonne raison de consulter, pour vous.
 
-<div class="bg-[#FCF6EC] border-l-4 border-terracotta rounded-lg px-5 py-4 my-7 text-sm text-[#6B5B44]">
+<Disclaimer>
   Ces repères sont fournis à titre informatif et ne remplacent pas l'avis d'un pédiatre ou d'une sage-femme, en particulier en cas de doute sur un bébé né prématurément ou avec un contexte médical particulier.
-</div>
-
-## 7. Questions fréquentes
-
-#### Combien d'heures de sommeil un bébé a-t-il besoin par âge ?
-Voir le détail dans la section 1, les repères vont d'environ 14-17h à la naissance à 11-14h vers 12-24 mois, en comptant les siestes.
-
-#### Qu'est-ce qu'une régression du sommeil ?
-Une période transitoire, souvent liée à un pic de développement, où bébé se remet à se réveiller plus souvent. Voir notre article dédié.
-
-#### À partir de quel âge un bébé peut-il faire ses nuits ?
-Il n'y a pas d'âge universel : cela dépend du poids, de l'alimentation et du tempérament de l'enfant.
-
-<div class="flex gap-3 items-start bg-cream rounded-xl px-5 py-4 my-7">
-  <div class="w-11 h-11 rounded-full bg-terracotta text-white flex items-center justify-center font-display font-semibold shrink-0">T</div>
-  <p class="text-sm text-ink/70 m-0"><strong class="text-ink">Rédigé par l'équipe Tempo</strong>, contenu construit à partir de synthèses généralement admises en pédiatrie du sommeil. Contenu à visée informative, ne remplace pas une consultation médicale.</p>
-</div>
+</Disclaimer>
 
 ### Sources et pour aller plus loin
 
