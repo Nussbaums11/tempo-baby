@@ -18,7 +18,7 @@ src/
     EmailCapture.astro     # PLACEHOLDER capture email, voir plus bas
     RelatedArticles.astro  # le composant de maillage auto par cocon
     Disclaimer.astro       # bloc disclaimer médical, importé dans les .mdx
-    TableOfContents.astro  # sommaire "Dans ce guide", importé dans les pages pilier
+    TableOfContents.astro  # sommaire "Dans ce guide", 100% auto (H2/H3/H4 réels), rendu par ArticleLayout
     FaqSection.astro       # affichage de la FAQ, rendu auto par ArticleLayout
     AuthorBox.astro        # encart "Rédigé par l'équipe Tempo", rendu auto par ArticleLayout
   layouts/

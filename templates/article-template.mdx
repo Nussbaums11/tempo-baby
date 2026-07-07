@@ -20,6 +20,13 @@
 # retaper leur HTML/style dans un article — si un jour tu veux changer
 # leur apparence sur TOUT le site, tu modifies un seul fichier composant,
 # pas chaque article. Voir le README pour le détail.
+#
+# LE SOMMAIRE ("Dans ce guide") EST 100% AUTOMATIQUE : il n'y a rien à
+# écrire pour l'avoir. ArticleLayout.astro construit la liste à partir de
+# tes vrais titres H2 (##) et H3 (###) dans le corps de l'article, et
+# l'affiche seulement si l'article a plus d'un titre. Utilise juste des
+# H2/H3 propres et descriptifs, le sommaire suit automatiquement — pas
+# besoin de le retaper, jamais de désynchronisation possible.
 # ============================================================
 
 title: "Titre de l'article (celui qui s'affiche en H1 et dans l'onglet)"
@@ -43,22 +50,11 @@ faq:
 ---
 
 import Disclaimer from '../../components/Disclaimer.astro';
-import TableOfContents from '../../components/TableOfContents.astro';
 
 {/* Paragraphe d'intro : reformule le problème du parent, pose le sujet.
     2-4 phrases, pas plus. C'est ce qui donne envie de continuer à lire. */}
 
 Paragraphe d'introduction ici.
-
-{/* Sommaire optionnel : uniquement sur les pages PILIER (longues,
-    structurées en plusieurs parties). Pas la peine sur un satellite court.
-    Ne liste QUE les sections du corps de l'article — pas "Questions
-    fréquentes", elle est ajoutée automatiquement après le contenu. */}
-
-<TableOfContents items={[
-  "Première partie",
-  "Deuxième partie",
-]} />
 
 ## 1. Premier titre de section (H2)
 

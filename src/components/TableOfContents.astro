@@ -1,16 +1,60 @@
 ---
-// Sommaire "Dans ce guide", à utiliser uniquement sur les pages PILIER
-// (longues, structurées). Usage dans un article MDX :
-// <TableOfContents items={["Partie 1", "Partie 2", "Questions fréquentes"]} />
-// Changer le style ici le change sur tous les sommaires du site.
-interface Props {
-  items: string[];
+// Sommaire "Dans ce guide", 100% automatique : construit à partir des
+// vrais titres H2/H3/H4 de l'article (fournis par `headings`, calculés par
+// Astro via render() dans [...slug].astro). Personne n'a plus besoin de le
+// retaper ni de le tenir à jour à la main, il ne peut jamais désynchroniser
+// du contenu réel. Rendu automatiquement par ArticleLayout.astro, ne
+// s'affiche que si l'article a plus d'un titre (les satellites courts sans
+// structure n'en ont pas besoin).
+//
+// Changer le style ici (couleurs, espacement, icône) le change PARTOUT.
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
 }
-const { items } = Astro.props;
+
+interface Props {
+  headings: Heading[];
+}
+
+// La section "Sources et pour aller plus loin", présente en bas de tout
+// article (voir templates/article-template.mdx), est exclue du sommaire :
+// ce n'est pas une partie du guide à proprement parler, juste des
+// références en fin de page.
+const EXCLUDED_TITLES = ['sources et pour aller plus loin'];
+
+const { headings = [] } = Astro.props;
+const items = headings.filter(
+  (h) => h.depth >= 2 && h.depth <= 4 && !EXCLUDED_TITLES.includes(h.text.trim().toLowerCase())
+);
+
+const indent: Record<number, string> = { 2: 'pl-0', 3: 'pl-5', 4: 'pl-9' };
+const textStyle: Record<number, string> = {
+  2: 'font-semibold text-ink',
+  3: 'text-ink/70 text-[0.9rem]',
+  4: 'text-ink/55 text-[0.85rem]',
+};
 ---
-<div class="bg-cream border border-border rounded-xl px-6 py-5 my-7">
-  <h4 class="mt-0 mb-2">Dans ce guide</h4>
-  <ol class="pl-5 mb-0">
-    {items.map((item) => <li>{item}</li>)}
-  </ol>
-</div>
+
+{
+  items.length > 1 && (
+    <nav aria-label="Sommaire de l'article" class="not-prose bg-cream border border-border rounded-xl px-6 py-5 my-7">
+      <p class="mt-0 mb-3 font-display text-ink flex items-center gap-2">
+        <span aria-hidden="true">📋</span> Dans ce guide
+      </p>
+      <ol class="mb-0 space-y-1.5 list-none">
+        {items.map((h) => (
+          <li class={`${indent[h.depth] ?? 'pl-0'} ${h.depth > 2 ? 'border-l-2 border-terracotta/20' : ''}`}>
+            <a
+              href={`#${h.slug}`}
+              class={`no-underline hover:text-terracotta transition-colors ${h.depth > 2 ? 'ml-3' : ''} ${textStyle[h.depth] ?? ''}`}
+            >
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}

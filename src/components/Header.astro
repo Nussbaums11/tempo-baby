@@ -1,11 +1,15 @@
 ---
-// Header partagé sur toutes les pages.
+// Header partagé sur toutes les pages. Les liens de nav (desktop + burger
+// mobile) sont dupliqués volontairement : Tailwind ne permet pas de
+// réutiliser un même <nav> à deux endroits du DOM. Si tu ajoutes/retires
+// un lien, pense à le faire dans les DEUX blocs ci-dessous.
 ---
 <header class="bg-ink">
   <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
     <a href="/" class="font-display text-xl font-semibold text-white">
       Temp<span class="text-terracotta">o</span>
     </a>
+
     <nav class="hidden md:flex gap-7 items-center">
       <a href="/application/" class="text-sm text-white/85 hover:text-terracotta">Application</a>
       <a href="/ressources/" class="text-sm text-white/85 hover:text-terracotta">Ressources</a>
@@ -18,5 +22,67 @@
         Essayer Tempo
       </a>
     </nav>
+
+    <button
+      id="menu-toggle"
+      type="button"
+      class="md:hidden text-white text-2xl leading-none p-2 -mr-2"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Ouvrir le menu"
+    >
+      <span id="menu-icon">☰</span>
+    </button>
   </div>
+
+  <nav id="mobile-menu" class="hidden md:hidden flex-col px-6 pb-5 gap-1">
+    <a href="/application/" class="block py-2.5 text-sm text-white/85 hover:text-terracotta">Application</a>
+    <a href="/ressources/" class="block py-2.5 text-sm text-white/85 hover:text-terracotta">Ressources</a>
+    <a href="/tarifs/" class="block py-2.5 text-sm text-white/85 hover:text-terracotta">Tarifs</a>
+    <a href="/qui-sommes-nous/" class="block py-2.5 text-sm text-white/85 hover:text-terracotta">Qui sommes-nous</a>
+    <a
+      href="/application/#essayer"
+      class="block mt-2 bg-terracotta hover:bg-terracotta-dark text-white text-sm font-semibold px-4 py-2.5 rounded-lg text-center"
+    >
+      Essayer Tempo
+    </a>
+  </nav>
 </header>
+
+<script>
+  const btn = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const icon = document.getElementById('menu-icon');
+
+  // "hidden" (display:none) et "flex" (display:flex) se disputent la même
+  // propriété CSS : on ne les laisse donc JAMAIS coexister sur l'élément,
+  // sinon l'ordre des utilities Tailwind dans la feuille de style générée
+  // (et pas l'ordre des classes dans le HTML) déciderait laquelle gagne.
+  function openMenu() {
+    menu?.classList.remove('hidden');
+    menu?.classList.add('flex');
+    btn?.setAttribute('aria-expanded', 'true');
+    if (icon) icon.textContent = '✕';
+  }
+
+  function closeMenu() {
+    menu?.classList.remove('flex');
+    menu?.classList.add('hidden');
+    btn?.setAttribute('aria-expanded', 'false');
+    if (icon) icon.textContent = '☰';
+  }
+
+  btn?.addEventListener('click', () => {
+    if (menu?.classList.contains('hidden')) {
+      openMenu();
+    } else {
+      closeMenu();
+    }
+  });
+
+  // Referme le menu si on clique un lien (utile en navigation full-page,
+  // évite que le menu reste ouvert visuellement une fraction de seconde).
+  menu?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', closeMenu);
+  });
+</script>

@@ -4,11 +4,18 @@ import Footer from '../components/Footer.astro';
 import RelatedArticles from '../components/RelatedArticles.astro';
 import FaqSection from '../components/FaqSection.astro';
 import AuthorBox from '../components/AuthorBox.astro';
+import TableOfContents from '../components/TableOfContents.astro';
 import '../styles/global.css';
 
 interface Faq {
   question: string;
   answer: string;
+}
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
 }
 
 interface Props {
@@ -19,9 +26,10 @@ interface Props {
   updated: Date;
   readingTime?: string;
   faq?: Faq[];
+  headings?: Heading[];
 }
 
-const { title, description, slug, cocon, updated, readingTime, faq = [] } = Astro.props;
+const { title, description, slug, cocon, updated, readingTime, faq = [], headings = [] } = Astro.props;
 
 const faqSchema =
   faq.length > 0
@@ -79,6 +87,7 @@ const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', mont
 
     <div class="bg-white pt-10 pb-4">
       <div class="max-w-3xl mx-auto px-6 prose-tempo">
+        <TableOfContents headings={headings} />
         <slot />
         <FaqSection faq={faq} />
         <AuthorBox />
