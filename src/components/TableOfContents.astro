@@ -43,12 +43,12 @@ const textStyle: Record<number, string> = {
       <p class="mt-0 mb-3 font-display text-ink flex items-center gap-2">
         <span aria-hidden="true">📋</span> Dans ce guide
       </p>
-      <ol class="mb-0 space-y-1.5 list-none">
+      <ol class="mb-0 space-y-1 list-none">
         {items.map((h) => (
           <li class={`${indent[h.depth] ?? 'pl-0'} ${h.depth > 2 ? 'border-l-2 border-terracotta/20' : ''}`}>
             <a
               href={`#${h.slug}`}
-              class={`no-underline hover:text-terracotta transition-colors ${h.depth > 2 ? 'ml-3' : ''} ${textStyle[h.depth] ?? ''}`}
+              class={`block py-2 no-underline hover:text-terracotta transition-colors ${h.depth > 2 ? 'ml-3' : ''} ${textStyle[h.depth] ?? ''}`}
             >
               {h.text}
             </a>
