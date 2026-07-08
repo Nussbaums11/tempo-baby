@@ -1,0 +1,46 @@
+---
+// Page 404 personnalisée. Astro construit automatiquement ce fichier en
+// /404.html à la racine du build (convention reconnue par Cloudflare Pages
+// et la plupart des hébergeurs statiques) : elle s'affiche pour toute URL
+// qui ne correspond à aucune route existante.
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const suggestions = [
+  { href: '/ressources/', label: 'Voir toutes les ressources' },
+  { href: '/application/', label: "Découvrir l'application" },
+  { href: '/qui-sommes-nous/', label: 'Qui sommes-nous' },
+];
+---
+
+<BaseLayout
+  title="Page introuvable — Tempo"
+  description="Cette page n'existe pas ou plus. Retrouvez nos guides et notre application depuis la page d'accueil Tempo."
+  path="/404/"
+>
+  <section class="py-20">
+    <div class="max-w-xl mx-auto px-6 text-center">
+      <p class="text-6xl mb-4">🍼</p>
+      <h1 class="text-3xl md:text-4xl mb-4">Cette page s'est perdue en route</h1>
+      <p class="text-ink/60 mb-8">
+        La page que vous cherchez n'existe pas, ou a changé d'adresse. Rien de grave : voici où retrouver ce qui
+        vous intéresse probablement.
+      </p>
+      <a
+        href="/"
+        class="inline-block bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-3 rounded-lg mb-8"
+      >
+        Retour à l'accueil
+      </a>
+      <div class="grid gap-3 sm:grid-cols-3">
+        {suggestions.map((s) => (
+          <a
+            href={s.href}
+            class="block bg-white border border-border rounded-xl px-4 py-3 no-underline text-sm font-semibold text-ink hover:border-terracotta hover:text-terracotta"
+          >
+            {s.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
