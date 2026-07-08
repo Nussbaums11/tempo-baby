@@ -8,7 +8,7 @@ const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Tempo',
-  description: 'Application de parentalité personnalisée par l\'IA, fondée sur la recherche scientifique.',
+  description: 'Application de parentalité qui évolue avec votre bébé, fondée sur la recherche scientifique.',
   url: 'https://tempo-baby.com/',
 };
 
@@ -28,8 +28,8 @@ const pillars = cocons.map((c) => {
 ---
 
 <BaseLayout
-  title="L'app qui s'adapte à votre bébé, pas au bébé moyen — Tempo"
-  description="Tempo centralise sommeil, alimentation, développement et émotions de votre bébé, avec des conseils personnalisés fondés sur la recherche scientifique, pas sur des templates génériques."
+  title="L'app qui suit le rythme de votre bébé — Tempo"
+  description="Des conseils qui évoluent avec votre bébé, fondés sur la recherche scientifique — pas sur des templates génériques."
   path="/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
@@ -42,11 +42,12 @@ const pillars = cocons.map((c) => {
 
   <section class="py-16">
     <div class="max-w-5xl mx-auto px-6">
-      <h2 class="text-center text-2xl md:text-3xl mb-3">Cinq pans de la vie de bébé, un seul endroit fiable</h2>
-      <p class="text-center text-ink/60 max-w-xl mx-auto mb-10">
+      <h2 class="text-center text-2xl md:text-3xl mb-3">Toutes les facettes de la vie de bébé, réunies au même endroit</h2>
+      <p class="text-center text-ink/60 max-w-xl mx-auto mb-2">
         Aujourd'hui, les parents jonglent entre 5 à 6 sources pour trouver une info fiable. On a commencé à tout
         regrouper ici, en attendant l'app.
       </p>
+      <p class="text-center text-ink/40 text-sm mb-10">Et d'autres facettes à venir.</p>
       <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {pillars.map((p) => {
           const cardClass = `block rounded-xl border p-6 transition ${
@@ -74,26 +75,26 @@ const pillars = cocons.map((c) => {
 
   <section class="bg-ink text-white/90 py-16">
     <div class="max-w-4xl mx-auto px-6">
-      <h2 class="text-2xl md:text-3xl text-white mb-4">Pourquoi un nouveau site, une nouvelle app ?</h2>
+      <h2 class="text-2xl md:text-3xl text-white mb-4">Le problème qu'on résout</h2>
       <p class="text-white/70">
-        Parce que les conseils génériques "à 6 mois, bébé fait ceci" ne servent à rien à un bébé en avance ou en
-        retard sur sa tranche d'âge. Tempo part de la recherche scientifique, et de votre bébé réel.
+        Un conseil "à 6 mois, bébé fait ceci" ne sert à rien si votre bébé est en avance ou en retard sur cet âge.
+        Tempo part de la recherche scientifique, et de votre bébé réel — pas d'un modèle générique.
       </p>
       <div class="grid sm:grid-cols-2 gap-6 mt-6">
         <div class="bg-white/5 rounded-xl p-6">
-          <h4 class="text-white mt-0 mb-3">Ce qu'on ne fait pas</h4>
+          <h3 class="text-white mt-0 mb-3">Ce qu'on ne fait pas</h3>
           <ul class="pl-5 space-y-2 text-sm text-white/75">
-            <li>Des templates génériques par âge, identiques pour tous les bébés</li>
-            <li>Du contenu qui reprend la doxa sans sourcer</li>
-            <li>Un silo par sujet (sommeil ici, alimentation ailleurs, développement encore ailleurs)</li>
+            <li>Des templates génériques, identiques pour tous les bébés</li>
+            <li>Des conseils invérifiables, recopiés sans source</li>
+            <li>Un silo par sujet : sommeil ici, repas ailleurs, développement encore ailleurs</li>
           </ul>
         </div>
         <div class="bg-white/5 border border-terracotta rounded-xl p-6">
-          <h4 class="text-white mt-0 mb-3">Ce qu'on fait</h4>
+          <h3 class="text-white mt-0 mb-3">Ce qu'on fait</h3>
           <ul class="pl-5 space-y-2 text-sm text-white/75">
             <li>Des conseils qui s'adaptent à l'âge, au poids, au développement réel de votre enfant</li>
-            <li>Des sources vérifiables : recherche scientifique, pas la doxa Instagram</li>
-            <li>Un seul endroit pour tous les pans de la vie de bébé</li>
+            <li>Des sources vérifiables, pas des on-dit</li>
+            <li>Un seul endroit pour toutes les facettes de la vie de bébé</li>
           </ul>
         </div>
       </div>

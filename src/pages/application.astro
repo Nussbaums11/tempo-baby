@@ -9,14 +9,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const features = [
   { icon: '🌙', title: 'Sommeil', text: "Suivi des siestes et des nuits, repères adaptés à l'âge réel de votre bébé." },
   { icon: '🥕', title: 'Alimentation', text: "Diversification, quantités, allergies : un suivi qui s'ajuste à son rythme." },
-  { icon: '🧠', title: 'Développement', text: "Étapes motrices et cognitives, sans comparaison anxiogène avec la moyenne." },
+  { icon: '🧠', title: 'Développement', text: "Étapes motrices et cognitives, à son rythme, sans comparaison anxiogène." },
   { icon: '💬', title: 'Émotions', text: "Des pistes concrètes pour les pleurs, les colères, l'angoisse de séparation." },
 ];
 ---
 
 <BaseLayout
   title="L'application — bientôt disponible — Tempo"
-  description="Tempo est l'application qui centralise sommeil, alimentation, développement et émotions de votre bébé, avec des conseils personnalisés par l'IA fondés sur la recherche scientifique."
+  description="Tempo est l'application qui évolue avec votre bébé : sommeil, alimentation, développement, émotions, avec des conseils fondés sur la recherche scientifique."
   path="/application/"
 >
   <section class="bg-ink pt-16 pb-16">
@@ -25,11 +25,11 @@ const features = [
         En préparation
       </span>
       <h1 class="font-display text-3xl md:text-4xl text-white mb-4">
-        Une app qui s'adapte à votre bébé, pas à la moyenne
+        Une app qui évolue avec votre bébé, à chaque étape
       </h1>
       <p class="text-white/70 max-w-xl mx-auto mb-6 text-lg">
-        Tempo centralise sommeil, alimentation, développement et émotions de votre enfant, avec des conseils
-        personnalisés par l'IA, fondés sur la recherche scientifique plutôt que sur des repères génériques par âge.
+        Sommeil, alimentation, développement, émotions : des conseils qui évoluent avec votre bébé, fondés sur la
+        recherche scientifique plutôt que sur des repères génériques par âge.
       </p>
       <a
         href="#essayer"
@@ -42,7 +42,7 @@ const features = [
 
   <section class="py-16">
     <div class="max-w-5xl mx-auto px-6">
-      <h2 class="text-center text-2xl md:text-3xl mb-10">Un seul endroit pour tous les pans de sa vie</h2>
+      <h2 class="text-center text-2xl md:text-3xl mb-10">Un seul endroit pour toutes les facettes de sa vie</h2>
       <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {features.map((f) => (
           <div class="rounded-xl border border-border bg-white p-6">
@@ -60,7 +60,7 @@ const features = [
       <h2 class="text-2xl md:text-3xl text-white mb-4">Fondée sur la recherche, pas sur des templates</h2>
       <p class="text-white/70">
         Chaque conseil s'ajuste à l'âge, au poids et au développement réel de votre enfant, avec des sources
-        vérifiables plutôt qu'une doxa parentale reprise sans recul.
+        vérifiables plutôt que des conseils recopiés sans recul.
       </p>
       <p class="mt-6">
         <a href="/qui-sommes-nous/" class="text-terracotta hover:underline">En savoir plus sur notre approche →</a>
@@ -88,7 +88,7 @@ const features = [
             type="submit"
             class="bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-5 py-3 rounded-lg"
           >
-            Je rejoins
+            Rejoindre la liste d'attente
           </button>
         </form>
       </div>
