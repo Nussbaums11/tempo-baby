@@ -9,7 +9,7 @@ const orgSchema = {
   '@type': 'Organization',
   name: 'Tempo',
   description: 'Application de parentalité personnalisée par l\'IA, fondée sur la recherche scientifique.',
-  url: 'https://www.tempo-baby.com/',
+  url: 'https://tempo-baby.com/',
 };
 
 const allArticles = await getCollection('articles', ({ data }) => !data.draft);
@@ -48,19 +48,26 @@ const pillars = cocons.map((c) => {
         regrouper ici, en attendant l'app.
       </p>
       <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {pillars.map((p) => (
-          <a
-            href={p.href}
-            aria-disabled={!p.live}
-            class={`block rounded-xl border p-6 no-underline transition hover:-translate-y-0.5 ${
-              p.signature ? 'border-terracotta bg-terracotta/10' : 'border-border bg-white hover:shadow-lg'
-            }`}
-          >
-            <div class="text-2xl">{p.icon}</div>
-            <h3 class="mt-2 text-lg text-ink">{p.title}</h3>
-            <p class="text-sm text-ink/60">{p.text}</p>
-          </a>
-        ))}
+        {pillars.map((p) => {
+          const cardClass = `block rounded-xl border p-6 transition ${
+            p.signature ? 'border-terracotta bg-terracotta/10' : 'border-border bg-white'
+          } ${p.live ? 'no-underline hover:-translate-y-0.5 hover:shadow-lg' : 'opacity-60 cursor-default'}`;
+          const content = (
+            <>
+              <div class="text-2xl">{p.icon}</div>
+              <h3 class="mt-2 text-lg text-ink">{p.title}</h3>
+              <p class="text-sm text-ink/60">{p.text}</p>
+            </>
+          );
+          // Pas de lien mort : les cocons sans article publié ("bientôt en
+          // ligne") sont affichés en simple carte non cliquable plutôt qu'un
+          // <a href="#"> qui remonterait la page sans rien ouvrir.
+          return p.live ? (
+            <a href={p.href} class={cardClass}>{content}</a>
+          ) : (
+            <div class={cardClass} aria-disabled="true">{content}</div>
+          );
+        })}
       </div>
     </div>
   </section>
