@@ -11,7 +11,18 @@ import sitemap from '@astrojs/sitemap';
 // d'exploration massives à la connexion de Search Console.
 export default defineConfig({
   site: 'https://tempo-baby.com',
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    sitemap({
+      // /notre-methode/ ne fait qu'une redirection 301 vers /qui-sommes-nous/
+      // (ancienne URL conservée pour ne pas casser un lien externe existant).
+      // Astro la build quand même comme route, donc le sitemap l'incluait par
+      // défaut — remonté par l'audit Ahrefs du 08/07/2026. Une redirection ne
+      // doit jamais apparaître dans le sitemap (seules les URLs canoniques à
+      // indexer doivent y figurer).
+      filter: (page) => !page.includes('/notre-methode'),
+    }),
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
