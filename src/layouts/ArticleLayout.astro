@@ -5,6 +5,7 @@ import RelatedArticles from '../components/RelatedArticles.astro';
 import FaqSection from '../components/FaqSection.astro';
 import AuthorBox from '../components/AuthorBox.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import { cocons } from '../data/cocons';
 import '../styles/global.css';
 
 interface Faq {
@@ -49,6 +50,9 @@ const faqSchema =
 // perçu par les moteurs/IA (fil d'Ariane structuré), en plus du visuel déjà
 // affiché en haut de page.
 const articleUrl = new URL(`/${slug}/`, Astro.site).toString();
+const coconMeta = cocons.find((c) => c.slug === cocon);
+const coconTitle = coconMeta?.title ?? cocon;
+const coconUrl = new URL(`/ressources/${cocon}/`, Astro.site).toString();
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -67,7 +71,8 @@ const breadcrumbSchema = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Accueil', item: new URL('/', Astro.site).toString() },
-    { '@type': 'ListItem', position: 2, name: title, item: articleUrl },
+    { '@type': 'ListItem', position: 2, name: coconTitle, item: coconUrl },
+    { '@type': 'ListItem', position: 3, name: title, item: articleUrl },
   ],
 };
 
@@ -103,7 +108,7 @@ const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', mont
       <div class="bg-ink text-white pt-12 pb-10">
         <div class="max-w-3xl mx-auto px-6">
           <div class="text-sm text-white/60 mb-3">
-            <a href="/" class="hover:text-terracotta">Accueil</a> / {title}
+            <a href="/" class="hover:text-terracotta">Accueil</a> / <a href={`/ressources/${cocon}/`} class="hover:text-terracotta">{coconTitle}</a> / {title}
           </div>
           <h1 class="text-3xl md:text-4xl text-white">{title}</h1>
           <div class="flex gap-3 text-sm text-white/60 mt-3">
