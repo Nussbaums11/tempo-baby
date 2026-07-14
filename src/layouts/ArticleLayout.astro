@@ -126,6 +126,21 @@ const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', mont
           <AuthorBox />
         </div>
       </div>
+      {/*
+        Sommaire placé APRÈS l'intro (avant le premier H2), pas tout en haut :
+        Astro ne permet pas de découper le <slot/>, on déplace donc le nœud #toc
+        côté client juste avant le premier h2. Script exécuté dès la fin du bloc
+        contenu (le prose est déjà parsé) pour éviter tout saut visible.
+      */}
+      <script is:inline>
+        (function () {
+          var prose = document.querySelector('.prose-tempo');
+          if (!prose) return;
+          var toc = prose.querySelector('#toc');
+          var firstH2 = prose.querySelector('h2');
+          if (toc && firstH2) prose.insertBefore(toc, firstH2);
+        })();
+      </script>
     </main>
 
     <RelatedArticles cocon={cocon} currentSlug={slug} />

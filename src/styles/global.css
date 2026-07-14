@@ -65,3 +65,34 @@ body {
   color: var(--color-terracotta);
   text-decoration: underline;
 }
+/*
+ * Tableaux markdown : sans ces règles, `.prose-tempo` ne stylait ni table ni
+ * th/td (colonnes collées, aucune bordure = tableau illisible en ligne,
+ * constaté sur cycle-sommeil-bebe le 14/07). En mobile, la table passe en
+ * bloc scrollable horizontalement pour ne jamais déborder de l'écran.
+ */
+.prose-tempo :where(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.75em 0;
+  font-size: 0.95rem;
+}
+.prose-tempo :where(th),
+.prose-tempo :where(td) {
+  border: 1px solid var(--color-border);
+  padding: 0.55em 0.7em;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+.prose-tempo :where(thead th) {
+  background-color: var(--color-cream);
+  font-weight: 600;
+}
+@media (max-width: 640px) {
+  .prose-tempo :where(table) {
+    display: block;
+    overflow-x: auto;
+    font-size: 0.9rem;
+  }
+}
