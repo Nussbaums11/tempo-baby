@@ -5,6 +5,7 @@ import RelatedArticles from '../components/RelatedArticles.astro';
 import FaqSection from '../components/FaqSection.astro';
 import AuthorBox from '../components/AuthorBox.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import Analytics from '../components/Analytics.astro';
 import { cocons } from '../data/cocons';
 import '../styles/global.css';
 
@@ -83,6 +84,7 @@ const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', mont
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <Analytics />
     <title>{title} — Tempo</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(`/${slug}/`, Astro.site)} />

@@ -1,0 +1,20 @@
+---
+// Google Analytics 4 — propriété "tempo-baby.com" (compte GA "Tempo")
+// L'ID de mesure GA4 n'est pas secret : il est exposé côté navigateur.
+const GA_ID = 'G-63CF4B776F';
+---
+
+<!-- Google tag (gtag.js) — ne se déclenche que sur le domaine de prod -->
+<script is:inline define:vars={{ GA_ID }}>
+  if (location.hostname === 'tempo-baby.com' || location.hostname === 'www.tempo-baby.com') {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(s);
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', GA_ID);
+  }
+</script>
