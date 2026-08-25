@@ -30,8 +30,25 @@ export interface Author {
    * réelle. Laisser vide tant qu'on n'a pas l'URL exacte : une URL inventée
    * ou morte fait plus de mal que pas de sameAs du tout.
    *
-   * LinkedIn renseigné le 25/08/2026 (URLs fournies par Sandra). À compléter
-   * si d'autres profils publics apparaissent.
+   * LinkedIn renseigné le 25/08/2026 (URLs fournies par Sandra).
+   *
+   * 🔴 CRITÈRE D'ENTRÉE (posé par Sandra le 25/08/2026, à tenir strictement) :
+   * n'entrent ici que les profils où la personne est RÉELLEMENT IDENTIFIÉE,
+   * tenus par elle, et vérifiables par un humain. Pas les annuaires, pas les
+   * profils générés ou recyclés, pas les fiches de masse.
+   *
+   * POURQUOI : le `sameAs` n'est pas une liste de backlinks, c'est la liste
+   * des points de vérification que Google va suivre pour juger si l'auteur
+   * d'un contenu de santé infantile est crédible. Il se joue à la QUALITÉ,
+   * pas au volume : une référence solide vaut mieux que trois moyennes, et
+   * une entrée faible dilue les autres.
+   *
+   * Cas d'école : un profil Viadeo recyclé par le Journal du Net (DR 86 !)
+   * a été proposé le 25/08 et ÉCARTÉ par Sandra. Bon arbitrage : les liens y
+   * sont en `nofollow ugc`, la page est un annuaire de profils de masse, et
+   * à côté d'un vrai LinkedIn elle abaisse le signal au lieu de le monter.
+   * Un tel profil garde son utilité ailleurs (diversifier un profil de liens
+   * pollué par le spam), mais pas ici.
    */
   sameAs?: string[];
 }
