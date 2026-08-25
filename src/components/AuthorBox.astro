@@ -1,12 +1,39 @@
 ---
-// Encart "Rédigé par l'équipe Tempo", affiché automatiquement en bas de
-// CHAQUE article par ArticleLayout.astro. Personne n'a besoin de l'ajouter
-// à la main dans un article. Changer le texte ou le style ici le change
-// partout d'un coup.
+// Encart de signature affiché automatiquement en bas de CHAQUE article par
+// ArticleLayout.astro. Personne n'a besoin de l'ajouter à la main.
+//
+// 25/08/2026 : réécrit. L'encart signait « l'équipe Tempo », un collectif
+// anonyme. Sur un site YMYL, un auteur nommé et rattaché à une page auteur
+// vaut nettement mieux : c'est le signal que Google cherche pour évaluer qui
+// parle de santé infantile. Le nom, le rôle et la bio viennent tous de
+// src/data/authors.ts, jamais écrits en dur ici.
+import { getAuthor } from '../data/authors';
+
+interface Props {
+  /** Slug de l'auteur. Si absent, DEFAULT_AUTHOR_SLUG s'applique. */
+  author?: string;
+}
+
+const { author } = Astro.props;
+const a = getAuthor(author);
 ---
-<div class="flex gap-3 items-start bg-cream rounded-xl px-5 py-4 my-7">
-  <div class="w-11 h-11 rounded-full bg-terracotta text-white flex items-center justify-center font-display font-semibold shrink-0">T</div>
-  <p class="text-sm text-ink/70 m-0">
-    <strong class="text-ink">Rédigé par l'équipe Tempo</strong>, contenu à visée informative, ne remplace pas une consultation médicale.
-  </p>
+
+<div class="flex gap-4 items-start bg-cream rounded-xl px-5 py-5 my-7">
+  <div
+    class="w-12 h-12 rounded-full bg-terracotta text-white flex items-center justify-center font-display font-semibold shrink-0"
+    aria-hidden="true"
+  >
+    {a.initials}
+  </div>
+  <div class="m-0">
+    <p class="text-sm text-ink m-0">
+      Rédigé par <a href={`/auteurs/${a.slug}/`} class="font-semibold hover:text-terracotta">{a.name}</a>
+      <span class="text-ink/60"> · {a.role}</span>
+    </p>
+    <p class="text-sm text-ink/70 mt-1 mb-0">{a.bio}</p>
+    <p class="text-xs text-ink/60 mt-2 mb-0">
+      Contenu à visée informative, fondé sur des sources officielles et citées. Il ne remplace pas l'avis d'un
+      professionnel de santé qui connaît votre enfant.
+    </p>
+  </div>
 </div>

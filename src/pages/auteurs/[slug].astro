@@ -1,0 +1,111 @@
+---
+// Page auteur, créée le 25/08/2026 dans le cadre du socle E-E-A-T.
+//
+// POURQUOI : sur un site YMYL, Google veut pouvoir rattacher un contenu santé
+// à une personne identifiable et vérifiable. Un nom en bas d'article ne suffit
+// pas s'il ne mène nulle part. Cette page est la destination de la signature,
+// elle porte le JSON-LD `Person` et la liste des articles écrits.
+//
+// Une page est générée pour CHAQUE auteur de src/data/authors.ts, même sans
+// article à son nom : la page auteur sert aussi de fiche d'identité publique
+// et de cible du `sameAs`. Les articles listés incluent ceux qui n'ont pas de
+// champ `author` explicite mais retombent sur l'auteur par défaut.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { authors, DEFAULT_AUTHOR_SLUG } from '../../data/authors';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles', ({ data }) => !data.draft);
+
+  return authors.map((author) => ({
+    params: { slug: author.slug },
+    props: {
+      author,
+      articles: articles
+        .filter((a) => (a.data.author ?? DEFAULT_AUTHOR_SLUG) === author.slug)
+        .sort((a, b) => b.data.updated.getTime() - a.data.updated.getTime()),
+    },
+  }));
+}
+
+const { author, articles } = Astro.props;
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: author.name,
+  description: author.bio,
+  jobTitle: author.role,
+  url: new URL(`/auteurs/${author.slug}/`, Astro.site).toString(),
+  worksFor: { '@type': 'Organization', name: 'Tempo', url: Astro.site?.toString() },
+  ...(author.sameAs?.length ? { sameAs: author.sameAs } : {}),
+};
+---
+
+<BaseLayout
+  title={`${author.name} — Tempo`}
+  description={author.bio}
+  path={`/auteurs/${author.slug}/`}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+  </Fragment>
+
+  <div class="bg-ink text-white pt-12 pb-10">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-sm text-white/60 mb-3">
+        <a href="/" class="hover:text-terracotta">Accueil</a> / {author.name}
+      </div>
+      <div class="flex gap-4 items-center">
+        <div
+          class="w-14 h-14 rounded-full bg-terracotta text-white flex items-center justify-center font-display font-semibold shrink-0"
+          aria-hidden="true"
+        >
+          {author.initials}
+        </div>
+        <div>
+          <h1 class="text-3xl md:text-4xl text-white m-0">{author.name}</h1>
+          <p class="text-white/60 text-sm mt-1 mb-0">{author.role}</p>
+        </div>
+      </div>
+      <p class="text-white/70 mt-4 mb-0">{author.bio}</p>
+    </div>
+  </div>
+
+  <section class="py-14">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="bg-cream rounded-xl px-5 py-5 mb-10">
+        <p class="text-sm text-ink/80 m-0">
+          <strong class="text-ink">Notre méthode.</strong> Chaque affirmation médicale publiée sur Tempo est
+          rattachée à une source officielle, citée dans l'article. Nous ne sommes pas des professionnels de santé :
+          nous lisons, vérifions et rendons lisible ce que disent les autorités sanitaires et la recherche, et nous
+          disons explicitement quand une pratique n'est pas prouvée. Nos contenus ne remplacent jamais l'avis d'un
+          professionnel qui connaît votre enfant.
+          <a href="/qui-sommes-nous/" class="text-terracotta hover:underline">En savoir plus sur notre approche</a>.
+        </p>
+      </div>
+
+      {articles.length > 0 && (
+        <>
+          <h2 class="text-2xl text-ink mb-5">
+            {articles.length === 1 ? 'Son article' : `Ses ${articles.length} articles`}
+          </h2>
+          <div class="grid gap-4">
+            {articles.map((a) => (
+              <a
+                href={`/${a.id}/`}
+                class="block bg-white border border-border rounded-xl px-5 py-4 no-underline hover:border-terracotta hover:shadow-lg transition"
+              >
+                <span class="font-semibold text-ink">
+                  {a.data.pilier ? '📍 ' : ''}
+                  {a.data.title}
+                </span>
+                <p class="text-sm text-ink/60 mt-1">{a.data.description}</p>
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+</BaseLayout>

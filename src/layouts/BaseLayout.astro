@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Analytics from '../components/Analytics.astro';
+import { organizationJsonLd } from '../data/organization';
 import '../styles/global.css';
 
 interface Props {
@@ -11,6 +12,13 @@ interface Props {
 }
 
 const { title, description, path } = Astro.props;
+
+// JSON-LD Organization posé sur toutes les pages « site » (accueil, méthode,
+// tarifs, ressources...). C'est le socle d'entité : il donne un identifiant
+// stable à Tempo et portera le `sameAs` vers les profils officiels dès qu'ils
+// existeront. Les articles ont leur propre balisage (ArticleLayout) et
+// référencent cette même organisation comme publisher.
+const orgSchema = organizationJsonLd(Astro.site);
 ---
 
 <html lang="fr">
@@ -32,6 +40,10 @@ const { title, description, path } = Astro.props;
       href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Source+Sans+3:wght@400;600&family=Space+Grotesk:wght@600&display=swap"
       rel="stylesheet"
     />
+    <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+    {/* Balisage supplémentaire propre à une page (ex : JSON-LD Person sur les
+        pages auteur). Optionnel : la plupart des pages ne l'utilisent pas. */}
+    <slot name="head" />
   </head>
   <body>
     <Header />

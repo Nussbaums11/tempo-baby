@@ -7,6 +7,8 @@ import AuthorBox from '../components/AuthorBox.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Analytics from '../components/Analytics.astro';
 import { cocons } from '../data/cocons';
+import { getAuthor } from '../data/authors';
+import { organizationSchema } from '../data/organization';
 import '../styles/global.css';
 
 interface Faq {
@@ -28,11 +30,16 @@ interface Props {
   updated: Date;
   published?: Date;
   readingTime?: string;
+  /** Slug de l'auteur (src/data/authors.ts). Absent = auteur par défaut. */
+  author?: string;
   faq?: Faq[];
   headings?: Heading[];
 }
 
-const { title, description, slug, cocon, updated, published, readingTime, faq = [], headings = [] } = Astro.props;
+const { title, description, slug, cocon, updated, published, readingTime, author, faq = [], headings = [] } = Astro.props;
+
+// Auteur résolu une fois, réutilisé par le JSON-LD et par l'encart de signature.
+const articleAuthor = getAuthor(author);
 
 const faqSchema =
   faq.length > 0
@@ -62,8 +69,18 @@ const articleSchema = {
   description,
   datePublished: (published ?? updated).toISOString(),
   dateModified: updated.toISOString(),
-  author: { '@type': 'Organization', name: 'Tempo' },
-  publisher: { '@type': 'Organization', name: 'Tempo' },
+  // 25/08/2026 : `author` passe d'Organization à Person. Sur un site YMYL,
+  // Google évalue la fiabilité d'un contenu santé à partir de la personne qui
+  // le signe, pas d'un collectif. Le `sameAs` relie cette personne à ses
+  // profils publics (vide tant que les URLs ne sont pas confirmées).
+  author: {
+    '@type': 'Person',
+    name: articleAuthor.name,
+    description: articleAuthor.role,
+    url: new URL(`/auteurs/${articleAuthor.slug}/`, Astro.site).toString(),
+    ...(articleAuthor.sameAs?.length ? { sameAs: articleAuthor.sameAs } : {}),
+  },
+  publisher: organizationSchema(Astro.site),
   mainEntityOfPage: articleUrl,
 };
 
@@ -130,7 +147,7 @@ const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', mont
           <TableOfContents headings={headings} />
           <slot />
           <FaqSection faq={faq} />
-          <AuthorBox />
+          <AuthorBox author={author} />
         </div>
       </div>
       {/*

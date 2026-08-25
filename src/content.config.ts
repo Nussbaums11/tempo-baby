@@ -12,6 +12,9 @@ import { glob } from 'astro/loaders';
  *   composant RelatedArticles les regroupe correctement.
  * - pilier : true pour la page pilier du cocon (une seule par cocon), false
  *   pour les satellites.
+ * - author : slug de l'auteur (voir src/data/authors.ts). Optionnel : si absent,
+ *   on retombe sur DEFAULT_AUTHOR_SLUG. Alimente la signature affichée et le
+ *   JSON-LD `author: Person`, décisif pour l'E-E-A-T en YMYL (ajouté 25/08/2026).
  * - faq : alimente le schema.org FAQPage de chaque article (GEO / AI Overviews).
  * - published : date de première publication (optionnelle, absente sur les 3
  *   articles v1). Utilisée pour le schema Article/BlogPosting (datePublished).
@@ -27,6 +30,7 @@ const articles = defineCollection({
     updated: z.coerce.date(),
     published: z.coerce.date().optional(),
     readingTime: z.string().optional(),
+    author: z.string().optional(),
     faq: z
       .array(
         z.object({
