@@ -29,6 +29,9 @@ export interface Author {
    * qui est le mécanisme par lequel Google relie un auteur à une identité
    * réelle. Laisser vide tant qu'on n'a pas l'URL exacte : une URL inventée
    * ou morte fait plus de mal que pas de sameAs du tout.
+   *
+   * LinkedIn renseigné le 25/08/2026 (URLs fournies par Sandra). À compléter
+   * si d'autres profils publics apparaissent.
    */
   sameAs?: string[];
 }
@@ -40,9 +43,7 @@ export const authors: Author[] = [
     role: 'Cofondatrice de Tempo, consultante SEO',
     bio: "Consultante SEO indépendante et cofondatrice de Tempo. Elle conçoit les contenus du site, cherche et vérifie les sources, et confronte chaque affirmation médicale à la littérature officielle avant publication. Parent, comme les lecteurs de ces pages.",
     initials: 'SN',
-    // TODO : ajouter l'URL exacte du profil LinkedIn quand la page entreprise
-    // Tempo sera créée (vague 0 du plan backlinks).
-    sameAs: [],
+    sameAs: ['https://www.linkedin.com/in/sandra-nussbaum/'],
   },
   {
     slug: 'hugo-lebarrois',
@@ -50,8 +51,7 @@ export const authors: Author[] = [
     role: 'Cofondateur de Tempo, produit',
     bio: "Cofondateur de Tempo, en charge du produit et du prototype. Il travaille sur la personnalisation des recommandations en fonction du rythme réel de chaque enfant. Parent, comme les lecteurs de ces pages.",
     initials: 'HL',
-    // TODO : idem, URL LinkedIn à renseigner.
-    sameAs: [],
+    sameAs: ['https://www.linkedin.com/in/hugo-lebarrois-b3672044/'],
   },
 ];
 
