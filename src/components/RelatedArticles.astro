@@ -2,13 +2,24 @@
 // Composant de maillage interne automatique par cocon.
 //
 // C'est LE composant qui fait tenir la stratégie de cocons sémantiques sans
-// dossier ni URL dédiés : il recalcule, à chaque build (donc à chaque
-// publication puisque le déploiement est automatique), la liste de tous les
-// articles qui partagent le même champ `cocon`. Sandra n'a jamais besoin de
-// retoucher les anciens articles à la main quand elle en publie un nouveau
-// dans le même cocon : il apparaît ici automatiquement partout où c'est
-// pertinent.
+// dossier ni URL dédiés. Il recalcule à chaque build les articles à proposer
+// en bas de page, à partir du champ `parent` du frontmatter : Sandra n'a
+// jamais besoin de retoucher les anciens articles à la main quand elle en
+// publie un nouveau.
+//
+// 🔴 Il ne propose QUE le couloir de maillage de la page (01/09/2026).
+// Avant cette date il listait TOUT le cocon depuis chaque article : 33 pages
+// x 32 liens = ~1 056 liens de template contre 198 liens en contenu, ce qui
+// aplatissait le silo bien plus sûrement que les liens rédactionnels qu'on
+// venait de nettoyer. Le couloir, identique à celui des skills Tempo :
+//   pilier -> ses sœurs uniquement
+//   sœur   -> le pilier + ses filles rattachées
+//   fille  -> le pilier + sa sœur parente + les autres filles de cette sœur
+// L'accès au reste du cocon n'est pas perdu pour autant : le lien de bas de
+// bloc renvoie vers /ressources/<cocon>/, qui liste l'intégralité des
+// articles et joue le rôle de hub de crawl.
 import { getCollection } from 'astro:content';
+import { cocons } from '../data/cocons';
 
 interface Props {
   cocon: string;
@@ -17,30 +28,77 @@ interface Props {
 
 const { cocon, currentSlug } = Astro.props;
 
-const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+const all = await getCollection('articles', ({ data }) => !data.draft);
+const inCocon = all.filter((a) => a.data.cocon === cocon);
 
-const sameCocon = allArticles
-  .filter((a) => a.data.cocon === cocon && a.id !== currentSlug)
-  // Le pilier du cocon toujours en premier dans la liste.
-  .sort((a, b) => Number(b.data.pilier) - Number(a.data.pilier));
+const pilier = inCocon.find((a) => a.data.pilier);
+const me = inCocon.find((a) => a.id === currentSlug);
+
+const byTitle = (a, b) => a.data.title.localeCompare(b.data.title, 'fr');
+const childrenOf = (slug) => inCocon.filter((a) => a.data.parent === slug).sort(byTitle);
+
+// Rôle de la page dans l'arbre, déduit du seul frontmatter.
+const isPilier = Boolean(me?.data.pilier);
+const isSoeur = Boolean(me && !isPilier && pilier && me.data.parent === pilier.id);
+
+type Group = { title: string; items: typeof inCocon };
+const groups: Group[] = [];
+
+if (isPilier) {
+  groups.push({ title: 'Les grands sujets de ce guide', items: childrenOf(currentSlug) });
+} else if (isSoeur) {
+  groups.push({ title: 'Dans cette série', items: childrenOf(currentSlug) });
+  if (pilier) groups.push({ title: 'Le guide complet', items: [pilier] });
+} else if (me?.data.parent) {
+  const soeur = inCocon.find((a) => a.id === me.data.parent);
+  const fratrie = childrenOf(me.data.parent).filter((a) => a.id !== currentSlug);
+  groups.push({
+    title: 'Dans la même série',
+    items: [...(soeur ? [soeur] : []), ...fratrie],
+  });
+  if (pilier) groups.push({ title: 'Le guide complet', items: [pilier] });
+} else if (pilier) {
+  // Filet : un article sans `parent` renseigné ne doit pas perdre toute
+  // navigation. Il ne reçoit que le pilier, et `npm run check:maillage`
+  // signale l'oubli.
+  groups.push({ title: 'Le guide complet', items: [pilier] });
+}
+
+const shown = groups.filter((g) => g.items.length > 0);
+const hub = cocons.find((c) => c.slug === cocon);
 ---
 
 {
-  sameCocon.length > 0 && (
+  shown.length > 0 && (
     <section class="bg-cream py-16">
-      <div class="max-w-4xl mx-auto px-6">
-        <h2 class="text-center text-2xl mb-8">Tout le cocon</h2>
-        <div class="grid gap-4 sm:grid-cols-2">
-          {sameCocon.map((article) => (
+      <div class="max-w-4xl mx-auto px-6 flex flex-col gap-10">
+        {shown.map((group) => (
+          <div>
+            <h2 class="text-center text-2xl mb-8">{group.title}</h2>
+            <div class="grid gap-4 sm:grid-cols-2">
+              {group.items.map((article) => (
+                <a
+                  href={`/${article.id}/`}
+                  class="block bg-white border border-border rounded-xl px-5 py-4 font-semibold text-ink hover:border-terracotta hover:text-terracotta no-underline"
+                >
+                  {article.data.pilier ? '📍 ' : ''}
+                  {article.data.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {hub && (
+          <p class="text-center">
             <a
-              href={`/${article.id}/`}
-              class="block bg-white border border-border rounded-xl px-5 py-4 font-semibold text-ink hover:border-terracotta hover:text-terracotta no-underline"
+              href={`/ressources/${cocon}/`}
+              class="font-semibold text-ink hover:text-terracotta"
             >
-              {article.data.pilier ? '📍 ' : ''}
-              {article.data.title}
+              Voir tous nos articles {hub.title} →
             </a>
-          ))}
-        </div>
+          </p>
+        )}
       </div>
     </section>
   )

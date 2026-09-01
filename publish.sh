@@ -37,6 +37,12 @@ if ! grep -qE '^published:' "$FILE"; then
   perl -0pi -e "s/^(updated:.*)\$/\$1\npublished: $TODAY/m" "$FILE"
 fi
 
+echo "→ Contrôle du maillage (couloir du cocon)"
+# Bloque la publication si l'article pose un lien hors de son couloir ou
+# si son champ `parent` manque : c'est le garde-fou qui a manqué jusqu'au
+# 01/09/2026, quand 55 liens hors couloir sont passés en prod inaperçus.
+npm run check:maillage
+
 echo "→ Build de vérification"
 npm run build
 
