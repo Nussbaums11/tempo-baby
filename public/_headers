@@ -1,0 +1,6 @@
+# Proto futurs parents (28/10/2026) : servi aux testeurs, jamais indexé.
+# Double verrou avec la balise meta robots de la page. Pas de Disallow dans
+# robots.txt : un robot bloqué ne lit pas le noindex.
+/app/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache
