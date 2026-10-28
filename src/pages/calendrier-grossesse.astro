@@ -1,0 +1,558 @@
+---
+// Page mère du cocon « futurs parents » (cocon 2, sheet « Tempo - Cocon
+// sémantique 2 - futurs parents », posé le 28/10/2026).
+// Requête visée : `calendrier grossesse` (59 000/mois, KD 3, Ahrefs).
+// La SERP sert des calculateurs : la page ouvre donc sur l'outil, puis
+// déroule tout le parcours (médical, démarches, préparatifs).
+// Cadrage léger sans brief Ahrefs (quota) : brief complet à repasser après
+// le 08/11/2026.
+// Contenus tirés des sources officielles citées sous chaque étape, non
+// relus médicalement (à faire).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Disclaimer from '../components/Disclaimer.astro';
+import { phases } from '../data/calendrier-grossesse';
+
+const title = 'Calendrier de grossesse : vos dates, SA par SA — Tempo';
+const description =
+  "Calculez votre calendrier de grossesse à partir des dernières règles, de la date de conception ou du terme : SA, échographies, consultations, congés, et tout ce qu'il y a à préparer.";
+
+// Table mois de grossesse ↔ SA de santé.fr (1er mois = 3 à 6 SA…).
+const monthEnds = [6, 10, 15, 19, 24, 28, 32, 36, 41];
+const weeks = Array.from({ length: 39 }, (_, i) => {
+  const w = i + 3;
+  const m = monthEnds.findIndex((e) => w <= e) + 1;
+  return { sa: w, month: m === 1 ? '1er mois' : `${m}e mois` };
+});
+
+const faq = [
+  {
+    question: 'Comment calculer ses semaines d’aménorrhée (SA) ?',
+    answer:
+      'Les SA se comptent à partir du premier jour des dernières règles, et non à partir de la conception. Comme l’ovulation a lieu environ deux semaines après les règles dans un cycle de 28 jours, on a en général 2 SA de plus que de semaines de grossesse.',
+  },
+  {
+    question: 'Comment calculer sa date d’accouchement ?',
+    answer:
+      'En France, la date présumée d’accouchement est fixée à 41 SA, soit 39 semaines après la conception. C’est un repère : l’échographie du 1er trimestre, dite de datation, permet de la préciser.',
+  },
+  {
+    question: 'Mes cycles sont longs ou irréguliers : comment faire ?',
+    answer:
+      'Le calcul standard suppose un cycle de 28 jours, avec une ovulation vers le 14e jour. Avec des cycles plus longs, il avance trop la grossesse. Indiquez la durée de vos cycles, ou la date de conception si vous la connaissez. Dans tous les cas, c’est l’échographie de datation qui donnera le bon terme.',
+  },
+  {
+    question: 'Quand faut-il déclarer sa grossesse ?',
+    answer:
+      'Avant la fin du 3e mois de grossesse, soit avant 16 SA. C’est le médecin ou la sage-femme de la première consultation qui fait la déclaration, en ligne ou sur le formulaire papier.',
+  },
+  {
+    question: 'Combien y a-t-il d’échographies pendant la grossesse ?',
+    answer:
+      'Trois échographies sont recommandées, une par trimestre : vers 12 SA (datation), au 5e mois (morphologie) et au 7e mois (position du bébé et du placenta).',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+
+const ext = { target: '_blank', rel: 'nofollow noopener noreferrer' };
+---
+
+<BaseLayout title={title} description={description} path="/calendrier-grossesse/">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+  <section class="pt-10 pb-6">
+    <div class="max-w-3xl mx-auto px-6">
+      <nav class="text-sm text-ink/50 mb-4">
+        <a href="/" class="hover:text-terracotta">Accueil</a> / Calendrier de grossesse
+      </nav>
+      <h1 class="font-display text-3xl md:text-4xl mb-3">Calendrier de grossesse : toutes vos dates, SA par SA</h1>
+      <p class="text-ink/70 text-lg">
+        Entrez une date, on calcule le reste : où vous en êtes, votre date présumée d’accouchement, et chaque étape
+        de la grossesse à sa place, des examens aux préparatifs.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-10">
+    <div class="max-w-3xl mx-auto px-6">
+      <form id="cal-form" class="bg-white rounded-2xl border border-border p-5 md:p-7 shadow-sm">
+        <fieldset>
+          <legend class="font-semibold mb-3">Je connais…</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" role="radiogroup">
+            <label class="cal-mode">
+              <input type="radio" name="mode" value="ddr" checked class="sr-only" />
+              <span>La date de mes dernières règles</span>
+            </label>
+            <label class="cal-mode">
+              <input type="radio" name="mode" value="conception" class="sr-only" />
+              <span>La date de conception</span>
+            </label>
+            <label class="cal-mode">
+              <input type="radio" name="mode" value="terme" class="sr-only" />
+              <span>Mon terme</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <p id="mode-hint" class="text-sm text-ink/60 mt-3">
+          Le premier jour de vos dernières règles. Si vos cycles ne font pas 28 jours, indiquez leur durée : le
+          calcul se recale. Si vos cycles sont irréguliers et que vous connaissez la date de conception, choisissez
+          « La date de conception » : c’est encore plus fiable.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+          <label class="block">
+            <span id="date-label" class="block text-sm font-semibold mb-1">Premier jour des dernières règles</span>
+            <input
+              id="cal-date"
+              type="date"
+              required
+              class="w-full border border-border rounded-lg px-3 py-2.5 bg-white"
+            />
+          </label>
+          <label id="cycle-field" class="block">
+            <span class="block text-sm font-semibold mb-1">Durée de mes cycles (jours)</span>
+            <input
+              id="cal-cycle"
+              type="number"
+              min="20"
+              max="45"
+              value="28"
+              inputmode="numeric"
+              class="w-full border border-border rounded-lg px-3 py-2.5 bg-white"
+            />
+          </label>
+          <label class="block">
+            <span class="block text-sm font-semibold mb-1">Vous attendez…</span>
+            <select id="cal-type" class="w-full border border-border rounded-lg px-3 py-2.5 bg-white">
+              <option value="1">Un bébé</option>
+              <option value="2">Des jumeaux</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="block text-sm font-semibold mb-1">Ce bébé est votre…</span>
+            <select id="cal-rank" class="w-full border border-border rounded-lg px-3 py-2.5 bg-white">
+              <option value="1">1er ou 2e enfant</option>
+              <option value="3">3e enfant ou plus</option>
+            </select>
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          class="mt-5 w-full sm:w-auto bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-3 rounded-lg"
+        >
+          Voir mon calendrier
+        </button>
+        <p id="cal-error" class="text-sm text-terracotta-dark mt-3 hidden" role="alert"></p>
+      </form>
+
+      <div id="cal-summary" class="hidden mt-6 grid grid-cols-2 md:grid-cols-3 gap-3" aria-live="polite">
+        <div class="cal-stat"><span class="cal-stat-label">Aujourd’hui</span><span id="s-sa" class="cal-stat-value"></span></div>
+        <div class="cal-stat"><span class="cal-stat-label">Mois de grossesse</span><span id="s-mois" class="cal-stat-value"></span></div>
+        <div class="cal-stat"><span class="cal-stat-label">Trimestre</span><span id="s-trim" class="cal-stat-value"></span></div>
+        <div class="cal-stat"><span class="cal-stat-label">Début de grossesse</span><span id="s-debut" class="cal-stat-value"></span></div>
+        <div class="cal-stat"><span class="cal-stat-label">Terme présumé</span><span id="s-terme" class="cal-stat-value"></span></div>
+        <div class="cal-stat"><span class="cal-stat-label">Congé maternité</span><span id="s-conge" class="cal-stat-value cal-stat-small"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-12">
+    <div class="max-w-3xl mx-auto px-6">
+      <h2 class="text-2xl md:text-3xl mb-2">Les étapes de la grossesse</h2>
+      <p class="text-ink/60 text-sm mb-6">
+        <span class="cal-tag cal-tag-officiel">Officiel</span> = daté par une source officielle, citée sous l’étape.
+        <span class="cal-tag cal-tag-repere ml-2">Repère</span> = ce que font la plupart des parents, sans obligation.
+      </p>
+
+      <details id="cal-past" class="cal-past hidden mb-8">
+        <summary id="cal-past-summary">Déjà passé</summary>
+        <ol class="space-y-3 mt-3"></ol>
+      </details>
+
+      {phases.map((phase) => (
+        <div class="mb-8" data-phase={phase.id}>
+          <h3 class="text-xl mb-3">{phase.title}</h3>
+          <ol class="space-y-3">
+            {phase.steps.map((step) => (
+              <li
+                class="cal-step"
+                data-id={step.id}
+                data-from={step.from ?? ''}
+                data-to={step.to ?? ''}
+                data-from-term={step.fromTerm ?? ''}
+                data-to-term={step.toTerm ?? ''}
+                data-deadline={step.deadline ? '1' : ''}
+                data-since={step.since ? '1' : ''}
+              >
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <span class={`cal-tag cal-tag-${step.kind}`}>{step.kind === 'officiel' ? 'Officiel' : 'Repère'}</span>
+                  <span class="cal-status hidden"></span>
+                  <span class="text-sm text-ink/60">
+                    <span class="cal-when">{step.when}</span>
+                    <span class="cal-dates font-semibold text-ink"></span>
+                  </span>
+                </div>
+                <p class="font-semibold text-ink">{step.title}</p>
+                <p class="text-sm text-ink/70 mt-1">{step.text}</p>
+                {step.source && (
+                  <p class="text-xs text-ink/50 mt-1">
+                    Source : <a href={step.source.url} {...ext} class="underline hover:text-terracotta">{step.source.label}</a>
+                  </p>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="pb-12">
+    <div class="max-w-3xl mx-auto px-6 prose-tempo">
+      <h2>Le calendrier semaine par semaine</h2>
+      <p>
+        Les professionnels comptent en semaines d’aménorrhée (SA), à partir du premier jour des dernières règles.
+        Les proches comptent en mois. Ce tableau fait le lien, et affiche vos dates une fois le calendrier calculé.
+      </p>
+      <table id="cal-weeks">
+        <thead>
+          <tr><th>SA</th><th>Mois de grossesse</th><th>Vos dates</th></tr>
+        </thead>
+        <tbody>
+          {weeks.map((w) => (
+            <tr data-sa={w.sa}><td>{w.sa} SA</td><td>{w.month}</td><td class="cal-week-dates">–</td></tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="text-sm">
+        Correspondance mois et SA : <a href="https://www.sante.fr/le-calendrier-de-grossesse" {...ext}>santé.fr, le calendrier de grossesse</a>.
+      </p>
+
+      <h2>Comment le calendrier est calculé</h2>
+      <ul>
+        <li><strong>Dernières règles</strong> : on compte les SA à partir du premier jour des règles, et le terme tombe à 41 SA. Si vos cycles ne font pas 28 jours, le calendrier se décale d’autant.</li>
+        <li><strong>Date de conception</strong> : on ajoute deux semaines pour retrouver les SA. Utile si vos cycles sont longs ou irréguliers.</li>
+        <li><strong>Terme</strong> : si l’échographie de datation vous a donné une date, c’est elle qui fait foi. On remonte le calendrier à partir d’elle.</li>
+      </ul>
+
+      <Disclaimer>
+        Ce calendrier reprend les repères officiels du suivi de grossesse en France. Il ne remplace pas votre
+        sage-femme ou votre médecin, qui adaptent le suivi à votre situation (grossesse gémellaire, suivi
+        renforcé…).
+      </Disclaimer>
+
+      <h2>Questions fréquentes</h2>
+      {faq.map((f) => (
+        <div>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-ink py-12">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <h2 class="font-display text-2xl md:text-3xl text-white mb-3">Ce calendrier, semaine après semaine</h2>
+      <p class="text-white/70 mb-6">
+        Tempo prépare une app qui vous montre seulement ce qui compte maintenant, et vous rappelle le reste au bon
+        moment.
+      </p>
+      <a href="/application/" class="inline-block bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-3 rounded-lg">
+        Découvrir l’app Tempo
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cal-mode {
+    display: block;
+    cursor: pointer;
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
+    background: var(--color-cream);
+  }
+  .cal-mode:has(input:checked) {
+    border-color: var(--color-terracotta);
+    background: hsl(16 62% 54% / 0.08);
+    font-weight: 600;
+  }
+  .cal-mode:has(input:focus-visible) {
+    outline: 2px solid var(--color-terracotta);
+    outline-offset: 2px;
+  }
+  .cal-stat {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 0.8rem;
+    padding: 0.8rem 1rem;
+  }
+  .cal-stat-label {
+    font-size: 0.8rem;
+    color: hsl(240 22% 16% / 0.6);
+  }
+  .cal-stat-value {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-ink);
+  }
+  .cal-stat-small {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+  #cal-weeks tr.is-now-row td {
+    background: hsl(16 62% 54% / 0.12);
+    font-weight: 600;
+  }
+  .cal-step {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 0.8rem;
+    padding: 0.9rem 1.1rem;
+  }
+  .cal-step.is-past {
+    opacity: 0.55;
+  }
+  .cal-step.is-now {
+    border-color: var(--color-terracotta);
+    box-shadow: 0 0 0 1px var(--color-terracotta);
+  }
+  .cal-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+  }
+  .cal-tag-officiel {
+    background: hsl(150 22% 42% / 0.12);
+    color: var(--color-sage);
+  }
+  .cal-tag-repere {
+    background: hsl(40 20% 88%);
+    color: hsl(240 22% 16% / 0.7);
+  }
+  .cal-past {
+    background: hsl(40 20% 88% / 0.45);
+    border-radius: 0.8rem;
+    padding: 0.8rem 1.1rem;
+  }
+  .cal-past > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: hsl(240 22% 16% / 0.7);
+  }
+  .cal-status {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    background: var(--color-terracotta);
+    color: white;
+  }
+</style>
+
+<script>
+  import { TERM_DAYS } from '../data/calendrier-grossesse';
+
+  const DAY = 86400000;
+  const fmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const fmtShort = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long' });
+
+  const hints: Record<string, [string, string]> = {
+    ddr: [
+      'Premier jour des dernières règles',
+      'Le premier jour de vos dernières règles. Si vos cycles ne font pas 28 jours, indiquez leur durée : le calcul se recale. Si vos cycles sont irréguliers et que vous connaissez la date de conception, choisissez « La date de conception » : c’est encore plus fiable.',
+    ],
+    conception: [
+      'Date de conception',
+      'La date de l’ovulation ou du rapport fécondant, si vous la connaissez (suivi d’ovulation, PMA…).',
+    ],
+    terme: [
+      'Date présumée d’accouchement',
+      'La date donnée par votre sage-femme ou votre médecin, en général après l’échographie de datation.',
+    ],
+  };
+
+  const form = document.getElementById('cal-form') as HTMLFormElement;
+  const dateInput = document.getElementById('cal-date') as HTMLInputElement;
+  const rankInput = document.getElementById('cal-rank') as HTMLSelectElement;
+  const typeInput = document.getElementById('cal-type') as HTMLSelectElement;
+  const cycleInput = document.getElementById('cal-cycle') as HTMLInputElement;
+  const cycleField = document.getElementById('cycle-field')!;
+  const err = document.getElementById('cal-error')!;
+  const pastBox = document.getElementById('cal-past') as HTMLDetailsElement;
+  const pastList = pastBox.querySelector('ol')!;
+  const steps = [...document.querySelectorAll<HTMLElement>('.cal-step')];
+  const homes = new Map(steps.map((li) => [li, li.parentElement!]));
+
+  // Date locale à minuit, sans décalage de fuseau.
+  const parse = (v: string) => {
+    const [y, m, d] = v.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+  const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const diffDays = (a: Date, b: Date) => Math.round((a.getTime() - b.getTime()) / DAY);
+  const today = () => {
+    const n = new Date();
+    return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  };
+
+  // Mois de grossesse depuis les SA (table santé.fr).
+  const monthFromSA = (w: number) => {
+    const bounds = [6, 10, 15, 19, 24, 28, 32, 36, 41];
+    const i = bounds.findIndex((b) => w <= b);
+    return i === -1 ? 9 : i + 1;
+  };
+  const ordinal = (n: number) => (n === 1 ? '1er' : `${n}e`);
+
+  const mode = () => (form.querySelector('input[name="mode"]:checked') as HTMLInputElement).value;
+
+  form.querySelectorAll('input[name="mode"]').forEach((r) =>
+    r.addEventListener('change', () => {
+      const [label, hint] = hints[mode()];
+      document.getElementById('date-label')!.textContent = label;
+      document.getElementById('mode-hint')!.textContent = hint;
+      cycleField.classList.toggle('hidden', mode() !== 'ddr');
+    }),
+  );
+
+  const range = (a: Date, b: Date) => {
+    if (a.getTime() === b.getTime()) return fmt.format(a);
+    if (a.getFullYear() === b.getFullYear()) return `du ${fmtShort.format(a)} au ${fmt.format(b)}`;
+    return `du ${fmt.format(a)} au ${fmt.format(b)}`;
+  };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    err.classList.add('hidden');
+    if (!dateInput.value) return;
+
+    const input = parse(dateInput.value);
+    const cycle = Number(cycleInput.value) || 28;
+    if (mode() === 'ddr' && (cycle < 20 || cycle > 45)) {
+      err.textContent = 'Indiquez une durée de cycle entre 20 et 45 jours.';
+      err.classList.remove('hidden');
+      return;
+    }
+    // Ovulation supposée 14 jours avant la fin du cycle : un cycle de 35 jours
+    // décale le calendrier d'une semaine par rapport au calcul standard.
+    const ddr =
+      mode() === 'ddr'
+        ? addDays(input, cycle - 28)
+        : mode() === 'conception'
+          ? addDays(input, -14)
+          : addDays(input, -TERM_DAYS);
+    const term = addDays(ddr, TERM_DAYS);
+    const days = diffDays(today(), ddr);
+
+    if (days < 0 || days > TERM_DAYS + 120) {
+      err.textContent =
+        days < 0
+          ? 'Cette date donne une grossesse qui n’a pas encore commencé. Vérifiez la date saisie.'
+          : 'Cette date est trop ancienne pour une grossesse en cours. Vérifiez la date saisie.';
+      err.classList.remove('hidden');
+      return;
+    }
+
+    // Résumé
+    const w = Math.floor(days / 7);
+    const d = days % 7;
+    const pregnant = days <= TERM_DAYS + 14;
+    document.getElementById('s-sa')!.textContent = pregnant ? `${w} SA${d ? ` + ${d} j` : ''}` : 'Bébé est là ?';
+    document.getElementById('s-mois')!.textContent = pregnant && w >= 3 ? `${ordinal(monthFromSA(w))} mois` : '–';
+    document.getElementById('s-trim')!.textContent = !pregnant
+      ? '–'
+      : w < 15
+        ? '1er trimestre'
+        : w < 29
+          ? '2e trimestre'
+          : '3e trimestre';
+    document.getElementById('s-terme')!.textContent = fmt.format(term);
+    document.getElementById('s-debut')!.textContent = fmt.format(addDays(ddr, 14));
+
+    // Congé maternité (service-public) : prénatal / postnatal en jours.
+    const twins = typeInput.value === '2';
+    const third = rankInput.value === '3';
+    const [pre, post] = twins ? [84, 154] : third ? [56, 126] : [42, 70];
+    const congeFrom = addDays(term, -pre);
+    const congeTo = addDays(term, post - 1);
+    document.getElementById('s-conge')!.textContent = `${fmtShort.format(congeFrom)} → ${fmt.format(congeTo)}`;
+    document.getElementById('cal-summary')!.classList.remove('hidden');
+
+    // Étapes : on remet chaque étape dans sa phase (ordre d'origine) avant
+    // de ranger les étapes passées dans le bloc replié « Déjà passé ».
+    const now = today();
+    steps.forEach((li) => homes.get(li)!.appendChild(li));
+    steps.forEach((li) => {
+      const ds = li.dataset;
+      let from: Date, to: Date;
+      if (ds.fromTerm !== '') {
+        let ft = Number(ds.fromTerm);
+        let tt = Number(ds.toTerm);
+        from = addDays(term, ft);
+        to = addDays(term, tt);
+        if (ds.id === 'conge-maternite') {
+          from = congeFrom;
+          to = congeTo;
+        }
+      } else {
+        from = addDays(ddr, Number(ds.from));
+        to = addDays(ddr, Number(ds.to));
+      }
+
+      li.querySelector('.cal-dates')!.textContent = ds.deadline
+        ? ` · au plus tard le ${fmt.format(to)}`
+        : ds.since
+          ? ` · à partir du ${fmt.format(from)}`
+          : ` · ${range(from, to)}`;
+
+      const status = li.querySelector('.cal-status') as HTMLElement;
+      li.classList.remove('is-past', 'is-now');
+      status.classList.add('hidden');
+      if (to < now) {
+        li.classList.add('is-past');
+      } else if (from <= now) {
+        li.classList.add('is-now');
+        status.textContent = 'En ce moment';
+        status.classList.remove('hidden');
+      }
+    });
+
+    // Tableau semaine par semaine
+    document.querySelectorAll<HTMLElement>('#cal-weeks tbody tr').forEach((tr) => {
+      const w = Number(tr.dataset.sa);
+      const a = addDays(ddr, w * 7);
+      const b = addDays(a, 6);
+      tr.querySelector('.cal-week-dates')!.textContent = range(a, b);
+      tr.classList.toggle('is-now-row', now >= a && now <= b);
+    });
+
+    const past = steps.filter((li) => li.classList.contains('is-past'));
+    past.forEach((li) => pastList.appendChild(li));
+    pastBox.classList.toggle('hidden', past.length === 0);
+    pastBox.open = false;
+    document.getElementById('cal-past-summary')!.textContent =
+      `Déjà passé · ${past.length} étape${past.length > 1 ? 's' : ''} (cliquer pour revoir)`;
+    document.querySelectorAll<HTMLElement>('[data-phase]').forEach((ph) => {
+      ph.classList.toggle('hidden', ph.querySelector('ol')!.children.length === 0);
+    });
+
+    document.getElementById('cal-summary')!.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>
