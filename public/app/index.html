@@ -1909,20 +1909,11 @@ nav.tabs button.soon { opacity: .55; }
         save();
         const co = S.coparent || {};
         if (co.envoye) { close(); return; }
-        openSheet(logo + '<h2>Invitez l\'autre parent</h2><p>Tempo se vit à deux : vous voyez les mêmes rendez-vous, la même liste et les mêmes démarches. Ce qu\'il faut faire et quand ne reste plus dans une seule tête.</p>' +
-          '<form id="wCo" style="display:grid;gap:12px"><div class="field"><label for="wCoP">Son prénom</label><input id="wCoP" type="text"></div>' +
-          '<div class="field"><label for="wCoC">Son e-mail ou son numéro de portable</label><input id="wCoC" type="text" inputmode="email" placeholder="Ex. 06 12 34 56 78"></div>' +
-          '<p class="group-intro" id="wCoErr" hidden></p>' +
-          '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="submit">Envoyer l\'invitation</button><button class="btn" type="button" id="wLater">Plus tard</button></div></form>');
+        openSheet(logo + '<span class="pill">Bientôt disponible</span><h2>Invitez l\'autre parent</h2><p>Tempo se vit à deux : vous verrez les mêmes rendez-vous, la même liste et les mêmes démarches. Ce qu\'il faut faire et quand ne restera plus dans une seule tête.</p>' +
+          '<p>L\'invitation arrive dans une prochaine version.</p>' +
+          '<button class="btn primary" type="button" id="wLater" style="justify-self:start">Continuer</button>');
         onb();
         document.getElementById("wLater").addEventListener("click", close);
-        document.getElementById("wCo").addEventListener("submit", ev => {
-          ev.preventDefault();
-          const pr = document.getElementById("wCoP").value.trim(), ct = document.getElementById("wCoC").value.trim(), er = document.getElementById("wCoErr");
-          const isMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ct), isTel = /^(\+33|0)[1-9](\s?\d{2}){4}$/.test(ct.replace(/[.-]/g, " ").replace(/\s+/g, " "));
-          if (!pr || !(isMail || isTel)) { er.textContent = !pr ? "Indique son prénom." : "Indique un e-mail ou un numéro de portable valide, par exemple 06 12 34 56 78."; er.hidden = false; return; }
-          S.coparent = { prenom: pr, contact: ct, canal: isMail ? "mail" : "sms", code: Math.random().toString(36).slice(2, 8), envoye: true }; save(); close();
-        });
       });
     });
   }
