@@ -408,6 +408,19 @@ textarea { font: inherit; font-size: 15px; color: var(--ink); background: var(--
 .step .status.st-fait, .step .status.st-rdv { color: var(--sage); }
 .step .status.st-aprendre, .step .status.st-retard, .rdv .status.st-aprendre { color: var(--terracotta-dark); }
 .rdv-what .dem-actions { align-items: center; gap: 14px; }
+/* Toute l'app (29/10) : une information n'a pas la forme d'un bouton (statuts, sources, verdicts, étiquettes),
+   les gélules restent aux filtres et aux choix, un seul bouton plein par carte. */
+.proof, .status, span.pill, .vd { background: none !important; padding: 0; border-radius: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; }
+.proof::before, .status::before, span.pill::before, .vd::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.status { color: var(--muted); }
+.answer-card .vd { font-size: 15px; }
+.answer-card .vd::before { width: 9px; height: 9px; }
+span.pill { color: var(--terracotta-dark); letter-spacing: .04em; text-transform: uppercase; font-size: 11px; }
+button.pill { background: none; border: 0; padding: 0; font-size: 14px; font-weight: 700; color: var(--terracotta-dark); cursor: pointer; white-space: nowrap; }
+button.pill.on { background: none; color: var(--sage); }
+.mat-foot select, .lrow select, select.lsel { border-color: transparent; background-color: transparent; color: var(--muted); font-weight: 600; text-align-last: right; padding-left: 4px; width: auto; padding-right: 30px; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23686878' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px 14px; cursor: pointer; font-size: 14px; }
+.lrow select.set { border-color: transparent; background-color: transparent; color: var(--sage); }
+.dem .dem-actions { align-items: center; gap: 14px; }
 /* Barre d'onglets */
 nav.tabs { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: var(--card); border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); padding: 6px 4px calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 5; }
 nav.tabs button { background: none; border: 0; display: grid; justify-items: center; gap: 2px; padding: 6px 0; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; }
@@ -701,11 +714,11 @@ nav.tabs button.soon { opacity: .55; }
     const lastTxt = n === null ? "Pas encore contactée" : n === 0 ? "Dernier contact aujourd'hui" : "Dernier contact il y a " + n + " jour" + (n > 1 ? "s" : "");
     return '<div class="dem">' +
       '<div class="dem-top"><span class="name">' + esc(d.nom) + '<small>' + esc(d.detail || "") + ' · ' + lastTxt + '</small></span>' +
-      '<span class="status ' + d.statut + '">' + STATUTS[d.statut] + '</span></div>' +
+      '</div>' +
       (doitRelancer ? '<div class="relance"><span>Sans nouvelles depuis ' + n + ' jours : relance</span></div>' : '') +
       '<div class="dem-actions">' +
-        '<button type="button" class="btn' + (doitRelancer ? " primary" : "") + '" data-relance="' + d.id + '">J\'ai relancé aujourd\'hui</button>' +
-        '<select aria-label="Changer le statut de ' + esc(d.nom) + '" data-statut="' + d.id + '" style="width:auto;padding:5px 10px;border-radius:999px;font-size:14px">' +
+        '<button type="button" class="' + (doitRelancer ? "btn primary" : "linkbtn") + '" data-relance="' + d.id + '">J\'ai relancé aujourd\'hui</button>' +
+        '<select class="lsel" aria-label="Changer le statut de ' + esc(d.nom) + '" data-statut="' + d.id + '">' +
           Object.keys(STATUTS).map(k => '<option value="' + k + '"' + (k === d.statut ? " selected" : "") + '>' + STATUTS[k] + '</option>').join("") +
         '</select>' +
         (d.example ? '<span class="ex" style="align-self:center">exemple</span>' : '') +
@@ -745,7 +758,7 @@ nav.tabs button.soon { opacity: .55; }
       '<section class="section"><div class="section-head"><h2>Les pistes</h2></div>' +
         '<p class="group-intro">Coche celles que tu creuses. En ouvrir deux, c\'est ne pas tout miser sur la commission de la mairie.</p>' +
         OPTIONS.map(o => '<details class="opt"><summary><span><span class="name">' + o.name + '</span><br><span class="meta">' + o.delai + '</span></span>' +
-          '<button type="button" class="pill' + (S.options[o.id] ? " on" : "") + '" data-opt="' + o.id + '">' + (S.options[o.id] ? "Je creuse" : "Creuser") + '</button></summary>' +
+          '<button type="button" class="pill' + (S.options[o.id] ? " on" : "") + '" data-opt="' + o.id + '">' + (S.options[o.id] ? "✓ Je creuse" : "+ Creuser") + '</button></summary>' +
           modeDL(o) + '</details>').join("") +
       '</section>' +
 
@@ -1199,6 +1212,7 @@ nav.tabs button.soon { opacity: .55; }
     const x = BASE[i]; if (!x) return;
     let k = x.k ? x.k.charAt(0).toUpperCase() + x.k.slice(1) : "", kl = "Bon à savoir";
     if (/^Repère\s*:\s*/.test(k)) { kl = "Repère"; k = k.replace(/^Repère\s*:\s*/, ""); }
+    if (k && !/[.!?…)]$/.test(k)) k += ".";
     openSheet('<button type="button" class="linkbtn" id="askBack" style="justify-self:start">← Retour</button>' +
       '<h2>' + esc(x.o) + '</h2><div class="answer-card"><span class="vd ' + x.v + '">' + ASK_V[x.v] + '</span>' +
       (x.p ? '<p>' + esc(x.p) + '</p>' : '') + (k ? '<p><b>' + kl + ' :</b> ' + esc(k) + '</p>' : '') + (x.b ? '<span class="proof aucune">Repère de bon sens, pas une consigne officielle</span>' : '') +
@@ -1456,7 +1470,7 @@ nav.tabs button.soon { opacity: .55; }
     const ph = x.photos || [];
     return '<div class="photos"><b style="font-size:14px">Photos des documents</b>' +
       (ph.length ? '<div class="thumbs">' + ph.map((src, i) => '<span class="thumb"><img src="' + src + '" alt="Document ' + (i + 1) + ' de la séance ' + (k + 1) + '"><button type="button" aria-label="Supprimer la photo" data-delphoto="' + k + ':' + i + '">×</button></span>').join("") + '</div>' : '') +
-      '<label class="btn file-btn">Ajouter des photos<input type="file" accept="image/*" multiple data-photos="' + k + '"></label>' +
+      '<label class="linkbtn file-btn">+ Ajouter des photos<input type="file" accept="image/*" multiple data-photos="' + k + '"></label>' +
       (ph.length ? '<p style="font-size:13px;color:var(--muted);margin:0">' + (x.synth ? 'Ces documents sont pris en compte dans la synthèse.' : 'Ils seront pris en compte dans la synthèse.') + '</p>' : '') + '</div>';
   }
   function resizeImage(file) {
@@ -1539,7 +1553,7 @@ nav.tabs button.soon { opacity: .55; }
           '<div class="field"><label for="sn' + k + '">Ce que je retiens</label><textarea id="sn' + k + '" rows="4" data-seance="' + k + '" data-f="notes" placeholder="Les 3 choses à ne pas oublier">' + esc(x.notes || "") + '</textarea></div>' +
           '<label class="filter" style="padding:0"><input type="checkbox" data-seance="' + k + '" data-f="doc"' + (x.doc ? " checked" : "") + '> J\'ai reçu les documents de la séance</label>' +
           (x.doc ? '' : '<p style="font-size:14px;color:var(--muted)">Pense à les demander, et à les faire envoyer sur ta propre adresse.</p>') + '</div></details>').join("") +
-        (se.length < 7 ? '<button type="button" class="btn" id="addSeance" style="justify-self:start">Ajouter la séance ' + (se.length + 1) + '</button>' : '') + '</section>' +
+        (se.length < 7 ? '<button type="button" class="linkbtn" id="addSeance" style="justify-self:start">+ Ajouter la séance ' + (se.length + 1) + '</button>' : '') + '</section>' +
         '<section class="section"><div class="callout"><span class="pill">En développement</span><h3>Tu as peur de l\'accouchement ?</h3><p>Tu n\'es pas seule, et cette peur arrive souvent dans les dernières semaines. On prépare cette section avec des parents qui sont passés par là.</p><p>En attendant, une idée d\'un futur papa : un point à deux chaque semaine. « Comment tu te sens, qu\'est-ce qui te fait peur, comment tu vois l\'autre ? » Ça aide à en parler avant que ça pèse.</p></div></section>';
     } else if (naisView === "projet") {
       const P = S.projet || {}; const txt = projetTexte();
