@@ -1145,7 +1145,7 @@ nav.tabs button.soon { opacity: .55; }
   function askHTML() {
     return '<button type="button" class="ask" id="askOpen">' + searchSvg + '<span>Enceinte, j\'ai le droit de… ?</span></button>';
   }
-  const ficheBtn = x => '<button type="button" data-fiche="' + x.i + '"><span>' + esc(x.o) + '</span><small class="t-' + x.v + '">' + ASK_V[x.v] + '</small></button>';
+  const ficheBtn = x => '<button type="button" data-qf="' + x.i + '"><span>' + esc(x.o) + '</span><small class="t-' + x.v + '">' + ASK_V[x.v] + '</small></button>';
   let askQ = "", askCat = "";
   function askListHTML() {
     const hit = askQ.trim() ? askFind(askQ) : [];
@@ -1169,10 +1169,10 @@ nav.tabs button.soon { opacity: .55; }
     document.getElementById("askForm").addEventListener("submit", e => { e.preventDefault(); inp.blur(); });
     sh.addEventListener("click", e => {
       const c = e.target.closest("[data-askcat]"); if (c) { askCat = c.dataset.askcat; document.getElementById("askRes").innerHTML = askListHTML(); sh.scrollTop = 0; return; }
-      const b = e.target.closest("[data-fiche]"); if (b) openFiche(+b.dataset.fiche);
+      const b = e.target.closest("[data-qf]"); if (b) openQFiche(+b.dataset.qf);
     });
   }
-  function openFiche(i) {
+  function openQFiche(i) {
     const x = BASE[i]; if (!x) return;
     let k = x.k ? x.k.charAt(0).toUpperCase() + x.k.slice(1) : "", kl = "Bon à savoir";
     if (/^Repère\s*:\s*/.test(k)) { kl = "Repère"; k = k.replace(/^Repère\s*:\s*/, ""); }
@@ -1702,7 +1702,7 @@ nav.tabs button.soon { opacity: .55; }
     if (tk) { e.preventDefault(); e.stopPropagation(); const id = tk.dataset.tick; if (id.indexOf("rdv_") === 0) { S.parcours = S.parcours || {}; const sid = id.slice(4); if (S.parcours[sid]) { delete S.parcours[sid]; delete S.done[id]; } else { S.parcours[sid] = "fait"; S.done[id] = true; } } else S.done[id] = !S.done[id]; save(); const open = tk.closest("details").open; render(); const d = document.querySelector('details[data-id="' + id + '"]'); if (d && open) d.open = true; return; }
     if (e.target.closest("#askOpen")) { openAsk(""); return; }
     const ak = e.target.closest("[data-ask]");
-    if (ak) { openFiche(+ak.dataset.ask); return; }
+    if (ak) { openQFiche(+ak.dataset.ask); return; }
     const go = e.target.closest("[data-go]");
     if (go) { if (go.dataset.go === "valise") valiseFrom = tab; tab = go.dataset.go; if (go.dataset.view) { if (go.dataset.go === "materiel") matView = go.dataset.view; else naisView = go.dataset.view; } render(); window.scrollTo(0, 0); return; }
     if (e.target.closest("#mdMsg")) { openMdMessage(); return; }
