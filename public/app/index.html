@@ -488,6 +488,20 @@ nav.tabs button.soon { opacity: .55; }
   // Statuts du matériel ramenés à 4 (23/10) : commandé et offert deviennent « J'ai », « pas besoin » redevient à choisir.
   Object.keys(S.mat).forEach(k => { const v = S.mat[k]; if (v === "commande" || v === "offert") S.mat[k] = "ai"; else if (!["ai", "recup", "liste", "acheter"].includes(v)) delete S.mat[k]; });
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+  // Quand on quitte l'exemple en changeant de terme, ses rendez-vous, séances, étapes cochées et démarches n'ont plus de sens
+  // (bug vu par Sandra le 29/10 : une consultation du 8e mois « aujourd'hui » à 6 SA). Ce que la personne a saisi reste.
+  function dropExample() {
+    if (!S.example) return;
+    S.rdvs = (S.rdvs || []).filter(r => !r.example && !r.imp); // imp = rendez-vous de l'import simulé, datés pour l'exemple
+    S.demarches = (S.demarches || []).filter(d => !d.example);
+    S.parcours = {}; S.seances = []; S.done = {};
+    S.valiseRecos = (S.valiseRecos || []).filter(r => r.id !== "r1");
+    // Champs encore à la valeur de l'exemple (Paris 19e, Port-Royal, checklist pré-remplie…) : on les vide.
+    ["ville", "quartier", "maternite", "reprise"].forEach(k => { if (S[k] === defaults[k]) S[k] = ""; });
+    const empty = { mat: {}, options: {}, pieces: {}, projet: {}, jourj: {}, valise: {} };
+    Object.keys(empty).forEach(k => { if (JSON.stringify(S[k]) === JSON.stringify(defaults[k])) S[k] = empty[k]; });
+    S.example = false;
+  }
   let tab = "accueil";
   try { const h = location.hash.replace("#", ""); if (["garde", "accueil", "materiel", "suivi", "naissance"].includes(h)) tab = h; } catch (e) {}
 
@@ -1669,6 +1683,7 @@ nav.tabs button.soon { opacity: .55; }
     document.getElementById("profForm").addEventListener("submit", e => {
       e.preventDefault();
       const t = document.getElementById("pTerme").value;
+      if (t && t !== S.terme) dropExample();
       if (t) S.terme = t;
       S.reprise = document.getElementById("pReprise").value;
       S.maternite = document.getElementById("pMater").value.trim();
@@ -1856,7 +1871,7 @@ nav.tabs button.soon { opacity: .55; }
     if (el.dataset.reco) { const r = (S.valiseRecos || []).find(x => x.id === el.dataset.reco); if (r) { r.ok = el.checked; save(); const keep = window.scrollY; render(); window.scrollTo(0, keep); } return; }
     if (el.dataset.doneMat) { S.mat[el.dataset.doneMat] = el.checked ? el.dataset.on : el.dataset.off; save(); const keep = window.scrollY; render(); window.scrollTo(0, keep); return; }
     if (el.dataset.notif) { S.notifs = S.notifs || {}; S.notifs[el.dataset.notif] = el.checked; save(); return; }
-    if (el.dataset.reg) { const k = el.dataset.reg; if (k === "terme" && !el.value) return; S[k] = el.value.trim ? el.value.trim() : el.value; if (k === "terme" || k === "reprise") S.example = false; save(); return; }
+    if (el.dataset.reg) { const k = el.dataset.reg; if (k === "terme" && !el.value) return; if (k === "terme" && el.value !== S.terme) dropExample(); S[k] = el.value.trim ? el.value.trim() : el.value; if (k === "terme" || k === "reprise") S.example = false; save(); return; }
     if (el.id === "matIndisp") { S.matIndisp = el.checked; save(); const keep = window.scrollY; render(); window.scrollTo(0, keep); return; }
     if (el.dataset.mat) { S.mat[el.dataset.mat] = el.value; save(); const keep = window.scrollY; render(); window.scrollTo(0, keep); return; }
     if (el.dataset.statut) { const d = S.demarches.find(x => x.id === el.dataset.statut); if (d) { d.statut = el.value; save(); render(); } return; }
@@ -1913,6 +1928,7 @@ nav.tabs button.soon { opacity: .55; }
         e.preventDefault();
         const moi = document.getElementById("wMoi").value.trim(), t = document.getElementById("wTerme").value, err = document.getElementById("wErr");
         if (!moi || !t) { err.textContent = !moi ? "Indique ton prénom." : "Indique la date du terme."; err.hidden = false; return; }
+        if (fromSettings && t !== S.terme) dropExample();
         if (fromSettings) Object.assign(S, { moi, terme: t, prenom: document.getElementById("wPrenom").value.trim(), example: false });
         else Object.assign(S, { moi, prenom: document.getElementById("wPrenom").value.trim(), ville: "", quartier: "", maternite: "", alim: "", example: false, terme: t, reprise: "", done: {}, options: {}, pieces: {}, demarches: [], mat: {}, parcours: {}, rdvs: [], seances: [], projet: {}, jourj: {}, quiz: {}, quizDone: false, quizStep: 0, valise: {}, valiseRecos: [], matCustom: [], listeOfferts: {}, matLinks: {}, matPrix: {}, listePub: {}, moisdor: {}, coparent: {}, naissance: null });
         save();
