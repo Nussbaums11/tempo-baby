@@ -433,6 +433,10 @@ button.pill.on { background: none; color: var(--sage); }
 .status.st-aprendre, .status.st-retard { color: var(--terracotta-dark); }
 .status.st-date { color: var(--muted); }
 .status.st-proche { color: var(--terracotta-dark); }
+.rec-link { display: inline-flex; align-items: center; gap: 6px; }
+.rec-link .rec-dot { width: 8px; height: 8px; color: var(--terracotta); }
+/* 29/10 : trop de soulignés. Un lien d'action = texte orange en gras, sans soulignement (comme « Ouvrir le suivi médical → »). */
+.linkbtn { text-decoration: none; }
 /* Barre d'onglets */
 nav.tabs { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: var(--card); border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); padding: 6px 4px calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 5; }
 nav.tabs button { background: none; border: 0; display: grid; justify-items: center; gap: 2px; padding: 6px 0; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; }
@@ -494,7 +498,7 @@ nav.tabs button.soon { opacity: .55; }
     parcours: { p_hcg: "fait", p_echo0: "fait", p_consult1: "fait", p_decl: "fait", p_diab: "fait", p_mater: "fait", p_echo1: "fait", p_epp: "fait", p_c4: "fait", p_c5: "fait", p_echo2: "fait", p_c6: "fait", p_c7: "fait", p_echo3: "fait", p_prepa: iso(today), p_c8: iso(addDays(today, 9)) },
     rdvs: [
       { id: "v1", t: "Échographie du 3e trimestre", date: iso(addDays(today, -10)), h: "10:30", lieu: "Cabinet d'échographie", q: "", n: "Tout va bien, bébé est tête en bas. Courbe de croissance normale.", example: true },
-      { id: "v2", t: "Séance de préparation n° 4", date: iso(today), h: "18:00", lieu: "Sage-femme du quartier", q: "Quand faut-il partir à la maternité ?\nQue mettre dans la valise ?", n: "", example: true },
+      { id: "v2", t: "Séance de préparation n° 4", date: iso(today), h: "18:00", lieu: "Maternité", q: "Quand faut-il partir à la maternité ?\nQue mettre dans la valise ?", n: "", example: true },
       { id: "v3", t: "Consultation du 8e mois", date: iso(addDays(today, 9)), h: "09:15", lieu: "Maternité", q: "", n: "", example: true }
     ],
     seances: [
@@ -652,8 +656,7 @@ nav.tabs button.soon { opacity: .55; }
       semaine.map(r => { const n = Math.round((new Date(r.date + "T00:00:00") - today) / DAY); const quand = n === 0 ? "Aujourd'hui" : n === 1 ? "Demain" : ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][new Date(r.date + "T00:00:00").getDay()].replace(/^./, c => c.toUpperCase());
         const qs = (r.q || "").split("\n").filter(Boolean);
         return '<div class="rdv-week' + (n === 0 ? " today" : "") + '"><div class="rdv-when"><b>' + quand + '</b><span>' + (r.h ? r.h.replace(":", "h") : "") + '</span></div><div class="rdv-what"><b>' + esc(r.t) + '</b>' + (r.lieu ? '<span>' + esc(r.lieu) + '</span>' : '') +
-          (qs.length ? '<span class="rdv-q">' + qs.length + ' question' + (qs.length > 1 ? "s" : "") + ' à poser : ' + esc(qs[0]) + (qs.length > 1 ? "…" : "") + '</span>' : '') +
-          '<div class="dem-actions">' + (r.synth ? '<span class="status st-fait">Synthèse prête</span>' : '<button type="button" class="btn primary rec-btn" data-record="1" data-rdv="' + r.id + '"><span class="rec-dot"></span>Enregistrer</button>') + '<button type="button" class="linkbtn" data-go="suivi">Mes questions</button></div></div></div>'; }).join("") + '</section>' : '';
+          '<div class="dem-actions"><button type="button" class="linkbtn" data-prep="' + r.id + '">Préparer le RDV →</button></div></div></div>'; }).join("") + '</section>' : '';
     const grpHTML = (cls, label, arr) => arr.length ? '<div class="group"><div class="eyebrow ' + cls + '">' + label + '</div>' + arr.map(itemHTML).join("") + '</div>' : '';
     if (S.naissance) return bornHTML();
     return '' +
@@ -1142,7 +1145,7 @@ nav.tabs button.soon { opacity: .55; }
     const rdvHTML = r => {
       const n = Math.round((new Date(r.date + "T00:00:00") - today) / DAY);
       const quand = n === 0 ? "Aujourd'hui" : n === 1 ? "Demain" : n > 1 ? "Dans " + n + " jours" : "Il y a " + (-n) + " jour" + (-n > 1 ? "s" : "");
-      return '<details class="opt rdv"' + (r.open ? " open" : "") + '><summary><span><span class="name">' + esc(r.t) + '</span><br><span class="meta">' + fmtD(new Date(r.date + "T00:00:00")) + (r.h ? " à " + esc(r.h) : "") + (r.lieu ? " · " + esc(r.lieu) : "") + (r.src ? " · importé via " + esc(r.src) : "") + '</span></span><span class="status st-date' + (n >= 0 && n <= 3 ? " st-proche" : "") + '">' + quand + '</span></summary>' +
+      return '<details class="opt rdv" data-rdv-id="' + r.id + '"' + (r.open ? " open" : "") + '><summary><span><span class="name">' + esc(r.t) + '</span><br><span class="meta">' + fmtD(new Date(r.date + "T00:00:00")) + (r.h ? " à " + esc(r.h) : "") + (r.lieu ? " · " + esc(r.lieu) : "") + (r.src ? " · importé via " + esc(r.src) : "") + '</span></span><span class="status st-date' + (n >= 0 && n <= 3 ? " st-proche" : "") + '">' + quand + '</span></summary>' +
         '<div class="step-body">' + (r.synth ? synthHTML(r.synth) : '<button type="button" class="btn primary rec-btn" data-record="1" data-rdv="' + r.id + '"><span class="rec-dot"></span>Enregistrer le rendez-vous</button>') +
         '<div class="field"><label for="q_' + r.id + '">Mes questions à poser</label><textarea id="q_' + r.id + '" data-rdv-q="' + r.id + '" rows="3" placeholder="Ex. Quand faut-il partir à la maternité ?">' + esc(r.q || "") + '</textarea></div>' +
         '<div class="field"><label for="n_' + r.id + '">Ce qu\'on m\'a dit</label><textarea id="n_' + r.id + '" data-rdv-n="' + r.id + '" rows="3" placeholder="Les réponses, les consignes, les documents à apporter…">' + esc(r.n || "") + '</textarea></div>' +
@@ -1405,7 +1408,7 @@ nav.tabs button.soon { opacity: .55; }
     const m = S.maternite || "Maternité";
     return [
       { k: "i1", t: "Prise de sang", date: iso(addDays(today, 6)), h: "08:00", lieu: "Laboratoire", src: "Doctolib" },
-      { k: "i2", t: "Séance de préparation n° 5", date: iso(addDays(today, 10)), h: "18:00", lieu: "Sage-femme du quartier", src: "Ton agenda" },
+      { k: "i2", t: "Séance de préparation n° 5", date: iso(addDays(today, 10)), h: "18:00", lieu: "Maternité", src: "Ton agenda" },
       { k: "i3", t: "Consultation d'anesthésie", date: iso(addDays(today, 12)), h: "11:20", lieu: m, src: "Doctolib", step: "p_anesth" }
     ].filter(f => !(S.rdvs || []).some(r => r.imp === f.k));
   }
@@ -1753,6 +1756,9 @@ nav.tabs button.soon { opacity: .55; }
     if (e.target.closest("#askOpen")) { openAsk(""); return; }
     const ak = e.target.closest("[data-ask]");
     if (ak) { openQFiche(+ak.dataset.ask); return; }
+    const pr = e.target.closest("[data-prep]");
+    if (pr) { (S.rdvs || []).forEach(x => { x.open = x.id === pr.dataset.prep; }); tab = "suivi"; render();
+      const el = document.querySelector('[data-rdv-id="' + pr.dataset.prep + '"]'); if (el) el.scrollIntoView({ block: "start" }); window.scrollBy(0, -12); return; }
     const go = e.target.closest("[data-go]");
     if (go) { if (go.dataset.go === "valise") valiseFrom = tab; tab = go.dataset.go; if (go.dataset.view) { if (go.dataset.go === "materiel") matView = go.dataset.view; else naisView = go.dataset.view; } render(); window.scrollTo(0, 0); return; }
     if (e.target.closest("#mdMsg")) { openMdMessage(); return; }
@@ -1808,7 +1814,7 @@ nav.tabs button.soon { opacity: .55; }
     if (e.target.id === "addRdvBtn") {
       openSheet('<h2>Ajouter un rendez-vous</h2>' + '<form id="addRdv" style="display:grid;gap:12px"><div class="field"><label for="rdvT">Quel rendez-vous ?</label><input id="rdvT" type="text" placeholder="Ex. Séance de préparation n° 5" required></div>' +
         '<div class="row2"><div class="field"><label for="rdvD">Date</label><input id="rdvD" type="date" required></div><div class="field"><label for="rdvH">Heure</label><input id="rdvH" type="time"></div></div>' +
-        '<div class="field"><label for="rdvL">Lieu ou avec qui</label><input id="rdvL" type="text" placeholder="Ex. Sage-femme du quartier"></div>' +
+        '<div class="field"><label for="rdvL">Lieu ou avec qui</label><input id="rdvL" type="text" placeholder="Ex. Maternité, gynéco, sage-femme"></div>' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="submit">Ajouter</button><button class="btn" type="button" data-close>Annuler</button></div></form>');
       document.getElementById("addRdv").addEventListener("submit", ev => {
         ev.preventDefault();
