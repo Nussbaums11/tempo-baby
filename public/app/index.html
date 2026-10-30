@@ -458,6 +458,10 @@ nav.tabs button.soon { opacity: .55; }
 .sheet { width: 100%; max-width: 420px; background: var(--card); border-radius: 20px 20px 0 0; padding: 22px 16px calc(22px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 12px; }
 /* 30/10 : une fiche plus haute que l'écran doit défiler, sinon ses boutons du bas sont hors de portée (bug fiche 21 SA). */
 .sheet { max-height: 92vh; max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain; align-content: start; }
+.sem-head { position: sticky; top: -22px; margin: -22px -16px 0; padding: 22px 16px 10px; background: var(--card); display: flex; justify-content: space-between; align-items: center; gap: 12px; z-index: 1; }
+.sem-x { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--cream); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.sem-x svg { width: 18px; height: 18px; }
+.sem-nav { justify-content: space-between; }
 .sem-nav { position: sticky; bottom: calc(-22px - env(safe-area-inset-bottom, 0px)); margin: 0 -16px calc(-22px - env(safe-area-inset-bottom, 0px)); padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--card); border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
 .sheet h2 { font-size: 22px; }
 .sheet p { margin: 0; color: var(--muted); }
@@ -1628,7 +1632,7 @@ nav.tabs button.soon { opacity: .55; }
   const fmtPoids = g => g < 1000 ? g + " g" : (g / 1000).toFixed(1).replace(".", ",") + " kg";
   function openBebe(sa) {
     const b = bebe(sa);
-    openSheet('<h2>' + b.sa + ' semaines d\'aménorrhée</h2>' +
+    openSheet('<div class="sem-head"><h2>' + b.sa + ' semaines d\'aménorrhée</h2><button class="sem-x" type="button" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
       '<div class="fruit fruit-big" aria-hidden="true">' + b.emoji + '</div><div class="bebe-big"><span class="ex">Taille</span><b>À peu près ' + b.fruit + '</b>' +
       (b.g ? '<span class="ex">Poids moyen</span><b>' + (b.sa > 40 ? "Plus de " : "Environ ") + fmtPoids(b.g) + '</b>' : '<span class="ex">Poids</span><b>Encore trop petit pour être estimé</b>') +
       (b.s.l ? '<span class="ex">Longueur</span><span class="bebe-long">' + fmtLong(b.s.l) + ', <small>' + (b.sa < 20 ? 'de la tête aux fesses' : 'de la tête aux talons') + '</small></span>' : '') + '</div>' +
@@ -1641,8 +1645,7 @@ nav.tabs button.soon { opacity: .55; }
         (b.s.l ? 'Longueur : NHS. ' : '') + 'Poids : moyenne publiée par Hadlock et al., Radiology, 1991. Fruits : comparaisons pour se représenter.</p>' +
       '<div class="sem-nav">' +
         (b.sa > 4 ? '<button class="btn" type="button" data-bebe-go="' + (b.sa - 1) + '">← Semaine ' + (b.sa - 1) + '</button>' : '') +
-        (b.sa < 41 ? '<button class="btn" type="button" data-bebe-go="' + (b.sa + 1) + '">Semaine ' + (b.sa + 1) + ' →</button>' : '') +
-        '<button class="btn" type="button" data-close>Fermer</button></div>');
+        (b.sa < 41 ? '<button class="btn" type="button" data-bebe-go="' + (b.sa + 1) + '">Semaine ' + (b.sa + 1) + ' →</button>' : '') + '</div>');
     document.getElementById("sheetRoot").querySelectorAll("[data-bebe-go]").forEach(b2 => b2.addEventListener("click", () => openBebe(Number(b2.dataset.bebeGo))));
   }
 
