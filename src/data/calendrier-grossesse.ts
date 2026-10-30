@@ -47,6 +47,8 @@ export interface Step {
    * (30/10/2026). Le titre doit porter tous les termes du mot-clé de l'article.
    */
   article?: string;
+  /** Si le titre ne porte pas tous les termes du mot-clé : ancre d'un lien affiché sous le texte. */
+  articleLabel?: string;
 }
 
 export interface Phase {
@@ -171,6 +173,8 @@ export const phases: Phase[] = [
       {
         id: 'materiel',
         title: 'Faire le point sur le matériel et la liste de naissance',
+        article: 'liste-de-naissance-exemple',
+        articleLabel: 'Un exemple de liste de naissance',
         text: 'Ce qui est vraiment indispensable au début, ce qui peut attendre, ce que les proches peuvent offrir.',
         kind: 'repere',
         from: sa(20),
