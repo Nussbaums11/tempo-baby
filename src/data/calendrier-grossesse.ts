@@ -248,6 +248,7 @@ export const phases: Phase[] = [
       {
         id: 'valise',
         title: 'Préparer la valise de maternité',
+        article: 'valise-maternite',
         text: 'Les papiers, le sac pour la salle de naissance, et de quoi tenir le séjour. La liste de votre maternité fait foi.',
         kind: 'repere',
         from: sa(33),
