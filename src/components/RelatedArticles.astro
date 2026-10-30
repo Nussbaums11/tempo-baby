@@ -31,7 +31,10 @@ const { cocon, currentSlug } = Astro.props;
 const all = await getCollection('articles', ({ data }) => !data.draft);
 const inCocon = all.filter((a) => a.data.cocon === cocon);
 
-const pilier = inCocon.find((a) => a.data.pilier);
+// Mère du cocon : un article `pilier: true`, ou une page à part déclarée dans
+// cocons.ts (`pilierExterne`, ex. le calculateur /calendrier-grossesse/).
+const externe = cocons.find((c) => c.slug === cocon)?.pilierExterne;
+const pilier = inCocon.find((a) => a.data.pilier) ?? (externe ? { id: externe.slug, data: { title: externe.title, pilier: true } } : undefined);
 const me = inCocon.find((a) => a.id === currentSlug);
 
 const byTitle = (a, b) => a.data.title.localeCompare(b.data.title, 'fr');

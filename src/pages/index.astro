@@ -14,7 +14,7 @@ const orgSchema = {
 
 const allArticles = await getCollection('articles', ({ data }) => !data.draft);
 
-const pillars = cocons.map((c) => {
+const pillars = cocons.filter((c) => !c.horsAccueil).map((c) => {
   const live = allArticles.some((a) => a.data.cocon === c.slug);
   return {
     icon: c.icon,

@@ -28,6 +28,9 @@ import { fileURLToPath } from 'node:url';
 const ART = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'content', 'articles');
 const LINK = /\[[^\]\n]+\]\((?:https:\/\/tempo-baby\.com)?\/([a-z0-9-]+)\/\)/g;
 const SOEURS_MAX = 2;
+// Cocons dont la mère n'est pas un article MDX mais une page à part (30/10/2026).
+// À garder aligné avec `pilierExterne` dans src/data/cocons.ts.
+const PILIERS_EXTERNES = { 'futurs-parents': 'calendrier-grossesse' };
 
 const articles = new Map();
 for (const file of readdirSync(ART).filter((f) => f.endsWith('.mdx'))) {
@@ -53,11 +56,16 @@ const warns = [];
 for (const cocon of new Set(live.map((a) => a.cocon))) {
   const inC = live.filter((a) => a.cocon === cocon);
   const piliers = inC.filter((a) => a.pilier);
-  if (piliers.length !== 1) {
-    errors.push(`cocon « ${cocon} » : ${piliers.length} pilier(s), il en faut exactement 1`);
+  const externe = PILIERS_EXTERNES[cocon];
+  if (piliers.length !== (externe ? 0 : 1)) {
+    errors.push(
+      externe
+        ? `cocon « ${cocon} » : sa mère est la page /${externe}/, aucun article ne doit porter \`pilier: true\``
+        : `cocon « ${cocon} » : ${piliers.length} pilier(s), il en faut exactement 1`
+    );
     continue;
   }
-  const pilier = piliers[0];
+  const pilier = externe ? { slug: externe, pilier: true } : piliers[0];
   const childrenOf = (s) => inC.filter((a) => a.parent === s).map((a) => a.slug);
   const soeurs = childrenOf(pilier.slug);
 
@@ -67,7 +75,7 @@ for (const cocon of new Set(live.map((a) => a.cocon))) {
     } else if (!a.parent) {
       errors.push(`${a.slug} : champ \`parent\` manquant au frontmatter`);
       continue;
-    } else if (!articles.has(a.parent)) {
+    } else if (!articles.has(a.parent) && a.parent !== externe) {
       errors.push(`${a.slug} : \`parent: ${a.parent}\` ne correspond à aucun article`);
       continue;
     }
