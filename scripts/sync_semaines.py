@@ -32,7 +32,8 @@ for r in rows[1:]:
         if " : http" in s:
             n, u = s.split(" : ", 1)
             sources.append({"n": n.strip(), "u": u.strip()})
-    semaines.append({"sa": int(r[0]), "t": r[1].strip(), "b": r[2].strip(), "m": r[3].strip(), "a": r[4].strip(), "u": sources})
+    semaines.append({"sa": int(r[0]), "t": r[1].strip(), "b": r[2].strip(), "m": r[3].strip(), "a": r[4].strip(), "u": sources,
+                     "l": float(r[6].replace(",", ".")) if r[6].strip() else None})
 
 html = APP.read_text()
 bloc = re.compile(r'(<script id="semainesQ" type="application/json">)(.*?)(</script>)', re.S)
