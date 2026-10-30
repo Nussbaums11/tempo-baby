@@ -41,6 +41,12 @@ export interface Step {
   /** Libellé de période affiché sans calcul (rendu statique). */
   when: string;
   source?: Source;
+  /**
+   * Slug de l'article du cocon « futurs parents » qui détaille l'étape. Le titre de
+   * l'étape devient alors le lien : c'est par là que la page mère maille ses sœurs
+   * (30/10/2026). Le titre doit porter tous les termes du mot-clé de l'article.
+   */
+  article?: string;
 }
 
 export interface Phase {
@@ -222,6 +228,7 @@ export const phases: Phase[] = [
       {
         id: 'projet-naissance',
         title: 'Écrire son projet de naissance',
+        article: 'projet-de-naissance',
         text: 'Vos souhaits pour l’accouchement, à apporter aux consultations : ni un contrat, ni une obligation.',
         kind: 'repere',
         from: sa(29),

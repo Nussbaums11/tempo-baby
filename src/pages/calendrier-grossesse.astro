@@ -202,7 +202,11 @@ const ext = { target: '_blank', rel: 'nofollow noopener noreferrer' };
                     <span class="cal-dates font-semibold text-ink"></span>
                   </span>
                 </div>
-                <p class="font-semibold text-ink">{step.title}</p>
+                <p class="font-semibold text-ink">
+                  {step.article ? (
+                    <a href={`/${step.article}/`} class="text-ink underline decoration-terracotta underline-offset-4 hover:text-terracotta">{step.title}</a>
+                  ) : step.title}
+                </p>
                 <p class="text-sm text-ink/70 mt-1">{step.text}</p>
                 {step.source && (
                   <p class="text-xs text-ink/50 mt-1">
