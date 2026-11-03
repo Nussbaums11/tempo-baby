@@ -1909,7 +1909,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const bigRepas = p.suivre.length ? '<div class="pn-last">' + p.suivre.map(k => { const r = PN_RUB.find(x => x.k === k), l = lastOf(k);
       if (k === "sommeil") { const se = sommeilEtat();
         return '<div class="pn-last-r"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t pn-open" data-pn-hist="sommeil" role="button" tabindex="0"><small>' + (se ? se.t : "Sommeil") + '</small><b>' + (se ? se.v : 'Rien de noté') + '</b><small>' + (se ? se.d : '') + '</small></span><button type="button" class="btn" data-pn-log="sommeil" aria-label="Noter le sommeil">+</button></div>'; }
-      const det = l ? (l.q ? l.q + ' ml' : l.cote ? 'Sein ' + l.cote : coucheTxt(l)) : '';
+      const det = l ? (l.q ? l.q + ' ml' : l.cote ? 'Sein ' + (l.cote === "droite" ? "droit" : l.cote) : coucheTxt(l)) : '';
       const jour = k === "biberon" ? bibJour() : todayCount(k) + ' aujourd\'hui';
       return '<div class="pn-last-r"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t pn-open" data-pn-hist="' + k + '" role="button" tabindex="0"><small>' + ONE[k] + '</small><b>' + (l ? depuis(l.t) : 'Rien de noté') + '</b><small>' + [det, l ? jour : ''].filter(Boolean).join(' · ') + '</small></span><button type="button" class="btn" data-pn-log="' + k + '" aria-label="Noter ' + r.one + '">+</button></div>'; }).join("") + '</div>' : '';
     const upcoming = PN_FRISE.filter(f => !p.frise[f.id] && ageJours() <= f.a).slice(0, 4);
@@ -1989,40 +1989,46 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const p = pn(), add = extra => { p.log.push(Object.assign({ k, t: quand().toISOString() }, extra || {})); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); };
     const lb = lastOf("biberon"), proche = k === "biberon" && lb && (Date.now() - new Date(lb.t)) < 30 * 60000;
     const hhmm = t => { const d = new Date(t); return d.getHours() + "h" + String(d.getMinutes()).padStart(2, "0"); };
+    // On choisit, puis on valide (Sandra 03/11 : un tap sur une quantité validait trop vite).
+    const valider = '<button class="btn primary" type="button" id="lgOk" style="justify-self:start">Enregistrer</button>';
+    const pick = (attr, set) => document.querySelectorAll("[" + attr + "]").forEach(b => b.addEventListener("click", () => { document.querySelectorAll("[" + attr + "]").forEach(x => x.setAttribute("aria-selected", x === b && b.getAttribute("aria-selected") !== "true")); set(b.getAttribute("aria-selected") === "true" ? b.getAttribute(attr) : null); }));
     if (k === "biberon") {
-      let fusion = false;
-      openSheet('<h2 id="bibT">Biberon</h2>' + (proche ? '<button type="button" class="linkbtn" id="bibFus" style="justify-self:start">Il a repris ? Ajouter au biberon de ' + hhmm(lb.t) + (lb.q ? ' (' + lb.q + ' ml)' : '') + '</button>' : '') + '<div id="bibH">' + heure + '</div><p>Combien ?</p><div class="chips md-chips">' + [30, 60, 90, 120, 150, 180].map(q => '<button type="button" class="chip" data-q="' + q + '">' + q + ' ml</button>').join("") + '</div><button type="button" class="linkbtn" id="qNone" style="justify-self:start">Noter sans la quantité</button>');
+      let fusion = false, q = null;
+      openSheet('<h2 id="bibT">Biberon</h2>' + (proche ? '<button type="button" class="linkbtn" id="bibFus" style="justify-self:start">Il a repris ? Ajouter au biberon de ' + hhmm(lb.t) + (lb.q ? ' (' + lb.q + ' ml)' : '') + '</button>' : '') + '<div id="bibH">' + heure + '</div><p>Combien ?</p><div class="chips md-chips">' + [30, 60, 90, 120, 150, 180].map(v => '<button type="button" class="chip" data-q="' + v + '" aria-selected="false">' + v + ' ml</button>').join("") + '</div>' + valider);
       const fb = document.getElementById("bibFus");
       if (fb) fb.addEventListener("click", () => { fusion = true; fb.remove(); document.getElementById("bibH").remove(); document.getElementById("bibT").textContent = "Ajouter au biberon de " + hhmm(lb.t); });
-      document.querySelectorAll("[data-q]").forEach(b => b.addEventListener("click", () => { if (fusion) { lb.q = (lb.q || 0) + (+b.dataset.q); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); } else add({ q: +b.dataset.q }); }));
-      document.getElementById("qNone").addEventListener("click", () => add());
+      pick("data-q", v => { q = v ? +v : null; });
+      document.getElementById("lgOk").addEventListener("click", () => { if (fusion) { if (q) lb.q = (lb.q || 0) + q; save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); } else add(q ? { q } : null); });
     } else if (k === "tetee") {
-      const l = lastOf("tetee");
-      openSheet('<h2>Quel sein ?</h2>' + (l && l.cote ? '<p>La dernière fois : ' + l.cote + '.</p>' : '') + heure + '<div style="display:flex;gap:8px"><button type="button" class="btn primary" data-c="gauche">Gauche</button><button type="button" class="btn primary" data-c="droite">Droite</button></div>');
-      document.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => add({ cote: b.dataset.c })));
+      const l = lastOf("tetee"); let cote = null;
+      openSheet('<h2>Tétée</h2>' + heure + '<div class="field"><label>Quel sein ?' + (l && l.cote ? ' La dernière fois : ' + l.cote + '.' : '') + '</label><div style="display:flex;gap:8px">' + ["gauche", "droite"].map(c => '<button type="button" class="chip" data-c="' + c + '" aria-selected="false">' + c.replace(/^./, m => m.toUpperCase()) + '</button>').join("") + '</div></div>' + valider);
+      pick("data-c", v => { cote = v; });
+      document.getElementById("lgOk").addEventListener("click", () => add(cote ? { cote } : null));
     } else if (k === "couche") {
       // Pipi et/ou caca (Sandra 03/11)
       const sel = new Set();
-      openSheet('<h2>Couche</h2>' + heure + '<div style="display:flex;gap:8px">' + ["pipi", "caca"].map(c => '<button type="button" class="chip" data-cc="' + c + '" aria-selected="false">' + c.replace(/^./, m => m.toUpperCase()) + '</button>').join("") + '</div><button class="btn primary" type="button" id="ccOk" style="justify-self:start">Noter</button>');
+      openSheet('<h2>Couche</h2>' + heure + '<div style="display:flex;gap:8px">' + ["pipi", "caca"].map(c => '<button type="button" class="chip" data-cc="' + c + '" aria-selected="false">' + c.replace(/^./, m => m.toUpperCase()) + '</button>').join("") + '</div><button class="btn primary" type="button" id="ccOk" style="justify-self:start">Enregistrer</button>');
       document.querySelectorAll("[data-cc]").forEach(b => b.addEventListener("click", () => { const c = b.dataset.cc; if (sel.has(c)) sel.delete(c); else sel.add(c); b.setAttribute("aria-selected", sel.has(c)); }));
       document.getElementById("ccOk").addEventListener("click", () => add(sel.size ? { c: ["pipi", "caca"].filter(c => sel.has(c)) } : null));
     } else if (k === "sommeil") {
       // Endormissement puis réveil (Sandra 03/11) : s'il dort, la feuille propose l'heure du réveil.
       const ls = lastOf("sommeil"), dort = ls && !ls.fin;
-      openSheet('<h2>' + (dort ? accord("Il", "Elle") + ' se réveille' : accord("Il", "Elle") + ' s\'endort') + '</h2>' + heure + '<button class="btn primary" type="button" id="slOk" style="justify-self:start">Noter</button>');
+      openSheet('<h2>' + (dort ? accord("Il", "Elle") + ' se réveille' : accord("Il", "Elle") + ' s\'endort') + '</h2>' + heure + '<button class="btn primary" type="button" id="slOk" style="justify-self:start">Enregistrer</button>');
       document.getElementById("slOk").addEventListener("click", () => { if (dort) { ls.fin = quand().toISOString(); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); } else add(); });
     } else {
-      openSheet('<h2>' + PN_RUB.find(x => x.k === k).l + '</h2>' + heure + '<button class="btn primary" type="button" id="otOk" style="justify-self:start">Noter</button>');
+      openSheet('<h2>' + PN_RUB.find(x => x.k === k).l + '</h2>' + heure + '<button class="btn primary" type="button" id="otOk" style="justify-self:start">Enregistrer</button>');
       document.getElementById("otOk").addEventListener("click", () => add());
     }
   }
   const coucheTxt = x => x.c && x.c.length ? x.c.map(c => c.replace(/^./, m => m.toUpperCase())).join(" + ") : "";
+  const hmTxt = t => { const d = new Date(t); return d.getHours() + "h" + String(d.getMinutes()).padStart(2, "0"); };
+  const typeSommeil = t => { const h = new Date(t).getHours(); return h >= 7 && h < 19 ? "de sieste" : "de nuit"; };
   const dureeTxt = (a, b) => { const min = Math.max(0, Math.round((new Date(b) - new Date(a)) / 60000)); return min < 60 ? min + " min" : Math.floor(min / 60) + " h" + (min % 60 ? " " + String(min % 60).padStart(2, "0") : ""); };
   // Sommeil : « dort depuis » ou « éveillé depuis », à lire d'un coup d'œil.
   function sommeilEtat() {
     const l = lastOf("sommeil"); if (!l) return null;
     if (!l.fin) return { t: "Dort depuis", v: dureeTxt(l.t, Date.now()), d: "Endormi" + accord("", "e") + " à " + new Date(l.t).getHours() + "h" + String(new Date(l.t).getMinutes()).padStart(2, "0") };
-    return { t: "Éveillé" + accord("", "e") + " depuis", v: dureeTxt(l.fin, Date.now()), d: "A dormi " + dureeTxt(l.t, l.fin) };
+    return { t: "Éveillé" + accord("", "e") + " depuis", v: dureeTxt(l.fin, Date.now()), d: dureeTxt(l.t, l.fin) + " " + typeSommeil(l.t) + ", de " + hmTxt(l.t) + " à " + hmTxt(l.fin) };
   }
 
   function openHist(k) {
@@ -2031,7 +2037,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const hm = t => { const d = new Date(t); return (d < today ? "Hier " : "") + d.getHours() + "h" + String(d.getMinutes()).padStart(2, "0"); };
     openSheet('<div class="sem-head"><h2>' + r.l + '</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
       '<button type="button" class="btn primary" id="hiAdd" style="justify-self:start">+ ' + r.one.replace(/^./, c => c.toUpperCase()) + '</button>' +
-      (list.length ? '<div class="pn-list">' + list.map(([x, i]) => '<button type="button" class="pn-check pn-hist" data-hi="' + i + '"><b>' + hm(x.t) + '</b><span>' + (x.q ? x.q + ' ml' : x.cote ? 'Sein ' + x.cote : x.k === "sommeil" ? (x.fin ? 'jusqu\'à ' + new Date(x.fin).getHours() + 'h' + String(new Date(x.fin).getMinutes()).padStart(2, "0") + ' · ' + dureeTxt(x.t, x.fin) : 'en cours') : coucheTxt(x)) + '</span><span class="pn-mod">Modifier</span></button>').join("") + '</div>' : '<p>Rien de noté depuis hier.</p>'));
+      (list.length ? '<div class="pn-list">' + list.map(([x, i]) => '<button type="button" class="pn-check pn-hist" data-hi="' + i + '"><b>' + (x.k === "sommeil" ? (new Date(x.t) < today ? "Hier, de " : "De ") + hmTxt(x.t) + (x.fin ? " à " + hmTxt(x.fin) : "") : hm(x.t)) + '</b><span>' + (x.q ? x.q + ' ml' : x.cote ? 'Sein ' + (x.cote === "droite" ? "droit" : x.cote) : x.k === "sommeil" ? (x.fin ? dureeTxt(x.t, x.fin) + ' ' + typeSommeil(x.t) : 'en cours') : coucheTxt(x)) + '</span><span class="pn-mod">Modifier</span></button>').join("") + '</div>' : '<p>Rien de noté depuis hier.</p>'));
     document.querySelectorAll("[data-hi]").forEach(b => b.addEventListener("click", () => openEdit(+b.dataset.hi)));
     document.getElementById("hiAdd").addEventListener("click", () => pnLog(k));
   }
