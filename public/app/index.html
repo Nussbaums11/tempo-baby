@@ -2096,13 +2096,19 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
   const ICO_CRAYON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
   function pnQuotidien() {
     const p = pn(), P = produits(), R = aRacheter();
-    const haut = R.length ? '<section class="section"><div class="section-head"><h2>À racheter · ' + R.length + '</h2></div><div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button></section>' : '';
+    const haut = R.length ? '<section class="section"><div class="section-head"><h2>À racheter · ' + R.length + '</h2><button type="button" class="linkbtn" data-pn-ajout>+ Ajouter</button></div><div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button></section>' : '';
     const bas = '<div class="pn-list">' + P.map(x => { const on = p.racheter.includes(x.id);
       return '<div class="pn-prod-row' + (on ? ' on' : '') + '"><button type="button" class="pn-check pn-prod" data-pn-fiche="' + x.id + '"><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span></button>' +
         '<button type="button" class="pn-ico-btn" data-pn-fiche="' + x.id + '" aria-label="Infos sur ' + esc(x.l) + '">' + ICO_CRAYON + '</button>' +
         '<button type="button" class="pn-ico-btn pn-panier' + (on ? ' on' : '') + '" data-pn-' + (on ? 'achete' : 'manque') + '="' + x.id + '" aria-label="' + (on ? 'Retirer ' + esc(x.l) + ' de la liste' : 'Ajouter ' + esc(x.l) + ' à racheter') + '">' + ICO_PANIER + '</button></div>'; }).join("") + '</div>';
-    return haut + '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-ajout>+ Ajouter</button></div>' + (R.length ? '' : '<p class="group-intro">Touche le panier quand un produit manque.</p>') + bas + '</section>' +
+    return haut + '<section class="section"><div class="section-head"><h2>Nos produits récurrents</h2>' + (R.length ? '' : '<button type="button" class="linkbtn" data-pn-ajout>+ Ajouter</button>') + '</div>' + (R.length ? '' : '<p class="group-intro">Touche le panier quand un produit manque.</p>') + bas + '</section>' +
       '<section class="section"><div class="section-head"><h2>Près de chez vous</h2></div><div class="callout"><span class="pill">En développement</span><h3>Ce que propose la PMI</h3><p>Pesées, consultations, et parfois des ateliers de portage ou de massage. C\'est gratuit, et beaucoup de parents le découvrent par hasard.</p></div></section>';
+  }
+  // Pas dans la liste ? On l'écrit, et ça part dans « À racheter ».
+  const autreHTML = () => '<form id="ajAutre" class="ask-in"><input id="ajAutreL" type="text" placeholder="Pas dans la liste ? Écris-le ici" autocomplete="off"><button class="btn" type="submit">Ajouter</button></form>';
+  function autreHTMLbind() {
+    const f = document.getElementById("ajAutre"); if (!f) return;
+    f.addEventListener("submit", e => { e.preventDefault(); const l = document.getElementById("ajAutreL").value.trim(); if (!l) return; const p = pn(); produits(); const it = { id: "o" + Date.now(), l, ref: "" }; p.ponctuels.push(it); p.racheter.push(it.id); save(); document.getElementById("sheetRoot").innerHTML = ""; render(); window.scrollTo(0, 0); });
   }
   // Mini parcours « + Ajouter » : une famille, puis une liste à cocher.
   function openAjout(fam) {
@@ -2110,15 +2116,17 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const right = chev.replace('class="chev"', 'class="chev pn-mod" style="transform:rotate(-90deg)"');
     if (!fam) {
       openSheet('<div class="sem-head"><h2>Ajouter à la liste</h2>' + X + '</div><div class="pn-list">' + PN_CATALOGUE.map(([f]) => '<button type="button" class="pn-check pn-hist" data-fam="' + f + '"><span>' + f + '</span>' + right + '</button>').join("") +
-        '<button type="button" class="pn-check pn-hist" data-fam=""><span>Un produit qu\'on rachète tout le temps<small>Il restera affiché dans « Nos produits »</small></span>' + right + '</button></div>');
+        '<button type="button" class="pn-check pn-hist" data-fam=""><span>Un produit qu\'on rachète tout le temps<small>Il restera affiché dans « Nos produits récurrents »</small></span>' + right + '</button></div>' + autreHTML());
       document.querySelectorAll("[data-fam]").forEach(b => b.addEventListener("click", () => b.dataset.fam ? openAjout(b.dataset.fam) : openProduit("")));
+      autreHTMLbind(); return;
       return;
     }
     const L = PN_CATALOGUE.find(([f]) => f === fam)[1], vet = fam === "Vêtements", sel = new Map();
     openSheet('<div class="sem-head"><h2>' + fam + '</h2>' + X + '</div>' +
       (vet ? '<div class="field pn-heure"><label for="ajT">Taille</label><select id="ajT"><option value="">À choisir</option>' + PN_TAILLES.map(t => '<option>' + t + '</option>').join("") + '</select></div>' : '') +
       '<div class="pn-list">' + L.map(([l, q], i) => '<div class="pn-prod-row"><button type="button" class="pn-check" data-aj="' + i + '"><span class="tick">' + tickSvg + '</span><span>' + esc(l) + '</span></button>' + (vet ? '<input class="pn-qte" type="number" inputmode="numeric" min="1" value="' + q + '" data-ajq="' + i + '" aria-label="Quantité de ' + esc(l) + '" hidden>' : '') + '</div>').join("") + '</div>' +
-      '<button class="btn primary" type="button" id="ajOk" style="justify-self:start" disabled>Ajouter à la liste</button>');
+      autreHTML() + '<button class="btn primary" type="button" id="ajOk" style="justify-self:start" disabled>Ajouter à la liste</button>');
+    autreHTMLbind();
     const ok = document.getElementById("ajOk");
     document.querySelectorAll("[data-aj]").forEach(b => b.addEventListener("click", () => { const i = +b.dataset.aj, on = !sel.has(i); if (on) sel.set(i, true); else sel.delete(i); b.classList.toggle("on", on);
       const q = document.querySelector('[data-ajq="' + i + '"]'); if (q) q.hidden = !on; ok.disabled = !sel.size; ok.textContent = sel.size ? "Ajouter " + sel.size + " à la liste" : "Ajouter à la liste"; }));
