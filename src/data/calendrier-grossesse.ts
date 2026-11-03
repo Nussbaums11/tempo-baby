@@ -154,6 +154,8 @@ export const phases: Phase[] = [
       {
         id: 'garde',
         title: 'Réfléchir au mode de garde',
+        article: 'mode-de-garde-enfant',
+        articleLabel: 'Quel mode de garde pour votre enfant ?',
         text: 'Crèche, assistante maternelle, nounou : les délais varient beaucoup d’une ville à l’autre. Renseignez-vous tôt auprès de votre mairie ou du relais petite enfance.',
         kind: 'repere',
         from: sa(16),
