@@ -471,7 +471,11 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 .toi-round { width: 30px; height: 30px; border-radius: 50%; border: 0; background: var(--terracotta); color: var(--card); font-weight: 700; font-size: 14px; cursor: pointer; display: grid; place-items: center; padding: 0; }
 .pn-last { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: grid; gap: 4px; margin-block: 6px; }
 .pn-last small { color: var(--muted); font-size: 13px; font-weight: 600; }
-.pn-last b { font-family: var(--font-display); font-size: 34px; line-height: 1.1; font-weight: 600; }
+.pn-last { gap: 0; padding: 4px 16px; }
+.pn-last-r { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--border); }
+.pn-last-r:first-child { border-top: 0; }
+.pn-last b { font-family: var(--font-display); font-size: 22px; line-height: 1.15; font-weight: 600; }
+.pn-last-r .btn { width: 40px; height: 40px; padding: 0; font-size: 22px; line-height: 1; display: grid; place-items: center; }
 .pn-last span { color: var(--muted); font-size: 14px; }
 .pn-add { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
 .pn-card { display: grid; gap: 2px; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; cursor: pointer; font-size: 14px; color: var(--muted); }
@@ -1882,10 +1886,12 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 
   function pnAccueil() {
     const p = pn(), N = S.naissance;
-    const repas = p.suivre.filter(k => k === "biberon" || k === "tetee");
-    const last = repas.map(lastOf).filter(Boolean).sort((a, b) => b.t.localeCompare(a.t))[0];
-    const bigRepas = repas.length ? '<div class="pn-last">' + (last ? '<small>Dernier' + (last.k === "tetee" ? "e tétée" : " biberon") + '</small><b>' + depuis(last.t) + '</b>' + (last.q ? '<span>' + last.q + ' ml</span>' : last.cote ? '<span>Sein ' + last.cote + '</span>' : '') + (repas.includes("biberon") ? '<span class="pn-jour">' + bibJour() + '</span>' : '') : '<small>Repas</small><b>Rien de noté</b>') +
-      '<div class="pn-add">' + repas.map(k => { const r = PN_RUB.find(x => x.k === k); return '<button type="button" class="btn primary" data-pn-log="' + k + '">+ ' + r.one.replace(/^./, c => c.toUpperCase()) + '</button>'; }).join("") + '</div></div>' : '';
+    // Une ligne par rubrique choisie, à égalité (Sandra 03/11 : le biberon seul en vedette, c'était son vécu, pas une règle).
+    const ONE = { biberon: "Dernier biberon", tetee: "Dernière tétée", couche: "Dernière couche", sommeil: "Dernier dodo", tirelait: "Dernier tire-lait" };
+    const bigRepas = p.suivre.length ? '<div class="pn-last">' + p.suivre.map(k => { const r = PN_RUB.find(x => x.k === k), l = lastOf(k);
+      const det = l ? (l.q ? l.q + ' ml' : l.cote ? 'Sein ' + l.cote : '') : '';
+      const jour = k === "biberon" ? bibJour() : todayCount(k) + ' aujourd\'hui';
+      return '<div class="pn-last-r"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t"><small>' + ONE[k] + '</small><b>' + (l ? depuis(l.t) : 'Rien de noté') + '</b><small>' + [det, l ? jour : ''].filter(Boolean).join(' · ') + '</small></span><button type="button" class="btn" data-pn-log="' + k + '" aria-label="Noter ' + r.one + '">+</button></div>'; }).join("") + '</div>' : '';
     const upcoming = PN_FRISE.filter(f => !p.frise[f.id] && ageJours() <= f.a).slice(0, 4);
     const imp = upcoming.filter(f => ageJours() >= f.de - 3).slice(0, 3), att = upcoming.filter(f => !imp.includes(f)).slice(0, 2);
     const card = f => { const dl = addDays(birth(), f.a); return '<button type="button" class="pn-card" data-pn-frise="' + f.id + '"><span class="pn-qui q-' + f.qui + '">' + PN_QUI[f.qui]() + '</span><b>' + f.t + '</b><span>' + (ageJours() > f.a - 3 ? "Avant le " + dl.getDate() + " " + MOIS[dl.getMonth()] : f.sub) + '</span></button>'; };
@@ -1950,7 +1956,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 
   function openChoix(first) {
     const p = pn(), sel = new Set(p.suivre);
-    openSheet('<h2>' + (first ? "Vous voulez noter quoi ?" : "À noter") + '</h2>' + (first ? '<p>Rien du tout, c\'est possible aussi.</p>' : '') +
+    openSheet('<h2>' + (first ? "Que voulez-vous suivre quotidiennement avec Tempo ?" : "À noter") + '</h2>' + (first ? '<p>Rien du tout, c\'est possible aussi : Tempo vous accompagne quand même, avec les rendez-vous, les démarches et les repères pour bébé.</p>' : '') +
       '<div class="pn-list">' + PN_RUB.map(r => '<button type="button" class="pn-check' + (sel.has(r.k) ? ' on' : '') + '" data-ch="' + r.k + '"><span class="tick">' + tickSvg + '</span>' + r.l + '</button>').join("") + '</div>' +
       '<button class="btn primary" type="button" id="chOk" style="justify-self:start">OK</button>');
     document.querySelectorAll("[data-ch]").forEach(b => b.addEventListener("click", () => { const k = b.dataset.ch; if (sel.has(k)) sel.delete(k); else sel.add(k); b.classList.toggle("on", sel.has(k)); }));
