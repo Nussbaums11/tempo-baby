@@ -2066,26 +2066,31 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
   // Quotidien (Sandra 03/11) : « À racheter » commun en haut, « Nos produits » avec leur référence en dessous.
   // Toucher un produit = il manque ; toucher une ligne à racheter = c'est acheté. Pas de répartition par ligne.
   const PN_GROUPES = ["Change", "Repas", "Soins et pharmacie", "Vêtements"];
+  // Vêtements détaillés (Sandra 03/11) : chaque type a sa taille et sa quantité. Quantités de départ = le trousseau du proto grossesse.
+  const PN_TAILLES = ["Naissance", "1 mois", "3 mois", "6 mois", "9 mois", "12 mois", "18 mois", "24 mois"];
+  const PN_VETEMENTS = [["bodies", "Bodies", 6], ["pyjamas", "Pyjamas ou grenouillères", 6], ["gigoteuses", "Gigoteuses", 2], ["brassieres", "Brassières ou gilets", 3], ["bonnets", "Bonnets", 2], ["chaussettes", "Chaussettes (paires)", 4], ["pantalons", "Pantalons", 3], ["combi", "Combinaison d'extérieur", 1]];
   function produits() {
     const p = pn();
+    if (p.produits && p.produits.some(x => x.id === "vetements")) { const i = p.produits.findIndex(x => x.id === "vetements"); p.produits.splice(i, 1, ...PN_VETEMENTS.map(([id, l, q]) => ({ id, l, ref: "", g: "Vêtements", taille: "", qte: q }))); p.racheter = (p.racheter || []).filter(x => x !== "vetements"); }
     if (!p.produits) {
       const g = { couches: 0, coton: 0, lait: 1, eau: 1, serum: 2, pharmacie: 2, vetements: 3 };
-      p.produits = PN_COURSES.map(([k, l]) => ({ id: k, l, ref: "", g: PN_GROUPES[g[k]] }));
+      p.produits = PN_COURSES.filter(([k]) => k !== "vetements").map(([k, l]) => ({ id: k, l, ref: "", g: PN_GROUPES[g[k]] })).concat(PN_VETEMENTS.map(([id, l, q]) => ({ id, l, ref: "", g: "Vêtements", taille: "", qte: q })));
       p.produits.splice(4, 0, { id: "tetines", l: "Tétines", ref: "", g: "Repas" });
       p.racheter = Object.keys(p.courses || {}).filter(k => p.courses[k].rac);
     }
     p.racheter = p.racheter || [];
     return p.produits;
   }
+  const prodSub = x => [x.g === "Vêtements" && x.taille ? "Taille " + x.taille : "", x.g === "Vêtements" && x.qte ? x.qte + " à acheter" : "", x.ref].filter(Boolean).join(" · ");
   function pnQuotidien() {
     const p = pn(), P = produits(), R = p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean);
-    const ligne = (x, attr, extra) => '<button type="button" class="pn-check pn-prod" ' + attr + '><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span>' + (extra || '') + '</button>';
-    const haut = R.length ? '<section class="section"><div class="section-head"><h2>À racheter · ' + R.length + '</h2></div><div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button></section>' : '';
+    const ligne = (x, attr, extra) => '<button type="button" class="pn-check pn-prod" ' + attr + '><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span>' + (extra || '') + '</button>';
+    const haut = R.length ? '<section class="section"><div class="section-head"><h2>À racheter · ' + R.length + '</h2></div><div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button></section>' : '';
     // Sandra 03/11 : « toucher pour ajouter » n'était pas clair → un panier pour la liste, un crayon pour la fiche.
     const ICO_PANIER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16l-1.5 10.5a1 1 0 0 1-1 .5h-11a1 1 0 0 1-1-.5z"/><path d="M8.5 9l3.5-5 3.5 5"/></svg>';
     const ICO_CRAYON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
     const bas = PN_GROUPES.map(g => { const L = P.filter(x => x.g === g); return L.length ? '<div class="pn-acq-h">' + g + '</div><div class="pn-list">' + L.map(x => { const on = p.racheter.includes(x.id);
-      return '<div class="pn-prod-row' + (on ? ' on' : '') + '"><button type="button" class="pn-check pn-prod" data-pn-fiche="' + x.id + '"><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span></button>' +
+      return '<div class="pn-prod-row' + (on ? ' on' : '') + '"><button type="button" class="pn-check pn-prod" data-pn-fiche="' + x.id + '"><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span></button>' +
         '<button type="button" class="pn-ico-btn" data-pn-fiche="' + x.id + '" aria-label="Infos sur ' + esc(x.l) + '">' + ICO_CRAYON + '</button>' +
         '<button type="button" class="pn-ico-btn pn-panier' + (on ? ' on' : '') + '" data-pn-' + (on ? 'achete' : 'manque') + '="' + x.id + '" aria-label="' + (on ? 'Retirer ' + esc(x.l) + ' de la liste' : 'Ajouter ' + esc(x.l) + ' à racheter') + '">' + ICO_PANIER + '</button></div>'; }).join("") + '</div>' : ''; }).join("");
     return haut + '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-fiche="">+ Ajouter</button></div>' + (R.length ? '' : '<p class="group-intro">Touche le panier quand un produit manque.</p>') + bas + '</section>' +
@@ -2096,16 +2101,19 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     openSheet('<h2>' + (id ? esc(x.l) : "Nouveau produit") + '</h2><form id="prForm" style="display:grid;gap:12px">' +
       '<div class="field"><label for="prL">Produit</label><input id="prL" type="text" value="' + esc(x.l) + '" placeholder="Couches, lait, tétines…" required></div>' +
       '<div class="field"><label for="prR">Notre référence</label><input id="prR" type="text" value="' + esc(x.ref) + '" placeholder="Marque, modèle, taille…"></div>' +
+      '<div id="prVet" class="row2"' + (g === "Vêtements" ? '' : ' hidden') + '><div class="field"><label for="prT">Taille</label><select id="prT"><option value="">À choisir</option>' + PN_TAILLES.map(t => '<option' + (t === x.taille ? ' selected' : '') + '>' + t + '</option>').join("") + '</select></div>' +
+      '<div class="field"><label for="prQ">Quantité</label><input id="prQ" type="number" inputmode="numeric" min="0" value="' + (x.qte != null ? x.qte : '') + '"></div></div>' +
       '<div class="field"><label for="prG">Rangé dans</label><select id="prG">' + PN_GROUPES.map(G => '<option' + (G === g ? ' selected' : '') + '>' + G + '</option>').join("") + '</select></div>' +
       '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button>' + (id ? '<button type="button" class="linkbtn" id="prDel">Supprimer</button>' : '') + '</div></form>');
-    document.getElementById("prG").addEventListener("change", e => { g = e.target.value; });
+    document.getElementById("prG").addEventListener("change", e => { g = e.target.value; document.getElementById("prVet").hidden = g !== "Vêtements"; });
+    const vet = () => g === "Vêtements" ? { taille: document.getElementById("prT").value, qte: document.getElementById("prQ").value ? +document.getElementById("prQ").value : null } : {};
     const close = () => { save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); };
     const del = document.getElementById("prDel"); if (del) del.addEventListener("click", () => { p.produits = P.filter(y => y.id !== id); p.racheter = p.racheter.filter(y => y !== id); close(); });
     document.getElementById("prForm").addEventListener("submit", e => { e.preventDefault(); const l = document.getElementById("prL").value.trim(); if (!l) return;
-      if (id) Object.assign(x, { l, ref: document.getElementById("prR").value.trim(), g }); else P.push({ id: "p" + Date.now(), l, ref: document.getElementById("prR").value.trim(), g }); close(); });
+      if (id) Object.assign(x, { l, ref: document.getElementById("prR").value.trim(), g }, vet()); else P.push(Object.assign({ id: "p" + Date.now(), l, ref: document.getElementById("prR").value.trim(), g }, vet())); close(); });
   }
   function envoyerListe() {
-    const p = pn(), P = produits(), txt = "À racheter pour " + bebeAppel() + " :\n" + p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean).map(x => "- " + x.l + (x.ref ? " (" + x.ref + ")" : "")).join("\n");
+    const p = pn(), P = produits(), txt = "À racheter pour " + bebeAppel() + " :\n" + p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean).map(x => "- " + x.l + (prodSub(x) ? " (" + prodSub(x) + ")" : "")).join("\n");
     const ok = () => openSheet('<h2>Liste copiée</h2><p>Colle-la dans un message à ' + esc(autre() === "Toi" ? "l'autre parent" : autre()) + '.</p><pre class="pn-txt">' + esc(txt) + '</pre><button class="btn" type="button" data-close style="justify-self:start">Fermer</button>');
     if (navigator.share) navigator.share({ text: txt }).catch(() => {}); else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, ok); else ok();
   }
