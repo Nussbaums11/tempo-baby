@@ -1321,6 +1321,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
       (pop.length ? '<div class="ask-cat">Les plus demandées</div><div class="ask-list">' + pop.map(ficheBtn).join("") + '</div>' : '');
   }
   function openAsk(f) {
+    if (S.naissance) { openNormal(); return; }
     if (typeof f === "string") { askQ = f; askCat = ""; }
     openSheet('<h2>Enceinte, j\'ai le droit de… ?</h2>' +
       '<form class="ask-in" id="askForm" role="search"><input id="askQ" type="search" placeholder="Un aliment, un sport, un médicament…" autocomplete="off" enterkeyhint="search" value="' + esc(askQ) + '"></form>' +
@@ -2003,7 +2004,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
       '<dl><dt>' + accord("Né le", "Née le", "Naissance") + '</dt><dd>' + fmtD(birth()) + ' ' + birth().getFullYear() + (N.heure ? ' à ' + N.heure.replace(":", "h") : '') + '</dd>' +
       '<dt>Poids</dt><dd>' + (m && m.p ? String(m.p).replace(".", ",") + ' kg' : '–') + '</dd>' +
       '<dt>Taille</dt><dd>' + (m && m.t ? String(m.t).replace(".", ",") + ' cm' : '–') + '</dd></dl>' +
-      '<div class="pn-id-f"><span>' + (m ? 'Mesuré le ' + jj(m.d) : 'Aucune mesure') + '</span><button type="button" class="linkbtn" data-pn-mesure>+ Nouvelle mesure</button></div></section>';
+      '<div class="pn-id-f"><span class="pn-open" data-pn-mesures role="button" tabindex="0">' + (m ? 'Mesuré le ' + jj(m.d) + ' ›' : 'Aucune mesure') + '</span><button type="button" class="linkbtn" data-pn-mesure>+ Mesure</button></div></section>';
     const row = (attr, on, l) => '<button type="button" class="pn-check' + (on ? ' on' : '') + '" ' + attr + '><span class="tick">' + tickSvg + '</span>' + l + '</button>';
     const grp = PN_ACQUIS.map(g => '<div class="pn-acq-g"><div class="pn-acq-h">' + g.g + '</div><div class="pn-list">' +
       g.l.map(([k, l]) => row('data-pn-acq="' + k + '"', !!p.acquis[k], l)).join("") + '</div></div>').join("");
@@ -2144,14 +2145,33 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
       done(); });
   }
 
-  function openMesure() {
-    openSheet('<h2>Nouvelle mesure</h2><form id="mesForm" style="display:grid;gap:12px"><div class="field"><label for="mDate">Le</label><input id="mDate" type="date" value="' + iso(today) + '" required></div>' +
-      '<div class="row2"><div class="field"><label for="mP">Poids (kg)</label><input id="mP" type="text" inputmode="decimal" placeholder="4,2"></div><div class="field"><label for="mT">Taille (cm)</label><input id="mT" type="text" inputmode="decimal" placeholder="54"></div></div>' +
-      '<div class="field pn-heure"><label for="mPC">Périmètre crânien (cm)</label><input id="mPC" type="text" inputmode="decimal" placeholder="37"></div>' +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button><button class="btn" type="button" data-close>Annuler</button></div></form>');
+  function openNormal() {
+    openSheet('<div class="sem-head"><h2>C\'est normal ?</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      '<input id="nmQ" type="search" placeholder="Reflux, coliques, selles, pleurs…" autocomplete="off" style="border-radius:999px">' +
+      '<div class="callout"><span class="pill">En développement</span><h3>Des réponses sourcées, sans jugement</h3><p>Chaque fiche dira ce qui est fréquent, à quoi ça ressemble, et les signes qui doivent faire consulter.</p></div>');
+  }
+
+  function openMesures() {
+    const p = pn(), list = p.mesures.map((m, i) => [m, i]).sort((a, b) => b[0].d.localeCompare(a[0].d));
+    const f = v => v != null ? String(v).replace(".", ",") : "–";
+    openSheet('<div class="sem-head"><h2>Mesures</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      '<button type="button" class="btn primary" id="msAdd" style="justify-self:start">+ Nouvelle mesure</button>' +
+      (list.length ? '<div class="pn-list">' + list.map(([m, i]) => '<button type="button" class="pn-check pn-hist" data-ms="' + i + '"><b>' + m.d.slice(8, 10) + '/' + m.d.slice(5, 7) + '</b><span>' + f(m.p) + ' kg · ' + f(m.t) + ' cm' + (m.pc != null ? ' · ' + f(m.pc) + ' cm de crâne' : '') + '</span>' + chev.replace('class="chev"', 'class="chev pn-mod" style="transform:rotate(-90deg)"') + '</button>').join("") + '</div>' : '<p>Aucune mesure pour l\'instant.</p>'));
+    document.getElementById("msAdd").addEventListener("click", () => openMesure());
+    document.querySelectorAll("[data-ms]").forEach(b => b.addEventListener("click", () => openMesure(+b.dataset.ms)));
+  }
+
+  function openMesure(idx) {
+    const M = idx !== undefined ? pn().mesures[idx] : {}, fv = v => v != null ? String(v).replace(".", ",") : "";
+    openSheet('<h2>' + (idx !== undefined ? "Modifier la mesure" : "Nouvelle mesure") + '</h2><form id="mesForm" style="display:grid;gap:12px"><div class="field"><label for="mDate">Le</label><input id="mDate" type="date" value="' + (M.d || iso(today)) + '" required></div>' +
+      '<div class="row2"><div class="field"><label for="mP">Poids (kg)</label><input id="mP" type="text" inputmode="decimal" placeholder="4,2" value="' + fv(M.p) + '"></div><div class="field"><label for="mT">Taille (cm)</label><input id="mT" type="text" inputmode="decimal" placeholder="54" value="' + fv(M.t) + '"></div></div>' +
+      '<div class="field pn-heure"><label for="mPC">Périmètre crânien (cm)</label><input id="mPC" type="text" inputmode="decimal" placeholder="37" value="' + fv(M.pc) + '"></div>' +
+      '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button>' + (idx !== undefined ? '<button type="button" class="linkbtn" id="mDel">Supprimer</button>' : '') + '</div></form>');
+    const md = document.getElementById("mDel"); if (md) md.addEventListener("click", () => { pn().mesures.splice(idx, 1); save(); render(); openMesures(); });
     document.getElementById("mesForm").addEventListener("submit", e => { e.preventDefault();
       const num = id => { const v = document.getElementById(id).value.replace(",", ".").trim(); return v && !isNaN(+v) ? +v : null; };
-      pn().mesures.push({ d: document.getElementById("mDate").value, p: num("mP"), t: num("mT"), pc: num("mPC") }); save(); document.getElementById("sheetRoot").innerHTML = ""; render(); });
+      const m = { d: document.getElementById("mDate").value, p: num("mP"), t: num("mT"), pc: num("mPC") };
+      if (idx !== undefined) pn().mesures[idx] = m; else pn().mesures.push(m); save(); document.getElementById("sheetRoot").innerHTML = ""; render(); if (idx !== undefined) openMesures(); });
   }
 
   function openAcquis(label, autreIdx) {
@@ -2198,6 +2218,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const fr = e.target.closest("[data-pn-frise]"); if (fr) { tab = "suivi"; render(); window.scrollTo(0, 0); return; }
     const sg = e.target.closest("[data-pn-sugg]"); if (sg) { if (sg.dataset.pnSugg === "add") p.suivre.push("sommeil"); else p.noSugg = true; rr(); return; }
     if (e.target.closest("[data-pn-mesure]")) { openMesure(); return; }
+    if (e.target.closest("[data-pn-mesures]")) { openMesures(); return; }
     const cb = e.target.closest("[data-pn-courbe]"); if (cb) { pnCourbe = cb.dataset.pnCourbe; rr(); return; }
     const aq = e.target.closest("[data-pn-acq]"); if (aq) { const k = aq.dataset.pnAcq; if (p.acquis[k]) { delete p.acquis[k]; rr(); } else { p.acquis[k] = iso(today); rr(); openAcquis(aq.textContent.trim()); } return; }
     if (e.target.closest("[data-pn-new]")) { openNouveaute(); return; }
@@ -2229,6 +2250,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     let b = document.getElementById("toiHead");
     if (S.naissance && !b) { b = document.createElement("button"); b.type = "button"; b.id = "toiHead"; b.className = "toi-round"; b.addEventListener("click", openToi); const ask = document.getElementById("askHead"); ask.parentNode.insertBefore(b, ask.nextSibling); }
     if (!S.naissance && b) { b.remove(); return; }
+    const ah = document.getElementById("askHead"); if (ah) ah.setAttribute("aria-label", S.naissance ? "C'est normal ? Poser une question" : "Enceinte, j'ai le droit de… ? Poser une question");
     if (b) { b.textContent = (S.moi || "Toi").trim().charAt(0).toUpperCase(); b.setAttribute("aria-label", "Ton espace : corps, moral, périné"); }
   }
 
