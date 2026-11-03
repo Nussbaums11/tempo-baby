@@ -2038,12 +2038,10 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
   function pnQuotidien() {
     const p = pn(), P = produits(), R = p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean);
     const ligne = (x, attr, extra) => '<button type="button" class="pn-check pn-prod" ' + attr + '><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span>' + (extra || '') + '</button>';
-    const haut = R.length ? '<div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button>'
-      : '<p class="group-intro">Rien à racheter. Touche un produit quand il manque.</p>';
+    const haut = R.length ? '<section class="section"><div class="section-head"><h2>À racheter · ' + R.length + '</h2></div><div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button></section>' : '';
     const bas = PN_GROUPES.map(g => { const L = P.filter(x => x.g === g); return L.length ? '<div class="pn-acq-h">' + g + '</div><div class="pn-list">' + L.map(x => { const on = p.racheter.includes(x.id);
       return '<div class="pn-prod-row' + (on ? ' on' : '') + '">' + ligne(x, 'data-pn-manque="' + x.id + '"', on ? '<em>À racheter</em>' : '') + '<button type="button" class="pn-edit" data-pn-fiche="' + x.id + '" aria-label="Modifier ' + esc(x.l) + '">' + chev.replace('class="chev"', 'class="chev" style="transform:rotate(-90deg)"') + '</button></div>'; }).join("") + '</div>' : ''; }).join("");
-    return '<section class="section"><div class="section-head"><h2>À racheter' + (R.length ? ' · ' + R.length : '') + '</h2></div>' + haut + '</section>' +
-      '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-fiche="">+ Ajouter</button></div>' + bas + '</section>' +
+    return haut + '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-fiche="">+ Ajouter</button></div>' + (R.length ? '' : '<p class="group-intro">Touche un produit quand il manque.</p>') + bas + '</section>' +
       '<section class="section"><div class="section-head"><h2>Près de chez vous</h2></div><div class="callout"><span class="pill">En développement</span><h3>Ce que propose la PMI</h3><p>Pesées, consultations, et parfois des ateliers de portage ou de massage. C\'est gratuit, et beaucoup de parents le découvrent par hasard.</p></div></section>';
   }
   function openProduit(id) {
@@ -2051,9 +2049,9 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     openSheet('<h2>' + (id ? esc(x.l) : "Nouveau produit") + '</h2><form id="prForm" style="display:grid;gap:12px">' +
       '<div class="field"><label for="prL">Produit</label><input id="prL" type="text" value="' + esc(x.l) + '" placeholder="Couches, lait, tétines…" required></div>' +
       '<div class="field"><label for="prR">Notre référence</label><input id="prR" type="text" value="' + esc(x.ref) + '" placeholder="Marque, modèle, taille…"></div>' +
-      '<div class="field"><label>Rangé dans</label><div class="chips md-chips">' + PN_GROUPES.map(G => '<button type="button" class="chip" data-prg="' + G + '" aria-selected="' + (G === g) + '">' + G + '</button>').join("") + '</div></div>' +
+      '<div class="field"><label for="prG">Rangé dans</label><select id="prG">' + PN_GROUPES.map(G => '<option' + (G === g ? ' selected' : '') + '>' + G + '</option>').join("") + '</select></div>' +
       '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button>' + (id ? '<button type="button" class="linkbtn" id="prDel">Supprimer</button>' : '') + '</div></form>');
-    document.querySelectorAll("[data-prg]").forEach(b => b.addEventListener("click", () => { g = b.dataset.prg; document.querySelectorAll("[data-prg]").forEach(y => y.setAttribute("aria-selected", y.dataset.prg === g)); }));
+    document.getElementById("prG").addEventListener("change", e => { g = e.target.value; });
     const close = () => { save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); };
     const del = document.getElementById("prDel"); if (del) del.addEventListener("click", () => { p.produits = P.filter(y => y.id !== id); p.racheter = p.racheter.filter(y => y !== id); close(); });
     document.getElementById("prForm").addEventListener("submit", e => { e.preventDefault(); const l = document.getElementById("prL").value.trim(); if (!l) return;
