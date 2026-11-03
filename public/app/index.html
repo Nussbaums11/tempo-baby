@@ -1614,7 +1614,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
         toggle("bebe", "Bébé de la semaine", "Sa taille et son poids, chaque semaine") + '</div></section>' +
       '<section class="section"><div class="section-head"><h2>Affichage</h2></div><div class="seg seg3" role="radiogroup">' +
         [["systeme", "Auto"], ["clair", "Clair"], ["sombre", "Sombre"]].map(([k, l]) => '<button type="button" role="radio" data-theme-set="' + k + '" aria-selected="' + ((S.theme || "systeme") === k) + '" aria-checked="' + ((S.theme || "systeme") === k) + '">' + l + '</button>').join("") + '</div></section>' +
-      '<section class="section"><div class="section-head"><h2>Bébé est là</h2></div>' + (S.naissance ? '<p class="group-intro">Naissance enregistrée le ' + fmtD(new Date(S.naissance.date + "T00:00:00")) + '.</p><div class="dem-actions"><button type="button" class="btn" id="bornEdit">Modifier</button><button type="button" class="btn" id="bornUndo">Annuler la naissance</button></div>' : '<div class="dem-actions"><button type="button" class="btn" id="bornOpen">Annoncer la naissance à Tempo</button></div>') + '</section>' +
+      '<section class="section"><div class="section-head"><h2>Bébé est là</h2></div>' + (S.naissance ? '<p class="group-intro">Naissance enregistrée le ' + fmtD(new Date(S.naissance.date + "T00:00:00")) + '.</p><div class="dem-actions"><button type="button" class="btn" id="bornEdit">Modifier</button><button type="button" class="btn" id="bornUndo">Revenir à la grossesse</button></div>' : '<div class="dem-actions"><button type="button" class="btn" id="bornOpen">Annoncer la naissance à Tempo</button></div>') + '</section>' +
       '<section class="section"><div class="section-head"><h2>Accueil de l\'app</h2></div><div class="dem-actions"><button type="button" class="btn" id="replayOnb">Relancer l\'accueil</button></div></section>' +
       '<section class="section"><div class="section-head"><h2>Mes données</h2></div>' +
         '<p class="group-intro">Dans ce prototype, tout reste dans ton navigateur. Rien n\'est envoyé ailleurs.</p>' +
@@ -2030,8 +2030,10 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const list = p.log.map((x, i) => [x, i]).filter(([x]) => x.k === k && new Date(x.t) >= hier).sort((a, b) => b[0].t.localeCompare(a[0].t));
     const hm = t => { const d = new Date(t); return (d < today ? "Hier " : "") + d.getHours() + "h" + String(d.getMinutes()).padStart(2, "0"); };
     openSheet('<div class="sem-head"><h2>' + r.l + '</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      '<button type="button" class="btn primary" id="hiAdd" style="justify-self:start">+ ' + r.one.replace(/^./, c => c.toUpperCase()) + '</button>' +
       (list.length ? '<div class="pn-list">' + list.map(([x, i]) => '<button type="button" class="pn-check pn-hist" data-hi="' + i + '"><b>' + hm(x.t) + '</b><span>' + (x.q ? x.q + ' ml' : x.cote ? 'Sein ' + x.cote : x.k === "sommeil" ? (x.fin ? 'jusqu\'à ' + new Date(x.fin).getHours() + 'h' + String(new Date(x.fin).getMinutes()).padStart(2, "0") + ' · ' + dureeTxt(x.t, x.fin) : 'en cours') : coucheTxt(x)) + '</span><span class="pn-mod">Modifier</span></button>').join("") + '</div>' : '<p>Rien de noté depuis hier.</p>'));
     document.querySelectorAll("[data-hi]").forEach(b => b.addEventListener("click", () => openEdit(+b.dataset.hi)));
+    document.getElementById("hiAdd").addEventListener("click", () => pnLog(k));
   }
 
   function openEdit(i) {
