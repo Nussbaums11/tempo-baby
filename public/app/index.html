@@ -507,6 +507,11 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 .pn-prod-row:first-child { border-top: 0; }
 .pn-prod-row .pn-check { border-top: 0; flex: 1; justify-content: space-between; }
 .pn-prod-row em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--terracotta-dark); white-space: nowrap; }
+.pn-ico-btn { background: none; border: 0; padding: 10px 8px; color: var(--muted); cursor: pointer; display: grid; place-items: center; flex: none; }
+.pn-ico-btn svg { width: 20px; height: 20px; }
+.pn-ico-btn.pn-panier { padding-right: 14px; }
+.pn-ico-btn.pn-panier.on { color: var(--terracotta-dark); }
+.pn-ico-btn.pn-panier.on svg { fill: var(--terracotta-soft); }
 .pn-edit { background: none; border: 0; padding: 11px 12px; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
 .pn-txt { white-space: pre-wrap; font: inherit; font-size: 14px; background: var(--cream); border-radius: 12px; padding: 12px; margin: 0; }
 .pn-seg { margin-bottom: 4px; }
@@ -2076,9 +2081,14 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const p = pn(), P = produits(), R = p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean);
     const ligne = (x, attr, extra) => '<button type="button" class="pn-check pn-prod" ' + attr + '><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span>' + (extra || '') + '</button>';
     const haut = R.length ? '<section class="section"><div class="section-head"><h2>À racheter · ' + R.length + '</h2></div><div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button></section>' : '';
+    // Sandra 03/11 : « toucher pour ajouter » n'était pas clair → un panier pour la liste, un crayon pour la fiche.
+    const ICO_PANIER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16l-1.5 10.5a1 1 0 0 1-1 .5h-11a1 1 0 0 1-1-.5z"/><path d="M8.5 9l3.5-5 3.5 5"/></svg>';
+    const ICO_CRAYON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
     const bas = PN_GROUPES.map(g => { const L = P.filter(x => x.g === g); return L.length ? '<div class="pn-acq-h">' + g + '</div><div class="pn-list">' + L.map(x => { const on = p.racheter.includes(x.id);
-      return '<div class="pn-prod-row' + (on ? ' on' : '') + '">' + ligne(x, 'data-pn-manque="' + x.id + '"', on ? '<em>À racheter</em>' : '') + '<button type="button" class="pn-edit" data-pn-fiche="' + x.id + '" aria-label="Modifier ' + esc(x.l) + '">' + chev.replace('class="chev"', 'class="chev" style="transform:rotate(-90deg)"') + '</button></div>'; }).join("") + '</div>' : ''; }).join("");
-    return haut + '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-fiche="">+ Ajouter</button></div>' + (R.length ? '' : '<p class="group-intro">Touche un produit quand il manque.</p>') + bas + '</section>' +
+      return '<div class="pn-prod-row' + (on ? ' on' : '') + '"><button type="button" class="pn-check pn-prod" data-pn-fiche="' + x.id + '"><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span></button>' +
+        '<button type="button" class="pn-ico-btn" data-pn-fiche="' + x.id + '" aria-label="Infos sur ' + esc(x.l) + '">' + ICO_CRAYON + '</button>' +
+        '<button type="button" class="pn-ico-btn pn-panier' + (on ? ' on' : '') + '" data-pn-' + (on ? 'achete' : 'manque') + '="' + x.id + '" aria-label="' + (on ? 'Retirer ' + esc(x.l) + ' de la liste' : 'Ajouter ' + esc(x.l) + ' à racheter') + '">' + ICO_PANIER + '</button></div>'; }).join("") + '</div>' : ''; }).join("");
+    return haut + '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-fiche="">+ Ajouter</button></div>' + (R.length ? '' : '<p class="group-intro">Touche le panier quand un produit manque.</p>') + bas + '</section>' +
       '<section class="section"><div class="section-head"><h2>Près de chez vous</h2></div><div class="callout"><span class="pill">En développement</span><h3>Ce que propose la PMI</h3><p>Pesées, consultations, et parfois des ateliers de portage ou de massage. C\'est gratuit, et beaucoup de parents le découvrent par hasard.</p></div></section>';
   }
   function openProduit(id) {
