@@ -858,6 +858,41 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
       '</div></div>';
   }
 
+  // Garde trouvée (Sandra 03/11) : type, date de début, puis les démarches qui restent, propres à chaque mode de garde.
+  // ⚠️ Listes à faire relire (Pajemploi, CMG, autorisations) avant les tests.
+  const GARDE_ETAPES = {
+    asmat: [["contrat", "Signer le contrat de travail", "Tu deviens son employeur : horaires, congés, salaire, période d'adaptation."], ["pajemploi", "Déclarer l'embauche sur Pajemploi", "C'est là que tu déclares et paies son salaire chaque mois."], ["cmg", "Demander l'aide de la CAF (CMG)", "Le complément de libre choix du mode de garde réduit le reste à payer."], ["urgence", "Signer l'autorisation de soins en urgence", "Elle permet d'agir si bébé a besoin d'un médecin pendant la garde."], ["personnes", "Donner la liste des personnes autorisées à venir chercher bébé", "Avec leurs coordonnées. Une personne absente de la liste peut être refusée."], ["carnet", "Fournir la copie des vaccins à jour", "Les pages vaccins du carnet de santé."], ["adaptation", "Planifier l'adaptation", "Quelques jours de présence progressive avant le vrai démarrage."], ["trousseau", "Préparer le trousseau", "Vêtements de rechange, couches, doudou, biberons ou lait."]],
+    creche: [["contrat", "Signer le contrat d'accueil et le règlement", "Il fixe les jours, les horaires et le tarif."], ["dossier", "Compléter le dossier d'inscription", "Justificatifs de domicile, de revenus, numéro CAF."], ["carnet", "Fournir les vaccins à jour", "Les vaccins obligatoires doivent être faits pour entrer en collectivité."], ["urgence", "Signer les autorisations (soins, sorties, photos)", ""], ["personnes", "Donner la liste des personnes autorisées à venir chercher bébé", "Avec leurs coordonnées et souvent une pièce d'identité."], ["adaptation", "Planifier l'adaptation", "La crèche propose en général un calendrier sur une à deux semaines."], ["trousseau", "Préparer le trousseau", "Vêtements de rechange, doudou, tétine, et ce que la crèche demande."]],
+    domicile: [["contrat", "Signer le contrat de travail", "En garde partagée, ajouter une convention entre les deux familles."], ["pajemploi", "Déclarer l'embauche sur Pajemploi", ""], ["cmg", "Demander l'aide de la CAF (CMG)", ""], ["urgence", "Signer l'autorisation de soins en urgence", ""], ["personnes", "Donner la liste des personnes autorisées à venir chercher bébé", ""], ["planning", "Caler le planning et les congés", "En garde partagée, à trois : les deux familles et la nounou."]]
+  };
+  const gardeEtapes = t => t === "asmat" ? GARDE_ETAPES.asmat : t === "domicile" ? GARDE_ETAPES.domicile : GARDE_ETAPES.creche.map(e => t === "micro" && e[0] === "dossier" ? ["cmg", "Demander l'aide de la CAF (CMG)", "Selon la micro-crèche, l'aide passe par toi ou par la structure."] : e);
+  let gardeRecherche = false;
+  function gardeTrouveeHTML() {
+    const G = S.gardeOk, o = OPTIONS.find(x => x.id === G.type), E = gardeEtapes(G.type), done = G.done || {}, n = E.filter(([k]) => done[k]).length, d = G.debut ? new Date(G.debut + "T00:00:00") : null;
+    return '<section class="section"><div class="pn-id"><div><small class="ex">Notre garde</small><h2 style="margin-top:4px">' + esc(o ? o.name : "") + (G.nom ? ' · ' + esc(G.nom) : '') + '</h2>' +
+      (d ? '<p class="group-intro">À partir du ' + fmtD(d) + ' ' + d.getFullYear() + '</p>' : '') + '</div><div class="pn-id-f"><span>' + n + '/' + E.length + ' démarches faites</span><button type="button" class="linkbtn" data-garde-edit>Modifier</button></div></div></section>' +
+      '<section class="section"><div class="section-head"><h2>Ce qu\'il reste à faire</h2></div><div class="pn-list pn-subs">' +
+      E.map(([k, l, w]) => '<button type="button" class="pn-check' + (done[k] ? ' on' : '') + '" data-garde-step="' + k + '"><span class="tick">' + tickSvg + '</span><span>' + l + (w ? '<small>' + w + '</small>' : '') + '</span></button>').join("") + '</div></section>' +
+      '<button type="button" class="linkbtn" data-garde-recherche style="justify-self:start">' + (gardeRecherche ? "Masquer notre recherche" : "Revoir notre recherche") + '</button>';
+  }
+  function openGardeOk() {
+    const G = S.gardeOk || {}; let type = G.type || "";
+    openSheet('<h2>Vous avez trouvé une garde</h2><form id="goForm" style="display:grid;gap:12px">' +
+      '<div class="field"><label for="goT">Type de garde</label><select id="goT" required><option value="">Choisir</option>' + OPTIONS.map(o => '<option value="' + o.id + '"' + (o.id === type ? ' selected' : '') + '>' + o.name + '</option>').join("") + '</select></div>' +
+      '<div class="field"><label for="goN">Nom (facultatif)</label><input id="goN" type="text" value="' + esc(G.nom || "") + '" placeholder="Ex. Nadia, crèche des Lilas"></div>' +
+      '<div class="field pn-heure"><label for="goD">À partir du</label><input id="goD" type="date" value="' + esc(G.debut || "") + '"></div>' +
+      '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button>' + (S.gardeOk ? '<button type="button" class="linkbtn" id="goDel">On cherche encore</button>' : '') + '</div></form>');
+    const close = () => { save(); document.getElementById("sheetRoot").innerHTML = ""; render(); window.scrollTo(0, 0); };
+    const del = document.getElementById("goDel"); if (del) del.addEventListener("click", () => { delete S.gardeOk; close(); });
+    document.getElementById("goForm").addEventListener("submit", e => { e.preventDefault(); const t = document.getElementById("goT").value; if (!t) return;
+      S.gardeOk = { type: t, nom: document.getElementById("goN").value.trim(), debut: document.getElementById("goD").value, done: (S.gardeOk && S.gardeOk.type === t) ? S.gardeOk.done : {} }; close(); });
+  }
+  document.getElementById("view").addEventListener("click", e => {
+    if (e.target.closest("[data-garde-ok]") || e.target.closest("[data-garde-edit]")) { openGardeOk(); return; }
+    const st = e.target.closest("[data-garde-step]"); if (st) { const d = S.gardeOk.done = S.gardeOk.done || {}, k = st.dataset.gardeStep; if (d[k]) delete d[k]; else d[k] = iso(today); save(); const keep = window.scrollY; render(); window.scrollTo(0, keep); return; }
+    if (e.target.closest("[data-garde-recherche]")) { gardeRecherche = !gardeRecherche; const keep = window.scrollY; render(); window.scrollTo(0, keep); return; }
+  });
+
   function renderGarde() {
     const need = needDate();
     const p = pregnancy();
@@ -869,8 +904,10 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
       ? "Septembre est le mois où les crèches libèrent le plus de places. Dépose tes dossiers tôt et garde une piste de secours."
       : "La plupart des places de crèche se libèrent en septembre. Pour " + MOIS[need.getMonth()] + ", vise les désistements (ils arrivent surtout en début d'année) et ouvre au moins une autre piste : assistante maternelle ou garde partagée.";
     const head = '<section class="page-title"><h1>Garde</h1></section>';
-    if (!S.quizDone) return head + renderQuiz();
-    return head + renderReco() +
+    if (S.gardeOk && !gardeRecherche) return head + gardeTrouveeHTML();
+    const top = S.gardeOk ? gardeTrouveeHTML() : '<button type="button" class="hint" data-garde-ok><span>Vous avez trouvé une garde ?</span><b>Le dire à Tempo →</b></button>';
+    if (!S.quizDone) return head + top + renderQuiz();
+    return head + top + renderReco() +
       '<section class="section"><div class="need">' +
         '<div class="row2"><div class="field"><label for="ville">Vous habitez à</label><input id="ville" type="text" placeholder="Ex. Paris" value="' + esc(S.ville || "") + '"></div>' +
         '<div class="field"><label for="quartier">Arrondissement ou quartier</label><input id="quartier" type="text" placeholder="Ex. 19e" value="' + esc(S.quartier || "") + '"></div></div>' +
