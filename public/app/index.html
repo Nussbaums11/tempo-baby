@@ -617,6 +617,11 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     Object.keys(empty).forEach(k => { if (JSON.stringify(S[k]) === JSON.stringify(defaults[k])) S[k] = empty[k]; });
     S.example = false;
   }
+  // Lien de test (03/11) : ?test=naissance place la grossesse à 39 SA, juste avant « Bébé est là », sans onboarding.
+  try { if (new URLSearchParams(location.search).get("test") === "naissance") {
+    delete S.naissance; delete S.pn; S.terme = iso(addDays(today, 14)); firstVisit = false; save();
+    history.replaceState(null, "", location.pathname);
+  } } catch (e) {}
   let tab = "accueil";
   try { const h = location.hash.replace("#", ""); if (["garde", "accueil", "materiel", "suivi", "naissance", "bebe", "quotidien"].includes(h)) tab = h; } catch (e) {}
 
