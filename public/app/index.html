@@ -501,6 +501,12 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 .pn-mes small { color: var(--muted); font-size: 12px; }
 .pn-acq-g { display: grid; gap: 6px; }
 .pn-acq-h { font-size: 13px; font-weight: 700; color: var(--muted); }
+.pn-heure input { width: auto; }
+.pn-open { cursor: pointer; }
+.pn-hist { justify-content: flex-start; }
+.pn-hist b { min-width: 72px; }
+.pn-hist span { color: var(--muted); }
+.pn-hist .pn-mod { margin-left: auto; color: var(--terracotta-dark); font-weight: 600; font-size: 14px; }
 .pn-list { display: grid; background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
 .pn-check { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--border); padding: 11px 14px; font-size: 15px; color: var(--ink); cursor: pointer; }
 .pn-check:first-child { border-top: 0; }
@@ -1884,17 +1890,26 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 
   const PN_COURSES = [["couches", "Couches"], ["coton", "Carrés de coton"], ["lait", "Lait"], ["eau", "Eau"], ["serum", "Sérum physiologique"], ["vetements", "Vêtements à la taille au-dessus"], ["pharmacie", "Pharmacie"]];
 
+  function friseItem(f) {
+    const done = !!pn().frise[f.id], dl = addDays(birth(), f.a);
+    return '<details class="item' + (done ? " done" : "") + '" data-fid="' + f.id + '"><summary><button type="button" class="tick" data-pn-tick="' + f.id + '" aria-label="' + (done ? "Marquer comme pas fait" : "Marquer comme fait") + '">' + tickSvg + '</button>' +
+      '<span class="t">' + f.t + '<small><span class="pn-qui q-' + f.qui + '">' + PN_QUI[f.qui]() + '</span> · ' + (f.a >= 365 ? "Quand tu veux" : "Avant le " + dl.getDate() + " " + MOIS[dl.getMonth()]) + '</small></span>' + chev + '</summary>' +
+      '<div class="body"><p>' + f.sub + '. ' + f.why + '</p></div></details>';
+  }
+
   function pnAccueil() {
     const p = pn(), N = S.naissance;
     // Une ligne par rubrique choisie, à égalité (Sandra 03/11 : le biberon seul en vedette, c'était son vécu, pas une règle).
     const ONE = { biberon: "Dernier biberon", tetee: "Dernière tétée", couche: "Dernière couche", sommeil: "Dernier dodo", tirelait: "Dernier tire-lait" };
     const bigRepas = p.suivre.length ? '<div class="pn-last">' + p.suivre.map(k => { const r = PN_RUB.find(x => x.k === k), l = lastOf(k);
-      const det = l ? (l.q ? l.q + ' ml' : l.cote ? 'Sein ' + l.cote : '') : '';
+      if (k === "sommeil") { const se = sommeilEtat();
+        return '<div class="pn-last-r"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t pn-open" data-pn-hist="sommeil" role="button" tabindex="0"><small>' + (se ? se.t : "Sommeil") + '</small><b>' + (se ? se.v : 'Rien de noté') + '</b><small>' + (se ? se.d : '') + '</small></span><button type="button" class="btn" data-pn-log="sommeil" aria-label="Noter le sommeil">+</button></div>'; }
+      const det = l ? (l.q ? l.q + ' ml' : l.cote ? 'Sein ' + l.cote : coucheTxt(l)) : '';
       const jour = k === "biberon" ? bibJour() : todayCount(k) + ' aujourd\'hui';
-      return '<div class="pn-last-r"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t"><small>' + ONE[k] + '</small><b>' + (l ? depuis(l.t) : 'Rien de noté') + '</b><small>' + [det, l ? jour : ''].filter(Boolean).join(' · ') + '</small></span><button type="button" class="btn" data-pn-log="' + k + '" aria-label="Noter ' + r.one + '">+</button></div>'; }).join("") + '</div>' : '';
+      return '<div class="pn-last-r"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t pn-open" data-pn-hist="' + k + '" role="button" tabindex="0"><small>' + ONE[k] + '</small><b>' + (l ? depuis(l.t) : 'Rien de noté') + '</b><small>' + [det, l ? jour : ''].filter(Boolean).join(' · ') + '</small></span><button type="button" class="btn" data-pn-log="' + k + '" aria-label="Noter ' + r.one + '">+</button></div>'; }).join("") + '</div>' : '';
     const upcoming = PN_FRISE.filter(f => !p.frise[f.id] && ageJours() <= f.a).slice(0, 4);
     const imp = upcoming.filter(f => ageJours() >= f.de - 3).slice(0, 3), att = upcoming.filter(f => !imp.includes(f)).slice(0, 2);
-    const card = f => { const dl = addDays(birth(), f.a); return '<button type="button" class="pn-card" data-pn-frise="' + f.id + '"><span class="pn-qui q-' + f.qui + '">' + PN_QUI[f.qui]() + '</span><b>' + f.t + '</b><span>' + (ageJours() > f.a - 3 ? "Avant le " + dl.getDate() + " " + MOIS[dl.getMonth()] : f.sub) + '</span></button>'; };
+    const card = friseItem;
     // Suggérer d'ajouter ou d'arrêter une rubrique : l'app propose, le parent tranche.
     const sugg = !p.suivre.includes("sommeil") && ageJours() >= 28 && !p.noSugg ? '<div class="pn-sugg"><p>' + bebeAppel() + ' dort moins par tranches qu\'au début. Tu veux suivre son sommeil ?</p><div class="pn-add"><button type="button" class="btn primary" data-pn-sugg="add">Ajouter le sommeil</button><button type="button" class="linkbtn" data-pn-sugg="non">Pas besoin</button></div></div>' : '';
     return '<section class="born"><span class="ex">Bienvenue</span><h1>' + esc(bebeAppel()) + ' ' + ageTxt() + '</h1>' +
@@ -1910,12 +1925,10 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const p = pn();
     const journal = p.suivre.length ? '<section class="section"><div class="section-head"><h2>Journal</h2><button type="button" class="linkbtn" data-pn-choix>Modifier</button></div>' +
       p.suivre.map(k => { const r = PN_RUB.find(x => x.k === k), l = lastOf(k), n = todayCount(k);
-        return '<div class="pn-row"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t"><b>' + r.l + '</b><small>' + (k === "biberon" && l ? 'Dernier ' + depuis(l.t) + '<br>' + bibJour() : l ? 'Dernier' + (k === "tetee" ? "e" : "") + ' ' + depuis(l.t) + ' · ' + n + ' aujourd\'hui' : 'Rien de noté') + '</small></span><button type="button" class="btn" data-pn-log="' + k + '">+ Noter</button></div>'; }).join("") +
+        if (k === "sommeil") { const se = sommeilEtat(); return '<div class="pn-row"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t pn-open" data-pn-hist="sommeil" role="button" tabindex="0"><b>' + r.l + '</b><small>' + (se ? se.t + ' ' + se.v : 'Rien de noté') + '</small></span><button type="button" class="btn" data-pn-log="sommeil">+ Noter</button></div>'; }
+        return '<div class="pn-row"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t pn-open" data-pn-hist="' + k + '" role="button" tabindex="0"><b>' + r.l + '</b><small>' + (k === "biberon" && l ? 'Dernier ' + depuis(l.t) + '<br>' + bibJour() : l ? 'Dernier' + (k === "tetee" ? "e" : "") + ' ' + depuis(l.t) + ' · ' + n + ' aujourd\'hui' : 'Rien de noté') + '</small></span><button type="button" class="btn" data-pn-log="' + k + '">+ Noter</button></div>'; }).join("") +
       '</section>' : '<section class="section"><div class="section-head"><h2>Journal</h2><button type="button" class="linkbtn" data-pn-choix>Ajouter</button></div><p class="group-intro">Rien à noter pour l\'instant.</p></section>';
-    const items = PN_FRISE.map(f => { const done = !!p.frise[f.id], dl = addDays(birth(), f.a);
-      return '<details class="item' + (done ? " done" : "") + '"><summary><button type="button" class="tick" data-pn-tick="' + f.id + '" aria-label="' + (done ? "Marquer comme pas fait" : "Marquer comme fait") + '">' + tickSvg + '</button>' +
-        '<span class="t">' + f.t + '<small><span class="pn-qui q-' + f.qui + '">' + PN_QUI[f.qui]() + '</span> · ' + (f.a >= 365 ? "Quand tu veux" : "Avant le " + dl.getDate() + " " + MOIS[dl.getMonth()]) + '</small></span>' + chev + '</summary>' +
-        '<div class="body"><p>' + f.why + '</p></div></details>'; }).join("");
+    const items = PN_FRISE.map(friseItem).join("");
     return journal + '<section class="section"><div class="section-head"><h2>À venir</h2></div>' + items + '</section>';
   }
 
@@ -1964,16 +1977,76 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
   }
 
   function pnLog(k) {
-    const p = pn(), add = extra => { p.log.push(Object.assign({ k, t: new Date().toISOString() }, extra || {})); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); };
+    // L'heure est réglable (Sandra 03/11) : par défaut maintenant, une heure plus tard que maintenant = hier soir.
+    const now = new Date(), hh = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+    const heure = '<div class="field pn-heure"><label for="lgH">Heure</label><input id="lgH" type="time" value="' + hh + '"></div>';
+    const quand = () => { const el = document.getElementById("lgH"); if (!el || !el.value || el.value === hh) return new Date(); const [h, m] = el.value.split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0); if (d > new Date()) d.setDate(d.getDate() - 1); return d; };
+    const p = pn(), add = extra => { p.log.push(Object.assign({ k, t: quand().toISOString() }, extra || {})); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); };
+    const lb = lastOf("biberon"), proche = k === "biberon" && lb && (Date.now() - new Date(lb.t)) < 30 * 60000;
+    const hhmm = t => { const d = new Date(t); return d.getHours() + "h" + String(d.getMinutes()).padStart(2, "0"); };
     if (k === "biberon") {
-      openSheet('<h2>Biberon</h2><p>Combien ?</p><div class="chips md-chips">' + [30, 60, 90, 120, 150, 180].map(q => '<button type="button" class="chip" data-q="' + q + '">' + q + ' ml</button>').join("") + '</div><button type="button" class="linkbtn" id="qNone" style="justify-self:start">Noter sans la quantité</button>');
-      document.querySelectorAll("[data-q]").forEach(b => b.addEventListener("click", () => add({ q: +b.dataset.q })));
+      let fusion = false;
+      openSheet('<h2 id="bibT">Biberon</h2>' + (proche ? '<button type="button" class="linkbtn" id="bibFus" style="justify-self:start">Il a repris ? Ajouter au biberon de ' + hhmm(lb.t) + (lb.q ? ' (' + lb.q + ' ml)' : '') + '</button>' : '') + '<div id="bibH">' + heure + '</div><p>Combien ?</p><div class="chips md-chips">' + [30, 60, 90, 120, 150, 180].map(q => '<button type="button" class="chip" data-q="' + q + '">' + q + ' ml</button>').join("") + '</div><button type="button" class="linkbtn" id="qNone" style="justify-self:start">Noter sans la quantité</button>');
+      const fb = document.getElementById("bibFus");
+      if (fb) fb.addEventListener("click", () => { fusion = true; fb.remove(); document.getElementById("bibH").remove(); document.getElementById("bibT").textContent = "Ajouter au biberon de " + hhmm(lb.t); });
+      document.querySelectorAll("[data-q]").forEach(b => b.addEventListener("click", () => { if (fusion) { lb.q = (lb.q || 0) + (+b.dataset.q); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); } else add({ q: +b.dataset.q }); }));
       document.getElementById("qNone").addEventListener("click", () => add());
     } else if (k === "tetee") {
       const l = lastOf("tetee");
-      openSheet('<h2>Quel sein ?</h2>' + (l && l.cote ? '<p>La dernière fois : ' + l.cote + '.</p>' : '') + '<div style="display:flex;gap:8px"><button type="button" class="btn primary" data-c="gauche">Gauche</button><button type="button" class="btn primary" data-c="droite">Droite</button></div>');
+      openSheet('<h2>Quel sein ?</h2>' + (l && l.cote ? '<p>La dernière fois : ' + l.cote + '.</p>' : '') + heure + '<div style="display:flex;gap:8px"><button type="button" class="btn primary" data-c="gauche">Gauche</button><button type="button" class="btn primary" data-c="droite">Droite</button></div>');
       document.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => add({ cote: b.dataset.c })));
-    } else add();
+    } else if (k === "couche") {
+      // Pipi et/ou caca (Sandra 03/11)
+      const sel = new Set();
+      openSheet('<h2>Couche</h2>' + heure + '<div style="display:flex;gap:8px">' + ["pipi", "caca"].map(c => '<button type="button" class="chip" data-cc="' + c + '" aria-selected="false">' + c.replace(/^./, m => m.toUpperCase()) + '</button>').join("") + '</div><button class="btn primary" type="button" id="ccOk" style="justify-self:start">Noter</button>');
+      document.querySelectorAll("[data-cc]").forEach(b => b.addEventListener("click", () => { const c = b.dataset.cc; if (sel.has(c)) sel.delete(c); else sel.add(c); b.setAttribute("aria-selected", sel.has(c)); }));
+      document.getElementById("ccOk").addEventListener("click", () => add(sel.size ? { c: ["pipi", "caca"].filter(c => sel.has(c)) } : null));
+    } else if (k === "sommeil") {
+      // Endormissement puis réveil (Sandra 03/11) : s'il dort, la feuille propose l'heure du réveil.
+      const ls = lastOf("sommeil"), dort = ls && !ls.fin;
+      openSheet('<h2>' + (dort ? accord("Il", "Elle") + ' se réveille' : accord("Il", "Elle") + ' s\'endort') + '</h2>' + heure + '<button class="btn primary" type="button" id="slOk" style="justify-self:start">Noter</button>');
+      document.getElementById("slOk").addEventListener("click", () => { if (dort) { ls.fin = quand().toISOString(); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); } else add(); });
+    } else {
+      openSheet('<h2>' + PN_RUB.find(x => x.k === k).l + '</h2>' + heure + '<button class="btn primary" type="button" id="otOk" style="justify-self:start">Noter</button>');
+      document.getElementById("otOk").addEventListener("click", () => add());
+    }
+  }
+  const coucheTxt = x => x.c && x.c.length ? x.c.map(c => c.replace(/^./, m => m.toUpperCase())).join(" + ") : "";
+  const dureeTxt = (a, b) => { const min = Math.max(0, Math.round((new Date(b) - new Date(a)) / 60000)); return min < 60 ? min + " min" : Math.floor(min / 60) + " h" + (min % 60 ? " " + String(min % 60).padStart(2, "0") : ""); };
+  // Sommeil : « dort depuis » ou « éveillé depuis », à lire d'un coup d'œil.
+  function sommeilEtat() {
+    const l = lastOf("sommeil"); if (!l) return null;
+    if (!l.fin) return { t: "Dort depuis", v: dureeTxt(l.t, Date.now()), d: "Endormi" + accord("", "e") + " à " + new Date(l.t).getHours() + "h" + String(new Date(l.t).getMinutes()).padStart(2, "0") };
+    return { t: "Éveillé" + accord("", "e") + " depuis", v: dureeTxt(l.fin, Date.now()), d: "A dormi " + dureeTxt(l.t, l.fin) };
+  }
+
+  function openHist(k) {
+    const p = pn(), r = PN_RUB.find(x => x.k === k), hier = addDays(today, -1);
+    const list = p.log.map((x, i) => [x, i]).filter(([x]) => x.k === k && new Date(x.t) >= hier).sort((a, b) => b[0].t.localeCompare(a[0].t));
+    const hm = t => { const d = new Date(t); return (d < today ? "Hier " : "") + d.getHours() + "h" + String(d.getMinutes()).padStart(2, "0"); };
+    openSheet('<div class="sem-head"><h2>' + r.l + '</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      (list.length ? '<div class="pn-list">' + list.map(([x, i]) => '<button type="button" class="pn-check pn-hist" data-hi="' + i + '"><b>' + hm(x.t) + '</b><span>' + (x.q ? x.q + ' ml' : x.cote ? 'Sein ' + x.cote : x.k === "sommeil" ? (x.fin ? 'jusqu\'à ' + new Date(x.fin).getHours() + 'h' + String(new Date(x.fin).getMinutes()).padStart(2, "0") + ' · ' + dureeTxt(x.t, x.fin) : 'en cours') : coucheTxt(x)) + '</span><span class="pn-mod">Modifier</span></button>').join("") + '</div>' : '<p>Rien de noté depuis hier.</p>'));
+    document.querySelectorAll("[data-hi]").forEach(b => b.addEventListener("click", () => openEdit(+b.dataset.hi)));
+  }
+
+  function openEdit(i) {
+    const p = pn(), x = p.log[i], d = new Date(x.t), hh = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    openSheet('<h2>Modifier</h2><form id="edForm" style="display:grid;gap:12px"><div class="field pn-heure"><label for="edH">' + (x.k === "sommeil" ? "Endormissement" : "Heure") + '</label><input id="edH" type="time" value="' + hh + '"></div>' +
+      (x.k === "biberon" ? '<div class="field pn-heure"><label for="edQ">Quantité (ml)</label><input id="edQ" type="number" inputmode="numeric" min="0" step="5" value="' + (x.q || "") + '"></div>' : '') +
+      (x.k === "tetee" ? '<div class="field"><label>Sein</label><div style="display:flex;gap:8px">' + ["gauche", "droite"].map(c => '<button type="button" class="chip" data-ec="' + c + '" aria-selected="' + (x.cote === c) + '">' + c.replace(/^./, m => m.toUpperCase()) + '</button>').join("") + '</div></div>' : '') +
+      (x.k === "couche" ? '<div style="display:flex;gap:8px">' + ["pipi", "caca"].map(c => '<button type="button" class="chip" data-ecc="' + c + '" aria-selected="' + ((x.c || []).includes(c)) + '">' + c.replace(/^./, m => m.toUpperCase()) + '</button>').join("") + '</div>' : '') +
+      (x.k === "sommeil" ? '<div class="field pn-heure"><label for="edF">Réveil</label><input id="edF" type="time" value="' + (x.fin ? String(new Date(x.fin).getHours()).padStart(2, "0") + ":" + String(new Date(x.fin).getMinutes()).padStart(2, "0") : "") + '"></div>' : '') +
+      '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button><button type="button" class="linkbtn" id="edDel">Supprimer</button></div></form>');
+    let cote = x.cote; const cc = new Set(x.c || []);
+    document.querySelectorAll("[data-ecc]").forEach(b => b.addEventListener("click", () => { const c = b.dataset.ecc; if (cc.has(c)) cc.delete(c); else cc.add(c); b.setAttribute("aria-selected", cc.has(c)); }));
+    document.querySelectorAll("[data-ec]").forEach(b => b.addEventListener("click", () => { cote = b.dataset.ec; document.querySelectorAll("[data-ec]").forEach(y => y.setAttribute("aria-selected", y.dataset.ec === cote)); }));
+    const done = () => { save(); render(); openHist(x.k); };
+    document.getElementById("edDel").addEventListener("click", () => { p.log.splice(i, 1); done(); });
+    document.getElementById("edForm").addEventListener("submit", e => { e.preventDefault();
+      const [h, m] = document.getElementById("edH").value.split(":").map(Number); const nd = new Date(d); nd.setHours(h, m, 0, 0); x.t = nd.toISOString();
+      const q = document.getElementById("edQ"); if (q) x.q = q.value ? +q.value : undefined; if (x.k === "tetee") x.cote = cote; if (x.k === "couche") x.c = ["pipi", "caca"].filter(c => cc.has(c));
+      const f = document.getElementById("edF"); if (f) { if (f.value) { const [fh, fm] = f.value.split(":").map(Number); const fd = new Date(nd); fd.setHours(fh, fm, 0, 0); if (fd < nd) fd.setDate(fd.getDate() + 1); x.fin = fd.toISOString(); } else delete x.fin; }
+      done(); });
   }
 
   function openMesure() {
@@ -2000,8 +2073,13 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     if (!S.naissance) return;
     const p = pn(); const keep = window.scrollY; const rr = () => { save(); render(); window.scrollTo(0, keep); };
     const lg = e.target.closest("[data-pn-log]"); if (lg) { pnLog(lg.dataset.pnLog); return; }
+    const hs = e.target.closest("[data-pn-hist]"); if (hs) { openHist(hs.dataset.pnHist); return; }
     if (e.target.closest("[data-pn-choix]")) { openChoix(false); return; }
-    const tk = e.target.closest("[data-pn-tick]"); if (tk) { e.preventDefault(); e.stopPropagation(); const id = tk.dataset.pnTick; if (p.frise[id]) delete p.frise[id]; else p.frise[id] = iso(today); rr(); return; }
+    const tk = e.target.closest("[data-pn-tick]"); if (tk) { e.preventDefault(); e.stopPropagation(); const id = tk.dataset.pnTick, it = tk.closest(".item"), open = it && it.open;
+      if (p.frise[id]) delete p.frise[id]; else p.frise[id] = iso(today); save();
+      // Sur l'accueil, la carte cochée reste affichée (barrée) au lieu de disparaître sous le doigt.
+      if (tab === "accueil" && it) { it.classList.toggle("done", !!p.frise[id]); return; }
+      render(); window.scrollTo(0, keep); const d = document.querySelector('[data-fid="' + id + '"]'); if (d && open) d.open = true; return; }
     const fr = e.target.closest("[data-pn-frise]"); if (fr) { tab = "suivi"; render(); window.scrollTo(0, 0); return; }
     const sg = e.target.closest("[data-pn-sugg]"); if (sg) { if (sg.dataset.pnSugg === "add") p.suivre.push("sommeil"); else p.noSugg = true; rr(); return; }
     if (e.target.closest("[data-pn-mesure]")) { openMesure(); return; }
