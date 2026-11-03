@@ -466,11 +466,60 @@ nav.tabs button.soon { opacity: .55; }
 .sheet h2 { font-size: 22px; }
 .sheet p { margin: 0; color: var(--muted); }
 .sheet ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+/* V1 post-naissance (03/11) */
+nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-inline: 2px; }
+.toi-round { width: 30px; height: 30px; border-radius: 50%; border: 0; background: var(--terracotta); color: var(--card); font-weight: 700; font-size: 14px; cursor: pointer; display: grid; place-items: center; padding: 0; }
+.pn-last { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: grid; gap: 4px; margin-block: 6px; }
+.pn-last small { color: var(--muted); font-size: 13px; font-weight: 600; }
+.pn-last b { font-family: var(--font-display); font-size: 34px; line-height: 1.1; font-weight: 600; }
+.pn-last span { color: var(--muted); font-size: 14px; }
+.pn-add { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.pn-card { display: grid; gap: 2px; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; cursor: pointer; font-size: 14px; color: var(--muted); }
+.pn-card b { color: var(--ink); font-size: 16px; }
+.pn-qui { font-size: 12px; font-weight: 700; color: var(--sage); }
+.pn-qui.q-toi { color: var(--terracotta-dark); }
+.pn-qui.q-dem { color: var(--muted); }
+.pn-sugg { background: var(--sage-soft); border-radius: 14px; padding: 14px; margin-block: 6px; }
+.pn-sugg p { margin: 0; font-size: 15px; }
+.pn-row, .pn-course { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 10px 14px; }
+.pn-ico { font-size: 20px; }
+.pn-row-t { display: grid; min-width: 0; }
+.pn-row-t small { color: var(--muted); font-size: 13px; }
+.pn-course.rac .tick { background: var(--terracotta); border-color: var(--terracotta); }
+.pn-course.rac .tick svg { opacity: 1; }
+.pn-rac { color: var(--terracotta-dark) !important; font-weight: 700; }
+.pn-who { display: inline-flex; gap: 2px; }
+.pn-who button { border: 0; background: none; font-size: 12px; font-weight: 600; color: var(--muted); padding: 4px 6px; border-radius: 999px; cursor: pointer; }
+.pn-who button[aria-selected="true"] { background: var(--ink); color: var(--cream); }
+.pn-mes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pn-mes div { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: grid; gap: 2px; }
+.pn-mes b { font-size: 18px; }
+.pn-mes small { color: var(--muted); font-size: 12px; }
+.pn-acq-g { display: grid; gap: 6px; }
+.pn-acq-h { font-size: 13px; font-weight: 700; color: var(--muted); }
+.pn-list { display: grid; background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+.pn-check { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--border); padding: 11px 14px; font-size: 15px; color: var(--ink); cursor: pointer; }
+.pn-check:first-child { border-top: 0; }
+.pn-check.on .tick { background: var(--sage); border-color: var(--sage); }
+.pn-check.on .tick svg { opacity: 1; }
+.pn-jour { color: var(--ink) !important; font-weight: 600; }
+.pn-id { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 16px; display: grid; gap: 12px; margin-block: 8px 6px; }
+.pn-id-h { display: flex; align-items: center; gap: 12px; }
+.pn-id-av { width: 64px; height: 64px; border-radius: 50%; background: var(--sage-soft); color: var(--sage); display: grid; place-items: center; flex: none; overflow: hidden; cursor: pointer; }
+.pn-id-av svg { width: 26px; height: 26px; }
+.pn-id-av img { width: 100%; height: 100%; object-fit: cover; }
+.pn-id h1 { font-size: 28px; line-height: 1.1; }
+.pn-id-h p { margin: 0; color: var(--muted); }
+.pn-id dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 15px; }
+.pn-id dt { color: var(--muted); }
+.pn-id dd { margin: 0; font-weight: 600; }
+.pn-id-f { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 10px; }
+#editProfile { padding: 5px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
 <div class="app">
-  <div class="proto"><span class="logo" aria-label="Tempo"><svg viewBox="0 0 300 78" width="108" height="28" role="img" aria-label="Tempo"><svg x="0" y="0" width="78" height="78" viewBox="0 0 100 100"><rect x="6" y="58" width="18" height="36" rx="9" class="lb"/><rect x="30" y="34" width="18" height="60" rx="9" class="lb"/><rect x="54" y="10" width="18" height="84" rx="9" class="lc"/><rect x="78" y="46" width="18" height="48" rx="9" class="lb"/></svg><text x="100" y="58.5" font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="56" letter-spacing="-0.03em" class="lt">tempo</text></svg></span><span style="display:inline-flex;gap:6px;align-items:center"><button class="gear gear-round" id="askHead" type="button" aria-label="Enceinte, j'ai le droit de… ? Poser une question"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button><button class="gear" id="editProfile" type="button" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Mes infos et réglages</button></span></div>
+  <div class="proto"><span class="logo" aria-label="Tempo"><svg viewBox="0 0 300 78" width="108" height="28" role="img" aria-label="Tempo"><svg x="0" y="0" width="78" height="78" viewBox="0 0 100 100"><rect x="6" y="58" width="18" height="36" rx="9" class="lb"/><rect x="30" y="34" width="18" height="60" rx="9" class="lb"/><rect x="54" y="10" width="18" height="84" rx="9" class="lc"/><rect x="78" y="46" width="18" height="48" rx="9" class="lb"/></svg><text x="100" y="58.5" font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="56" letter-spacing="-0.03em" class="lt">tempo</text></svg></span><span style="display:inline-flex;gap:6px;align-items:center"><button class="gear gear-round" id="askHead" type="button" aria-label="Enceinte, j'ai le droit de… ? Poser une question"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button><button class="gear" id="editProfile" type="button" aria-label="Mes infos et réglages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span></div>
   <main id="view"></main>
 </div>
 
@@ -559,7 +608,7 @@ nav.tabs button.soon { opacity: .55; }
     S.example = false;
   }
   let tab = "accueil";
-  try { const h = location.hash.replace("#", ""); if (["garde", "accueil", "materiel", "suivi", "naissance"].includes(h)) tab = h; } catch (e) {}
+  try { const h = location.hash.replace("#", ""); if (["garde", "accueil", "materiel", "suivi", "naissance", "bebe", "quotidien"].includes(h)) tab = h; } catch (e) {}
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const chev = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
@@ -1292,19 +1341,24 @@ nav.tabs button.soon { opacity: .55; }
     const N = S.naissance || {}; const how = N.how || [];
     openSheet('<h2>Bébé est là</h2><p>Félicitations ! Dites-le à Tempo : l\'app passe en mode « premiers jours ».</p>' +
       '<form id="bornForm" style="display:grid;gap:12px"><div class="field"><label for="bPrenom">Son prénom</label><input id="bPrenom" type="text" value="' + esc(N.prenom || S.prenom || "") + '"></div>' +
+      '<div class="field"><label>C\'est</label><div class="chips md-chips">' + [["fille", "Une fille"], ["garcon", "Un garçon"]].map(([k, l]) => '<button type="button" class="chip" data-born-sexe="' + k + '" aria-selected="' + (N.sexe === k) + '">' + l + '</button>').join("") + '</div></div>' +
+      '<div class="field"><label for="bSurnom">Un surnom pour l\'app (facultatif)</label><input id="bSurnom" type="text" maxlength="10" value="' + esc(N.surnom || "") + '" placeholder="Choupette, Loulou…"></div>' +
       '<div class="row2"><div class="field"><label for="bDate">Le</label><input id="bDate" type="date" value="' + esc(N.date || iso(today)) + '" required></div><div class="field"><label for="bHeure">À</label><input id="bHeure" type="time" value="' + esc(N.heure || "") + '"></div></div>' +
       '<div class="field"><label>Comment ça s\'est passé</label><div class="chips md-chips">' + BORN_HOW.map(h => '<button type="button" class="chip" data-born-how="' + esc(h) + '" aria-selected="' + how.includes(h) + '">' + h + '</button>').join("") + '</div></div>' +
       '<div class="field"><label for="bRecit">En quelques mots (pour vous)</label><textarea id="bRecit" rows="3" placeholder="Ce que vous voulez garder de ce jour-là">' + esc(N.recit || "") + '</textarea></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button><button class="btn" type="button" data-close>Annuler</button></div></form>');
     document.querySelector(".sheet").classList.add("tall");
-    const sel = new Set(how);
+    const sel = new Set(how); let sexe = N.sexe || "";
+    document.querySelectorAll("[data-born-sexe]").forEach(b => b.addEventListener("click", () => { sexe = sexe === b.dataset.bornSexe ? "" : b.dataset.bornSexe; document.querySelectorAll("[data-born-sexe]").forEach(x => x.setAttribute("aria-selected", x.dataset.bornSexe === sexe)); }));
     document.querySelectorAll("[data-born-how]").forEach(b => b.addEventListener("click", () => { const h = b.dataset.bornHow; if (sel.has(h)) sel.delete(h); else sel.add(h); b.setAttribute("aria-selected", sel.has(h)); }));
     document.getElementById("bornForm").addEventListener("submit", e => {
       e.preventDefault(); const d = document.getElementById("bDate").value; if (!d) return;
       const pr = document.getElementById("bPrenom").value.trim();
-      S.naissance = { prenom: pr, date: d, heure: document.getElementById("bHeure").value, how: [...sel], recit: document.getElementById("bRecit").value.trim() };
+      const first = !S.naissance;
+      S.naissance = { prenom: pr, sexe, surnom: document.getElementById("bSurnom").value.trim(), date: d, heure: document.getElementById("bHeure").value, how: [...sel], recit: document.getElementById("bRecit").value.trim() };
       if (pr) S.prenom = pr; save();
       document.getElementById("sheetRoot").innerHTML = ""; tab = "accueil"; render(); window.scrollTo(0, 0);
+      if (first) openChoix(true);
     });
   }
   function bornHTML() {
@@ -1761,8 +1815,229 @@ nav.tabs button.soon { opacity: .55; }
     });
   }
 
+  // ---------- V1 post-naissance (03/11/2026) ----------
+  // Quand « Bébé est là » est enregistré, l'app bascule : Accueil · Suivi · [bébé] · Quotidien · Garde,
+  // plus le rond de la mère en haut. Cadrage dans la note « Tempo - V1 post-naissance ».
+  const pn = () => { S.pn = S.pn || {}; const p = S.pn; p.suivre = p.suivre || []; p.log = p.log || []; p.acquis = p.acquis || {}; p.autres = p.autres || []; p.mesures = p.mesures || []; p.courses = p.courses || {}; p.frise = p.frise || {}; return p; };
+  const PN_RUB = [
+    { k: "biberon", l: "Biberons", one: "biberon", ico: "🍼" },
+    { k: "tetee", l: "Tétées", one: "tétée", ico: "🤱" },
+    { k: "couche", l: "Couches", one: "couche", ico: "🧷" },
+    { k: "sommeil", l: "Sommeil", one: "dodo", ico: "🌙" },
+    { k: "tirelait", l: "Tire-lait", one: "séance de tire-lait", ico: "💧" }
+  ];
+  const fille = () => (S.naissance || {}).sexe === "fille";
+  const accord = (m, f) => fille() ? f : m;
+  // Nom de l'onglet : le surnom s'il y en a un, sinon le prénom s'il tient dans la barre, sinon « Bébé ».
+  const bebeNom = () => { const N = S.naissance || {}; if (N.surnom) return N.surnom; if (N.prenom && N.prenom.length <= 10) return N.prenom; return "Bébé"; };
+  const bebeAppel = () => { const N = S.naissance || {}; return N.surnom || N.prenom || "Bébé"; };
+  const birth = () => new Date(S.naissance.date + "T00:00:00");
+  const ageJours = () => Math.max(0, Math.round((today - birth()) / DAY));
+  function ageTxt() {
+    const j = ageJours();
+    if (j === 0) return "est né" + accord("", "e") + " aujourd'hui";
+    if (j < 15) return "a " + j + " jour" + (j > 1 ? "s" : "");
+    if (j < 91) { const s = Math.floor(j / 7); return "a " + s + " semaines"; }
+    const m = Math.floor(j / 30.4); return "a " + m + " mois";
+  }
+  function depuis(t) {
+    const min = Math.max(0, Math.round((Date.now() - new Date(t).getTime()) / 60000));
+    if (min < 1) return "à l'instant";
+    if (min < 60) return "il y a " + min + " min";
+    const h = Math.floor(min / 60), r = min % 60;
+    return "il y a " + h + " h" + (r ? " " + String(r).padStart(2, "0") : "");
+  }
+  const lastOf = k => pn().log.filter(x => x.k === k).sort((a, b) => b.t.localeCompare(a.t))[0];
+  const todayCount = k => pn().log.filter(x => x.k === k && new Date(x.t) >= today).length;
+  const todayMl = () => pn().log.filter(x => x.k === "biberon" && new Date(x.t) >= today).reduce((a, x) => a + (x.q || 0), 0);
+  const bibJour = () => { const n = todayCount("biberon"), ml = todayMl(); return n + " biberon" + (n > 1 ? "s" : "") + (ml ? " · " + ml + " ml" : "") + " aujourd'hui"; };
+
+  // La frise mêle RDV de bébé, RDV de la mère et démarches à faire une fois, par date (jours après la naissance).
+  // ⚠️ Délais et calendrier à sourcer avant les tests (relecture médicale et administrative).
+  const PN_FRISE = [
+    { id: "declaration", qui: "dem", t: "Déclarer la naissance", sub: "À la mairie du lieu de naissance", de: 0, a: 5, why: "Dans les 5 jours qui suivent la naissance. L'acte de naissance qu'on te remet sert pour toutes les démarches qui suivent." },
+    { id: "exam8", qui: "bebe", t: "Examen des 8 premiers jours", sub: "Souvent fait à la maternité", de: 0, a: 8, why: "Le premier des examens obligatoires de bébé. Il est noté dans le carnet de santé." },
+    { id: "sagefemme", qui: "toi", t: "Visite de la sage-femme à la maison", sub: "Après le retour de la maternité", de: 2, a: 10, why: "Une sage-femme peut venir chez vous après la sortie : pesée de bébé, allaitement, cicatrice, moral. Beaucoup de parents ne savent pas qu'elle existe." },
+    { id: "acte", qui: "dem", t: "Envoyer l'acte de naissance", sub: "Sécu, CAF, mutuelle, employeur", de: 5, a: 30, why: "Chaque organisme a besoin de l'acte pour ouvrir les droits de bébé." },
+    { id: "vitale", qui: "dem", t: "Rattacher bébé à la carte Vitale", sub: "Un parent ou les deux : à choisir avant", de: 5, a: 30, why: "Bébé peut être rattaché à l'un des parents ou aux deux. Ce choix décide de qui est remboursé et avec quelle carte. Mieux vaut le trancher à deux avant de faire la démarche." },
+    { id: "exam15", qui: "bebe", t: "Examen de la 2e semaine", sub: "Chez le pédiatre ou le médecin", de: 8, a: 15, why: "Deuxième examen obligatoire. Prépare tes questions, c'est le moment." },
+    { id: "examm1", qui: "bebe", t: "Examen du 1er mois", sub: "Poids, taille, développement", de: 25, a: 35, why: "Les mesures sont notées dans le carnet de santé. Tu peux les reporter dans l'onglet de bébé." },
+    { id: "epnp", qui: "toi", t: "Entretien postnatal", sub: "Avec une sage-femme ou un médecin", de: 28, a: 56, why: "Un temps pour toi, pour parler de ton moral, de ta fatigue et de ce qui est difficile. Il est pour toi, pas pour bébé." },
+    { id: "postnatale", qui: "toi", t: "Visite postnatale", sub: "Gynécologue, sage-femme ou médecin", de: 42, a: 56, why: "Elle fait le point sur ton corps après l'accouchement. C'est elle qui ouvre la rééducation du périnée." },
+    { id: "perinee", qui: "toi", t: "Rééducation du périnée", sub: "Après la visite postnatale", de: 50, a: 90, why: "Les séances sont prescrites à la visite postnatale." },
+    { id: "examm2", qui: "bebe", t: "Examen et vaccins des 2 mois", sub: "Chez le pédiatre ou le médecin", de: 55, a: 65, why: "Les premiers vaccins obligatoires. Le calendrier est noté dans le carnet de santé." },
+    { id: "examm3", qui: "bebe", t: "Examen et vaccins des 3 mois", sub: "Chez le pédiatre ou le médecin", de: 85, a: 95, why: "Suite du calendrier des vaccins." },
+    { id: "papiers", qui: "dem", t: "Carte d'identité ou passeport", sub: "Avec une photo d'identité de bébé", de: 30, a: 365, why: "Pas obligatoire tout de suite, mais nécessaire pour voyager. La photo d'un nouveau-né demande un peu de patience." },
+    { id: "ceam", qui: "dem", t: "Carte européenne d'assurance maladie", sub: "Avant un voyage en Europe", de: 30, a: 365, why: "Elle se demande en ligne, sur le compte ameli du parent qui a rattaché bébé." }
+  ];
+  const PN_QUI = { bebe: () => bebeAppel(), toi: () => "Toi", dem: () => "Démarche" };
+
+  const PN_ACQUIS = [
+    { g: "Motricité", l: [["tete", "Tient sa tête quelques secondes"], ["bras", "Pousse sur ses bras à plat ventre"], ["mains", "Ouvre et ferme les mains"], ["bouche", "Porte ses mains à sa bouche"]] },
+    { g: "Éveil", l: [["regard", "Suit un visage des yeux"], ["sourire", "Sourit quand on lui sourit"], ["voix", "Se tourne vers une voix"]] },
+    { g: "Langage", l: [["gazouille", "Gazouille"], ["rire", "Rit aux éclats"]] }
+  ];
+
+  const PN_COURSES = [["couches", "Couches"], ["coton", "Carrés de coton"], ["lait", "Lait"], ["eau", "Eau"], ["serum", "Sérum physiologique"], ["vetements", "Vêtements à la taille au-dessus"], ["pharmacie", "Pharmacie"]];
+
+  function pnAccueil() {
+    const p = pn(), N = S.naissance;
+    const repas = p.suivre.filter(k => k === "biberon" || k === "tetee");
+    const last = repas.map(lastOf).filter(Boolean).sort((a, b) => b.t.localeCompare(a.t))[0];
+    const bigRepas = repas.length ? '<div class="pn-last">' + (last ? '<small>Dernier' + (last.k === "tetee" ? "e tétée" : " biberon") + '</small><b>' + depuis(last.t) + '</b>' + (last.q ? '<span>' + last.q + ' ml</span>' : last.cote ? '<span>Sein ' + last.cote + '</span>' : '') + (repas.includes("biberon") ? '<span class="pn-jour">' + bibJour() + '</span>' : '') : '<small>Repas</small><b>Rien de noté</b>') +
+      '<div class="pn-add">' + repas.map(k => { const r = PN_RUB.find(x => x.k === k); return '<button type="button" class="btn primary" data-pn-log="' + k + '">+ ' + r.one.replace(/^./, c => c.toUpperCase()) + '</button>'; }).join("") + '</div></div>' : '';
+    const upcoming = PN_FRISE.filter(f => !p.frise[f.id] && ageJours() <= f.a).slice(0, 4);
+    const imp = upcoming.filter(f => ageJours() >= f.de - 3).slice(0, 3), att = upcoming.filter(f => !imp.includes(f)).slice(0, 2);
+    const card = f => { const dl = addDays(birth(), f.a); return '<button type="button" class="pn-card" data-pn-frise="' + f.id + '"><span class="pn-qui q-' + f.qui + '">' + PN_QUI[f.qui]() + '</span><b>' + f.t + '</b><span>' + (ageJours() > f.a - 3 ? "Avant le " + dl.getDate() + " " + MOIS[dl.getMonth()] : f.sub) + '</span></button>'; };
+    // Suggérer d'ajouter ou d'arrêter une rubrique : l'app propose, le parent tranche.
+    const sugg = !p.suivre.includes("sommeil") && ageJours() >= 28 && !p.noSugg ? '<div class="pn-sugg"><p>' + bebeAppel() + ' dort moins par tranches qu\'au début. Tu veux suivre son sommeil ?</p><div class="pn-add"><button type="button" class="btn primary" data-pn-sugg="add">Ajouter le sommeil</button><button type="button" class="linkbtn" data-pn-sugg="non">Pas besoin</button></div></div>' : '';
+    return '<section class="born"><span class="ex">Bienvenue</span><h1>' + esc(bebeAppel()) + ' ' + ageTxt() + '</h1>' +
+      '<p>Depuis le ' + fmtD(birth()) + ' ' + birth().getFullYear() + (N.heure ? ' à ' + N.heure.replace(":", "h") : '') + '.</p></section>' +
+      bigRepas +
+      (imp.length ? '<section class="section"><div class="eyebrow vital">Important</div>' + imp.map(card).join("") + '</section>' : '') +
+      sugg +
+      (att.length ? '<section class="section"><div class="eyebrow attendre">Ça peut attendre</div>' + att.map(card).join("") + '</section>' : '') +
+      (ageJours() < 42 ? '<button type="button" class="hint" data-go="naissance" data-view="moisdor"><span>Votre mois d\'or</span><b>Ouvrir →</b></button>' : '');
+  }
+
+  function pnSuivi() {
+    const p = pn();
+    const journal = p.suivre.length ? '<section class="section"><div class="section-head"><h2>Journal</h2><button type="button" class="linkbtn" data-pn-choix>Modifier</button></div>' +
+      p.suivre.map(k => { const r = PN_RUB.find(x => x.k === k), l = lastOf(k), n = todayCount(k);
+        return '<div class="pn-row"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t"><b>' + r.l + '</b><small>' + (k === "biberon" && l ? 'Dernier ' + depuis(l.t) + '<br>' + bibJour() : l ? 'Dernier' + (k === "tetee" ? "e" : "") + ' ' + depuis(l.t) + ' · ' + n + ' aujourd\'hui' : 'Rien de noté') + '</small></span><button type="button" class="btn" data-pn-log="' + k + '">+ Noter</button></div>'; }).join("") +
+      '</section>' : '<section class="section"><div class="section-head"><h2>Journal</h2><button type="button" class="linkbtn" data-pn-choix>Ajouter</button></div><p class="group-intro">Rien à noter pour l\'instant.</p></section>';
+    const items = PN_FRISE.map(f => { const done = !!p.frise[f.id], dl = addDays(birth(), f.a);
+      return '<details class="item' + (done ? " done" : "") + '"><summary><button type="button" class="tick" data-pn-tick="' + f.id + '" aria-label="' + (done ? "Marquer comme pas fait" : "Marquer comme fait") + '">' + tickSvg + '</button>' +
+        '<span class="t">' + f.t + '<small><span class="pn-qui q-' + f.qui + '">' + PN_QUI[f.qui]() + '</span> · ' + (f.a >= 365 ? "Quand tu veux" : "Avant le " + dl.getDate() + " " + MOIS[dl.getMonth()]) + '</small></span>' + chev + '</summary>' +
+        '<div class="body"><p>' + f.why + '</p></div></details>'; }).join("");
+    return journal + '<section class="section"><div class="section-head"><h2>À venir</h2></div>' + items + '</section>';
+  }
+
+  function pnBebe() {
+    const p = pn(), N = S.naissance, m = p.mesures.slice().sort((a, b) => b.d.localeCompare(a.d))[0];
+    const jj = d => d.slice(8, 10) + '/' + d.slice(5, 7);
+    // Sa carte d'identité d'abord (Sandra, 03/11) : qui il est, puis ce qu'il sait faire.
+    const carte = '<section class="pn-id"><div class="pn-id-h"><label class="pn-id-av" aria-label="' + (p.photo ? 'Changer sa photo' : 'Ajouter sa photo') + '">' + (p.photo ? '<img src="' + p.photo + '" alt="">' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>') + '<input type="file" accept="image/*" id="pnPhoto" hidden></label><div><h1>' + esc(N.prenom || bebeAppel()) + '</h1><p>' + ageTxt().replace(/^a /, "") .replace(/^est n/, "N") + '</p></div></div>' +
+      '<dl><dt>Né' + accord("", "e") + ' le</dt><dd>' + fmtD(birth()) + ' ' + birth().getFullYear() + (N.heure ? ' à ' + N.heure.replace(":", "h") : '') + '</dd>' +
+      '<dt>Poids</dt><dd>' + (m && m.p ? String(m.p).replace(".", ",") + ' kg' : '–') + '</dd>' +
+      '<dt>Taille</dt><dd>' + (m && m.t ? String(m.t).replace(".", ",") + ' cm' : '–') + '</dd></dl>' +
+      '<div class="pn-id-f"><span>' + (m ? 'Mesuré le ' + jj(m.d) : 'Aucune mesure') + '</span><button type="button" class="linkbtn" data-pn-mesure>+ Nouvelle mesure</button></div></section>';
+    const row = (attr, on, l) => '<button type="button" class="pn-check' + (on ? ' on' : '') + '" ' + attr + '><span class="tick">' + tickSvg + '</span>' + l + '</button>';
+    const grp = PN_ACQUIS.map(g => '<div class="pn-acq-g"><div class="pn-acq-h">' + g.g + '</div><div class="pn-list">' +
+      g.l.map(([k, l]) => row('data-pn-acq="' + k + '"', !!p.acquis[k], l)).join("") + '</div></div>').join("");
+    const autres = p.autres.length ? '<div class="pn-acq-g"><div class="pn-acq-h">Ses autres nouveautés</div><div class="pn-list">' + p.autres.map((a, i) => row('data-pn-autre="' + i + '"', true, esc(a.l))).join("") + '</div></div>' : '';
+    return carte + '<section class="section"><div class="section-head"><h2>' + accord("Ce qu'il sait faire", "Ce qu'elle sait faire") + '</h2></div>' + grp + autres + '<button type="button" class="linkbtn" data-pn-new style="justify-self:start">+ Autre chose de nouveau</button></section>';
+  }
+
+  function pnQuotidien() {
+    const p = pn(), who = [["moi", "Moi"], ["autre", autre()], ["deux", "À deux"]];
+    const rows = PN_COURSES.map(([k, l]) => { const c = p.courses[k] || {};
+      return '<div class="pn-course' + (c.rac ? ' rac' : '') + '"><button type="button" class="tick" data-pn-rac="' + k + '" aria-label="' + (c.rac ? "C'est racheté" : "À racheter") + '">' + tickSvg + '</button><span class="pn-row-t"><b>' + l + '</b>' + (c.rac ? '<small class="pn-rac">À racheter</small>' : '') + '</span>' +
+        '<span class="pn-who">' + who.map(([w, wl]) => '<button type="button" data-pn-who="' + k + ':' + w + '" aria-selected="' + (c.qui === w) + '">' + esc(wl) + '</button>').join("") + '</span></div>'; }).join("");
+    return '<section class="section"><div class="section-head"><h2>Les courses qui reviennent</h2></div><p class="group-intro">Coche ce qu\'il faut racheter, et qui s\'en charge.</p>' + rows + '</section>' +
+      '<section class="section"><div class="section-head"><h2>Près de chez vous</h2></div><div class="callout"><span class="pill">En développement</span><h3>Ce que propose la PMI</h3><p>Pesées, consultations, et parfois des ateliers de portage ou de massage. C\'est gratuit, et beaucoup de parents le découvrent par hasard.</p></div></section>';
+  }
+
+  function openToi() {
+    const blocs = [
+      ["Ton corps", "Est-ce que ça va rester ? La ligne brune, la peau du ventre, cette impression de vide à l'intérieur : des repères dans le temps, pour savoir ce qui part et quand."],
+      ["Ton moral", "Les pleurs, les pensées qui dérangent, la fatigue : ce qui est fréquent, et les signes qui doivent faire demander de l'aide."],
+      ["Ton périné", "La rééducation en petites séances, à caser dans une journée où tu n'as ni temps ni énergie."]
+    ];
+    openSheet('<div class="sem-head"><h2>' + (S.moi ? esc(S.moi) : "Toi") + '</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      blocs.map(([t, d]) => '<details class="item"><summary style="grid-template-columns:1fr auto"><span class="t">' + t + '</span>' + chev + '</summary><div class="body" style="padding-left:14px"><p>' + d + '</p><span class="proof">En développement</span></div></details>').join(""));
+  }
+
+  function openChoix(first) {
+    const p = pn(), sel = new Set(p.suivre);
+    openSheet('<h2>' + (first ? "Vous voulez noter quoi ?" : "À noter") + '</h2>' + (first ? '<p>Rien du tout, c\'est possible aussi.</p>' : '') +
+      '<div class="pn-list">' + PN_RUB.map(r => '<button type="button" class="pn-check' + (sel.has(r.k) ? ' on' : '') + '" data-ch="' + r.k + '"><span class="tick">' + tickSvg + '</span>' + r.l + '</button>').join("") + '</div>' +
+      '<button class="btn primary" type="button" id="chOk" style="justify-self:start">OK</button>');
+    document.querySelectorAll("[data-ch]").forEach(b => b.addEventListener("click", () => { const k = b.dataset.ch; if (sel.has(k)) sel.delete(k); else sel.add(k); b.classList.toggle("on", sel.has(k)); }));
+    document.getElementById("chOk").addEventListener("click", () => { p.suivre = PN_RUB.map(r => r.k).filter(k => sel.has(k)); save(); document.getElementById("sheetRoot").innerHTML = ""; render(); });
+  }
+
+  function pnLog(k) {
+    const p = pn(), add = extra => { p.log.push(Object.assign({ k, t: new Date().toISOString() }, extra || {})); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); };
+    if (k === "biberon") {
+      openSheet('<h2>Biberon</h2><p>Combien ?</p><div class="chips md-chips">' + [30, 60, 90, 120, 150, 180].map(q => '<button type="button" class="chip" data-q="' + q + '">' + q + ' ml</button>').join("") + '</div><button type="button" class="linkbtn" id="qNone" style="justify-self:start">Noter sans la quantité</button>');
+      document.querySelectorAll("[data-q]").forEach(b => b.addEventListener("click", () => add({ q: +b.dataset.q })));
+      document.getElementById("qNone").addEventListener("click", () => add());
+    } else if (k === "tetee") {
+      const l = lastOf("tetee");
+      openSheet('<h2>Quel sein ?</h2>' + (l && l.cote ? '<p>La dernière fois : ' + l.cote + '.</p>' : '') + '<div style="display:flex;gap:8px"><button type="button" class="btn primary" data-c="gauche">Gauche</button><button type="button" class="btn primary" data-c="droite">Droite</button></div>');
+      document.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => add({ cote: b.dataset.c })));
+    } else add();
+  }
+
+  function openMesure() {
+    openSheet('<h2>Nouvelle mesure</h2><form id="mesForm" style="display:grid;gap:12px"><div class="field"><label for="mDate">Le</label><input id="mDate" type="date" value="' + iso(today) + '" required></div>' +
+      '<div class="row2"><div class="field"><label for="mP">Poids (kg)</label><input id="mP" type="text" inputmode="decimal" placeholder="4,2"></div><div class="field"><label for="mT">Taille (cm)</label><input id="mT" type="text" inputmode="decimal" placeholder="54"></div></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button><button class="btn" type="button" data-close>Annuler</button></div></form>');
+    document.getElementById("mesForm").addEventListener("submit", e => { e.preventDefault();
+      const num = id => { const v = document.getElementById(id).value.replace(",", ".").trim(); return v && !isNaN(+v) ? +v : null; };
+      pn().mesures.push({ d: document.getElementById("mDate").value, p: num("mP"), t: num("mT") }); save(); document.getElementById("sheetRoot").innerHTML = ""; render(); });
+  }
+
+  function openAcquis(label) {
+    openSheet('<div class="sem-head"><h2>' + esc(label) + '</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      '<p>Noté le ' + fmtD(today) + '. Bravo ' + esc(bebeAppel()) + ' !</p><div class="callout"><span class="pill">En développement</span><h3>Ce que ça veut dire, et quoi ' + accord("lui", "lui") + ' proposer</h3><p>Ici, une fiche sourcée : ce qui se joue derrière cette nouveauté, ce qui vient souvent après, et des idées de jeux pour l\'accompagner.</p></div>');
+  }
+
+  function openNouveaute() {
+    openSheet('<h2>Quelque chose de nouveau ?</h2><form id="nvForm" style="display:grid;gap:12px"><div class="field"><label for="nvL">Ce que ' + esc(bebeAppel()) + ' fait</label><input id="nvL" type="text" placeholder="Pointe du doigt, attrape ses pieds…" required></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="submit">Noter</button><button class="btn" type="button" data-close>Annuler</button></div></form>');
+    document.getElementById("nvForm").addEventListener("submit", e => { e.preventDefault(); const l = document.getElementById("nvL").value.trim(); if (!l) return; pn().autres.push({ l, d: iso(today) }); save(); render(); openAcquis(l); });
+  }
+
+  document.getElementById("view").addEventListener("click", e => {
+    if (!S.naissance) return;
+    const p = pn(); const keep = window.scrollY; const rr = () => { save(); render(); window.scrollTo(0, keep); };
+    const lg = e.target.closest("[data-pn-log]"); if (lg) { pnLog(lg.dataset.pnLog); return; }
+    if (e.target.closest("[data-pn-choix]")) { openChoix(false); return; }
+    const tk = e.target.closest("[data-pn-tick]"); if (tk) { e.preventDefault(); e.stopPropagation(); const id = tk.dataset.pnTick; if (p.frise[id]) delete p.frise[id]; else p.frise[id] = iso(today); rr(); return; }
+    const fr = e.target.closest("[data-pn-frise]"); if (fr) { tab = "suivi"; render(); window.scrollTo(0, 0); return; }
+    const sg = e.target.closest("[data-pn-sugg]"); if (sg) { if (sg.dataset.pnSugg === "add") p.suivre.push("sommeil"); else p.noSugg = true; rr(); return; }
+    if (e.target.closest("[data-pn-mesure]")) { openMesure(); return; }
+    const aq = e.target.closest("[data-pn-acq]"); if (aq) { const k = aq.dataset.pnAcq; if (p.acquis[k]) { delete p.acquis[k]; rr(); } else { p.acquis[k] = iso(today); rr(); openAcquis(aq.textContent.trim()); } return; }
+    if (e.target.closest("[data-pn-new]")) { openNouveaute(); return; }
+    const au = e.target.closest("[data-pn-autre]"); if (au) { openAcquis(p.autres[+au.dataset.pnAutre].l); return; }
+    const rc = e.target.closest("[data-pn-rac]"); if (rc) { const k = rc.dataset.pnRac; p.courses[k] = p.courses[k] || {}; p.courses[k].rac = !p.courses[k].rac; rr(); return; }
+    const wh = e.target.closest("[data-pn-who]"); if (wh) { const [k, w] = wh.dataset.pnWho.split(":"); p.courses[k] = p.courses[k] || {}; p.courses[k].qui = p.courses[k].qui === w ? "" : w; rr(); return; }
+  });
+
+  document.getElementById("view").addEventListener("change", e => {
+    if (e.target.id !== "pnPhoto" || !e.target.files[0]) return;
+    resizeImage(e.target.files[0]).then(src => { if (src) { pn().photo = src; save(); render(); } });
+  });
+
+  const NAV_ICO = {
+    accueil: '<path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
+    suivi: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/>',
+    naissance: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+    materiel: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+    garde: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14.5 19a3.5 3.5 0 0 1 6 0"/>',
+    bebe: '<circle cx="12" cy="9" r="4.5"/><path d="M10.3 9.5h.01M13.7 9.5h.01M10.5 11.3c.9.6 2.1.6 3 0"/><path d="M6 20.5a6 6 0 0 1 12 0"/>',
+    quotidien: '<path d="M4 9h16l-1.5 10.5a1 1 0 0 1-1 .5h-11a1 1 0 0 1-1-.5z"/><path d="M8.5 9l3.5-5 3.5 5"/>'
+  };
+  function navHTML() {
+    const t = S.naissance ? [["accueil", "Accueil"], ["suivi", "Suivi"], ["bebe", bebeNom()], ["quotidien", "Quotidien"], ["garde", "Garde"]]
+      : [["accueil", "Accueil"], ["suivi", "Suivi"], ["naissance", "Naissance"], ["materiel", "Matériel"], ["garde", "Garde"]];
+    return t.map(([k, l]) => '<button type="button" data-tab="' + k + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + NAV_ICO[k] + '</svg><span class="tab-l">' + esc(l) + '</span></button>').join("");
+  }
+  function headToi() {
+    let b = document.getElementById("toiHead");
+    if (S.naissance && !b) { b = document.createElement("button"); b.type = "button"; b.id = "toiHead"; b.className = "toi-round"; b.addEventListener("click", openToi); const ask = document.getElementById("askHead"); ask.parentNode.insertBefore(b, ask.nextSibling); }
+    if (!S.naissance && b) { b.remove(); return; }
+    if (b) { b.textContent = (S.moi || "Toi").trim().charAt(0).toUpperCase(); b.setAttribute("aria-label", "Ton espace : corps, moral, périné"); }
+  }
+
   function render() {
     const v = document.getElementById("view");
+    const nav = document.querySelector("nav.tabs"); nav.innerHTML = navHTML(); headToi();
+    const PN = { accueil: pnAccueil, suivi: pnSuivi, bebe: pnBebe, quotidien: pnQuotidien };
+    if (S.naissance && PN[tab]) { v.innerHTML = PN[tab](); document.querySelectorAll("nav.tabs button").forEach(b => { if (b.dataset.tab === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); }); return; }
+    if (!S.naissance && (tab === "bebe" || tab === "quotidien")) tab = "accueil";
     v.innerHTML = tab === "garde" ? renderGarde() : tab === "materiel" ? renderMateriel() : tab === "valise" ? renderValise() : tab === "listepub" ? renderListePub() : tab === "suivi" ? renderSuivi() : tab === "naissance" ? renderNaissance() : tab === "reglages" ? renderReglages() : renderAccueil();
     document.querySelectorAll("nav.tabs button").forEach(b => {
       if (b.dataset.tab === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
