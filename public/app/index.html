@@ -502,6 +502,15 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 .pn-acq-g { display: grid; gap: 6px; }
 .pn-acq-h { font-size: 13px; font-weight: 700; color: var(--muted); }
 .pn-heure input { width: auto; }
+.pn-seg { margin-bottom: 4px; }
+.pn-courbe { width: 100%; height: auto; display: block; }
+.pn-courbe text { font-size: 10px; fill: var(--muted); }
+.pn-courbe .ax { stroke: var(--border); stroke-width: 1; }
+.pn-courbe .grid { stroke: var(--border); stroke-width: 1; stroke-dasharray: 2 3; }
+.pn-courbe .ln { fill: none; stroke: var(--terracotta); stroke-width: 2; stroke-linejoin: round; }
+.pn-courbe circle { fill: var(--terracotta); stroke: var(--card); stroke-width: 2; }
+#nvQ { border-radius: 999px; }
+.pn-hist small { display: block; color: var(--muted); font-size: 12px; }
 .pn-subs .pn-check { align-items: flex-start; font-size: 14px; padding: 9px 12px; }
 .pn-subs .pn-check small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
 .pn-subs .tick { margin-top: 1px; }
@@ -1862,7 +1871,8 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     { k: "tirelait", l: "Tire-lait", one: "séance de tire-lait", ico: "💧" }
   ];
   const fille = () => (S.naissance || {}).sexe === "fille";
-  const accord = (m, f) => fille() ? f : m;
+  const sexe = () => (S.naissance || {}).sexe || "";
+  const accord = (m, f, n) => sexe() === "fille" ? f : sexe() === "garcon" ? m : (n !== undefined ? n : m);
   // Nom de l'onglet : le surnom s'il y en a un, sinon le prénom s'il tient dans la barre, sinon « Bébé ».
   const bebeNom = () => { const N = S.naissance || {}; if (N.surnom) return N.surnom; if (N.prenom && N.prenom.length <= 10) return N.prenom; return "Bébé"; };
   const bebeAppel = () => { const N = S.naissance || {}; return N.surnom || N.prenom || "Bébé"; };
@@ -1870,7 +1880,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
   const ageJours = () => Math.max(0, Math.round((today - birth()) / DAY));
   function ageTxt() {
     const j = ageJours();
-    if (j === 0) return "est né" + accord("", "e") + " aujourd'hui";
+    if (j === 0) return accord("est né aujourd'hui", "est née aujourd'hui", ": premier jour");
     if (j < 15) return "a " + j + " jour" + (j > 1 ? "s" : "");
     if (j < 91) { const s = Math.floor(j / 7); return "a " + s + " semaines"; }
     const m = Math.floor(j / 30.4); return "a " + m + " mois";
@@ -1901,7 +1911,9 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     { id: "epnp", qui: "toi", t: "Entretien postnatal", sub: "Avec une sage-femme ou un médecin", de: 28, a: 56, why: "Un temps pour toi, pour parler de ton moral, de ta fatigue et de ce qui est difficile. Il est pour toi, pas pour bébé." },
     { id: "postnatale", qui: "toi", t: "Visite postnatale", sub: "Gynécologue, sage-femme ou médecin", de: 42, a: 56, why: "Elle fait le point sur ton corps après l'accouchement. C'est elle qui ouvre la rééducation du périnée." },
     { id: "perinee", qui: "toi", t: "Rééducation du périnée", sub: "Après la visite postnatale", de: 50, a: 90, why: "Les séances sont prescrites à la visite postnatale." },
+    { id: "vacc2", qui: "bebe", t: "Acheter les vaccins des 2 mois", sub: "À la pharmacie, avec l'ordonnance", de: 48, a: 55, why: "Les vaccins s'achètent avant le rendez-vous et se gardent au réfrigérateur. Une semaine avant, c'est le bon moment." },
     { id: "examm2", qui: "bebe", t: "Examen et vaccins des 2 mois", sub: "Chez le pédiatre ou le médecin", de: 55, a: 65, why: "Les premiers vaccins obligatoires. Le calendrier est noté dans le carnet de santé." },
+    { id: "vacc3", qui: "bebe", t: "Acheter les vaccins des 3 mois", sub: "À la pharmacie, avec l'ordonnance", de: 78, a: 85, why: "Même réflexe qu'à 2 mois : les acheter une semaine avant et les garder au réfrigérateur." },
     { id: "examm3", qui: "bebe", t: "Examen et vaccins des 3 mois", sub: "Chez le pédiatre ou le médecin", de: 85, a: 95, why: "Suite du calendrier des vaccins." },
     { id: "papiers", qui: "dem", t: "Carte d'identité ou passeport", sub: "Avec une photo d'identité de bébé", de: 30, a: 365, why: "Pas obligatoire tout de suite, mais nécessaire pour voyager. La photo d'un nouveau-né demande un peu de patience." },
     { id: "ceam", qui: "dem", t: "Carte européenne d'assurance maladie", sub: "Avant un voyage en Europe", de: 30, a: 365, why: "Elle se demande en ligne, sur le compte ameli du parent qui a rattaché bébé." }
@@ -1914,6 +1926,12 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     { g: "Langage", l: [["gazouille", "Gazouille"], ["rire", "Rit aux éclats"]] }
   ];
 
+  const PN_ACQ_PLUS = [
+    ["Motricité", ["Se retourne du dos sur le ventre", "Se retourne du ventre sur le dos", "Attrape ses pieds", "Attrape un objet qu'on lui tend", "Passe un objet d'une main à l'autre", "Tient assis sans appui", "Rampe", "Marche à quatre pattes", "Se met debout en se tenant", "Fait ses premiers pas"]],
+    ["Éveil", ["Reconnaît ses parents de loin", "Joue à coucou-caché", "Cherche un objet caché", "Imite un geste", "Fait au revoir de la main", "Pointe du doigt", "Tape dans ses mains"]],
+    ["Langage", ["Babille (ba-ba, ma-ma)", "Répond à son prénom", "Comprend « non »", "Dit ses premiers mots"]]
+  ];
+  const PN_COURSES_G = [["Change", ["couches", "coton"]], ["Repas", ["lait", "eau"]], ["Soins et pharmacie", ["serum", "pharmacie"]], ["Vêtements", ["vetements"]]];
   const PN_COURSES = [["couches", "Couches"], ["coton", "Carrés de coton"], ["lait", "Lait"], ["eau", "Eau"], ["serum", "Sérum physiologique"], ["vetements", "Vêtements à la taille au-dessus"], ["pharmacie", "Pharmacie"]];
 
   const subDone = f => f.subs.filter(([k]) => pn().frise[f.id + ":" + k]).length;
@@ -1951,21 +1969,38 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 
   function pnSuivi() {
     const p = pn();
-    const journal = p.suivre.length ? '<section class="section"><div class="section-head"><h2>Journal</h2><button type="button" class="linkbtn" data-pn-choix>Modifier</button></div>' +
+    const journal = p.suivre.length ? '<section class="section"><div class="section-head"><h2>Journal de bord</h2><button type="button" class="linkbtn" data-pn-choix>Modifier</button></div>' +
       p.suivre.map(k => { const r = PN_RUB.find(x => x.k === k), l = lastOf(k), n = todayCount(k);
         if (k === "sommeil") { const se = sommeilEtat(); return '<div class="pn-row"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t pn-open" data-pn-hist="sommeil" role="button" tabindex="0"><b>' + r.l + '</b><small>' + (se ? se.t + ' ' + se.v : 'Rien de noté') + '</small></span><button type="button" class="btn pn-plus" data-pn-log="sommeil" aria-label="Noter le sommeil">+</button></div>'; }
         return '<div class="pn-row"><span class="pn-ico" aria-hidden="true">' + r.ico + '</span><span class="pn-row-t pn-open" data-pn-hist="' + k + '" role="button" tabindex="0"><b>' + r.l + '</b><small>' + (k === "biberon" && l ? 'Dernier ' + depuis(l.t) + '<br>' + bibJour() : l ? 'Dernier' + (k === "tetee" ? "e" : "") + ' ' + depuis(l.t) + ' · ' + n + ' aujourd\'hui' : 'Rien de noté') + '</small></span><button type="button" class="btn pn-plus" data-pn-log="' + k + '" aria-label="Noter">+</button></div>'; }).join("") +
-      '</section>' : '<section class="section"><div class="section-head"><h2>Journal</h2><button type="button" class="linkbtn" data-pn-choix>Ajouter</button></div><p class="group-intro">Rien à noter pour l\'instant.</p></section>';
+      '</section>' : '<section class="section"><div class="section-head"><h2>Journal de bord</h2><button type="button" class="linkbtn" data-pn-choix>Ajouter</button></div><p class="group-intro">Rien à noter pour l\'instant.</p></section>';
     const items = PN_FRISE.map(friseItem).join("");
-    return journal + '<section class="section"><div class="section-head"><h2>À venir</h2></div>' + items + '</section>';
+    return journal + '<section class="section"><div class="section-head"><h2>Démarches & RDV</h2></div>' + items + '</section>';
+  }
+
+  let pnCourbe = "p";
+  const COURBES = { p: ["Poids", "kg", m => m.p], t: ["Taille", "cm", m => m.t], pc: ["Crâne", "cm", m => m.pc], imc: ["IMC", "", m => m.p && m.t ? Math.round(m.p / Math.pow(m.t / 100, 2) * 10) / 10 : null] };
+  function courbeHTML() {
+    const [lab, u, get] = COURBES[pnCourbe], pts = pn().mesures.map(m => [Math.round((new Date(m.d + "T00:00:00") - birth()) / DAY), get(m)]).filter(([, v]) => v != null).sort((a, b) => a[0] - b[0]);
+    const seg = '<div class="chips pn-seg">' + Object.entries(COURBES).map(([k, c]) => '<button type="button" class="chip" data-pn-courbe="' + k + '" aria-selected="' + (k === pnCourbe) + '">' + c[0] + '</button>').join("") + '</div>';
+    if (pts.length < 2) return seg + '<p class="group-intro">La courbe se dessine dès la 2e mesure' + (pnCourbe === "pc" ? ' de périmètre crânien' : '') + '.</p>';
+    const W = 320, H = 150, L = 36, B = 22, xmax = Math.max(90, pts[pts.length - 1][0]), vs = pts.map(x => x[1]), lo = Math.min(...vs), hi = Math.max(...vs), pad = (hi - lo) * .15 || 1, y0 = lo - pad, y1 = hi + pad;
+    const X = d => L + d / xmax * (W - L - 8), Y = v => 8 + (1 - (v - y0) / (y1 - y0)) * (H - 8 - B), f = v => String(Math.round(v * 10) / 10).replace(".", ",");
+    const ticks = [0, 30, 60, 90].filter(d => d <= xmax).map(d => '<text x="' + X(d) + '" y="' + (H - 6) + '" text-anchor="' + (d === 0 ? "start" : X(d) > W - 30 ? "end" : "middle") + '">' + (d ? d / 30 + " mois" : "0") + '</text>').join("");
+    const last = pts[pts.length - 1];
+    return seg + '<svg class="pn-courbe" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + lab + ' de ' + esc(bebeAppel()) + '">' +
+      '<line x1="' + L + '" x2="' + (W - 8) + '" y1="' + (H - B) + '" y2="' + (H - B) + '" class="ax"/>' +
+      [y0 + pad, y1 - pad].map(v => '<text x="' + (L - 6) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + f(v) + '</text><line x1="' + L + '" x2="' + (W - 8) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" class="grid"/>').join("") + ticks +
+      '<polyline points="' + pts.map(([d, v]) => X(d) + "," + Y(v)).join(" ") + '" class="ln"/>' + pts.map(([d, v]) => '<circle cx="' + X(d) + '" cy="' + Y(v) + '" r="4"/>').join("") +
+      '</svg><p class="group-intro">Dernière mesure : <b>' + f(last[1]) + (u ? ' ' + u : '') + '</b> à ' + (last[0] < 31 ? last[0] + ' jours' : Math.floor(last[0] / 30.4) + ' mois') + '. Les courbes de référence du carnet de santé arrivent dans une prochaine version.</p>';
   }
 
   function pnBebe() {
     const p = pn(), N = S.naissance, m = p.mesures.slice().sort((a, b) => b.d.localeCompare(a.d))[0];
     const jj = d => d.slice(8, 10) + '/' + d.slice(5, 7);
     // Sa carte d'identité d'abord (Sandra, 03/11) : qui il est, puis ce qu'il sait faire.
-    const carte = '<section class="pn-id"><div class="pn-id-h"><label class="pn-id-av" aria-label="' + (p.photo ? 'Changer sa photo' : 'Ajouter sa photo') + '">' + (p.photo ? '<img src="' + p.photo + '" alt="">' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>') + '<input type="file" accept="image/*" id="pnPhoto" hidden></label><div><h1>' + esc(N.prenom || bebeAppel()) + '</h1><p>' + ageTxt().replace(/^a /, "") .replace(/^est n/, "N") + '</p></div></div>' +
-      '<dl><dt>Né' + accord("", "e") + ' le</dt><dd>' + fmtD(birth()) + ' ' + birth().getFullYear() + (N.heure ? ' à ' + N.heure.replace(":", "h") : '') + '</dd>' +
+    const carte = '<section class="pn-id"><div class="pn-id-h"><label class="pn-id-av" aria-label="' + (p.photo ? 'Changer sa photo' : 'Ajouter sa photo') + '">' + (p.photo ? '<img src="' + p.photo + '" alt="">' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>') + '<input type="file" accept="image/*" id="pnPhoto" hidden></label><div><h1>' + esc(N.prenom || bebeAppel()) + '</h1><p>' + ageTxt().replace(/^a /, "").replace(/^est n/, "N").replace(/^: p/, "P") + '</p></div></div>' +
+      '<dl><dt>' + accord("Né le", "Née le", "Naissance") + '</dt><dd>' + fmtD(birth()) + ' ' + birth().getFullYear() + (N.heure ? ' à ' + N.heure.replace(":", "h") : '') + '</dd>' +
       '<dt>Poids</dt><dd>' + (m && m.p ? String(m.p).replace(".", ",") + ' kg' : '–') + '</dd>' +
       '<dt>Taille</dt><dd>' + (m && m.t ? String(m.t).replace(".", ",") + ' cm' : '–') + '</dd></dl>' +
       '<div class="pn-id-f"><span>' + (m ? 'Mesuré le ' + jj(m.d) : 'Aucune mesure') + '</span><button type="button" class="linkbtn" data-pn-mesure>+ Nouvelle mesure</button></div></section>';
@@ -1973,14 +2008,17 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const grp = PN_ACQUIS.map(g => '<div class="pn-acq-g"><div class="pn-acq-h">' + g.g + '</div><div class="pn-list">' +
       g.l.map(([k, l]) => row('data-pn-acq="' + k + '"', !!p.acquis[k], l)).join("") + '</div></div>').join("");
     const autres = p.autres.length ? '<div class="pn-acq-g"><div class="pn-acq-h">Ses autres nouveautés</div><div class="pn-list">' + p.autres.map((a, i) => row('data-pn-autre="' + i + '"', true, esc(a.l))).join("") + '</div></div>' : '';
-    return carte + '<section class="section"><div class="section-head"><h2>' + accord("Ce qu'il sait faire", "Ce qu'elle sait faire") + '</h2></div>' + grp + autres + '<button type="button" class="linkbtn" data-pn-new style="justify-self:start">+ Autre chose de nouveau</button></section>';
+    const courbes = '<section class="section"><div class="section-head"><h2>Courbes de croissance</h2></div>' + courbeHTML() +
+      '<details class="item"><summary style="grid-template-columns:1fr auto"><span class="t">Comment lire les courbes</span>' + chev + '</summary><div class="body" style="padding-left:14px"><p>Ce qui compte, c\'est que la courbe de bébé suive son couloir, pas le chiffre d\'un jour.</p><span class="proof">En développement</span></div></details></section>';
+    return carte + courbes + '<section class="section"><div class="section-head"><h2>' + 'Ce que ' + esc(bebeAppel()) + ' sait faire' + '</h2></div>' + grp + autres + '<button type="button" class="linkbtn" data-pn-new style="justify-self:start">+ Autre chose de nouveau</button></section>';
   }
 
   function pnQuotidien() {
     const p = pn(), who = [["moi", "Moi"], ["autre", autre()], ["deux", "À deux"]];
-    const rows = PN_COURSES.map(([k, l]) => { const c = p.courses[k] || {};
+    const row1 = ([k, l]) => { const c = p.courses[k] || {};
       return '<div class="pn-course' + (c.rac ? ' rac' : '') + '"><button type="button" class="tick" data-pn-rac="' + k + '" aria-label="' + (c.rac ? "C'est racheté" : "À racheter") + '">' + tickSvg + '</button><span class="pn-row-t"><b>' + l + '</b>' + (c.rac ? '<small class="pn-rac">À racheter</small>' : '') + '</span>' +
-        '<span class="pn-who">' + who.map(([w, wl]) => '<button type="button" data-pn-who="' + k + ':' + w + '" aria-selected="' + (c.qui === w) + '">' + esc(wl) + '</button>').join("") + '</span></div>'; }).join("");
+        '<span class="pn-who">' + who.map(([w, wl]) => '<button type="button" data-pn-who="' + k + ':' + w + '" aria-selected="' + (c.qui === w) + '">' + esc(wl) + '</button>').join("") + '</span></div>'; };
+    const rows = PN_COURSES_G.map(([g, ks]) => '<div class="pn-acq-h">' + g + '</div>' + ks.map(k => row1(PN_COURSES.find(x => x[0] === k))).join("")).join("");
     return '<section class="section"><div class="section-head"><h2>Les courses qui reviennent</h2></div><p class="group-intro">Coche ce qu\'il faut racheter, et qui s\'en charge.</p>' + rows + '</section>' +
       '<section class="section"><div class="section-head"><h2>Près de chez vous</h2></div><div class="callout"><span class="pill">En développement</span><h3>Ce que propose la PMI</h3><p>Pesées, consultations, et parfois des ateliers de portage ou de massage. C\'est gratuit, et beaucoup de parents le découvrent par hasard.</p></div></section>';
   }
@@ -2017,7 +2055,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const pick = (attr, set) => document.querySelectorAll("[" + attr + "]").forEach(b => b.addEventListener("click", () => { document.querySelectorAll("[" + attr + "]").forEach(x => x.setAttribute("aria-selected", x === b && b.getAttribute("aria-selected") !== "true")); set(b.getAttribute("aria-selected") === "true" ? b.getAttribute(attr) : null); }));
     if (k === "biberon") {
       let fusion = false, q = null;
-      openSheet('<h2 id="bibT">Biberon</h2>' + (proche ? '<button type="button" class="linkbtn" id="bibFus" style="justify-self:start">Il a repris ? Ajouter au biberon de ' + hhmm(lb.t) + (lb.q ? ' (' + lb.q + ' ml)' : '') + '</button>' : '') + '<div id="bibH">' + heure + '</div><p>Combien ?</p><div class="chips md-chips">' + [30, 60, 90, 120, 150, 180].map(v => '<button type="button" class="chip" data-q="' + v + '" aria-selected="false">' + v + ' ml</button>').join("") + '</div>' + valider);
+      openSheet('<h2 id="bibT">Biberon</h2>' + (proche ? '<button type="button" class="linkbtn" id="bibFus" style="justify-self:start">' + esc(bebeAppel()) + ' a repris ? Ajouter au biberon de ' + hhmm(lb.t) + (lb.q ? ' (' + lb.q + ' ml)' : '') + '</button>' : '') + '<div id="bibH">' + heure + '</div><p>Combien ?</p><div class="chips md-chips">' + [30, 60, 90, 120, 150, 180].map(v => '<button type="button" class="chip" data-q="' + v + '" aria-selected="false">' + v + ' ml</button>').join("") + '</div>' + valider);
       const fb = document.getElementById("bibFus");
       if (fb) fb.addEventListener("click", () => { fusion = true; fb.remove(); document.getElementById("bibH").remove(); document.getElementById("bibT").textContent = "Ajouter au biberon de " + hhmm(lb.t); });
       pick("data-q", v => { q = v ? +v : null; });
@@ -2036,7 +2074,7 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     } else if (k === "sommeil") {
       // Endormissement puis réveil (Sandra 03/11) : s'il dort, la feuille propose l'heure du réveil.
       const ls = lastOf("sommeil"), dort = ls && !ls.fin;
-      openSheet('<h2>' + (dort ? accord("Il", "Elle") + ' se réveille' : accord("Il", "Elle") + ' s\'endort') + '</h2>' + heure + '<button class="btn primary" type="button" id="slOk" style="justify-self:start">Enregistrer</button>');
+      openSheet('<h2>' + esc(bebeAppel()) + (dort ? ' se réveille' : ' s\'endort') + '</h2>' + heure + '<button class="btn primary" type="button" id="slOk" style="justify-self:start">Enregistrer</button>');
       document.getElementById("slOk").addEventListener("click", () => { if (dort) { ls.fin = quand().toISOString(); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); } else add(); });
     } else {
       openSheet('<h2>' + PN_RUB.find(x => x.k === k).l + '</h2>' + heure + '<button class="btn primary" type="button" id="otOk" style="justify-self:start">Enregistrer</button>');
@@ -2050,8 +2088,8 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
   // Sommeil : « dort depuis » ou « éveillé depuis », à lire d'un coup d'œil.
   function sommeilEtat() {
     const l = lastOf("sommeil"); if (!l) return null;
-    if (!l.fin) return { t: "Dort depuis", v: dureeTxt(l.t, Date.now()), d: "Endormi" + accord("", "e") + " à " + new Date(l.t).getHours() + "h" + String(new Date(l.t).getMinutes()).padStart(2, "0") };
-    return { t: "Éveillé" + accord("", "e") + " depuis", v: dureeTxt(l.fin, Date.now()), d: dureeTxt(l.t, l.fin) + " " + typeSommeil(l.t) + ", de " + hmTxt(l.t) + " à " + hmTxt(l.fin) };
+    if (!l.fin) return { t: "Dort depuis", v: dureeTxt(l.t, Date.now()), d: "Endormissement à " + new Date(l.t).getHours() + "h" + String(new Date(l.t).getMinutes()).padStart(2, "0") };
+    return { t: accord("Éveillé depuis", "Éveillée depuis", "Ne dort plus depuis"), v: dureeTxt(l.fin, Date.now()), d: dureeTxt(l.t, l.fin) + " " + typeSommeil(l.t) + ", de " + hmTxt(l.t) + " à " + hmTxt(l.fin) };
   }
 
   // Récap par rubrique (Sandra 03/11) : aujourd'hui, puis la tendance des 6 jours d'avant.
@@ -2109,18 +2147,32 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
   function openMesure() {
     openSheet('<h2>Nouvelle mesure</h2><form id="mesForm" style="display:grid;gap:12px"><div class="field"><label for="mDate">Le</label><input id="mDate" type="date" value="' + iso(today) + '" required></div>' +
       '<div class="row2"><div class="field"><label for="mP">Poids (kg)</label><input id="mP" type="text" inputmode="decimal" placeholder="4,2"></div><div class="field"><label for="mT">Taille (cm)</label><input id="mT" type="text" inputmode="decimal" placeholder="54"></div></div>' +
+      '<div class="field pn-heure"><label for="mPC">Périmètre crânien (cm)</label><input id="mPC" type="text" inputmode="decimal" placeholder="37"></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button><button class="btn" type="button" data-close>Annuler</button></div></form>');
     document.getElementById("mesForm").addEventListener("submit", e => { e.preventDefault();
       const num = id => { const v = document.getElementById(id).value.replace(",", ".").trim(); return v && !isNaN(+v) ? +v : null; };
-      pn().mesures.push({ d: document.getElementById("mDate").value, p: num("mP"), t: num("mT") }); save(); document.getElementById("sheetRoot").innerHTML = ""; render(); });
+      pn().mesures.push({ d: document.getElementById("mDate").value, p: num("mP"), t: num("mT"), pc: num("mPC") }); save(); document.getElementById("sheetRoot").innerHTML = ""; render(); });
   }
 
-  function openAcquis(label) {
+  function openAcquis(label, autreIdx) {
     openSheet('<div class="sem-head"><h2>' + esc(label) + '</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
-      '<p>Noté le ' + fmtD(today) + '. Bravo ' + esc(bebeAppel()) + ' !</p><div class="callout"><span class="pill">En développement</span><h3>Ce que ça veut dire, et quoi ' + accord("lui", "lui") + ' proposer</h3><p>Ici, une fiche sourcée : ce qui se joue derrière cette nouveauté, ce qui vient souvent après, et des idées de jeux pour l\'accompagner.</p></div>');
+      '<p>Noté le ' + fmtD(today) + '. Bravo ' + esc(bebeAppel()) + ' !</p><div class="callout"><span class="pill">En développement</span><h3>Ce que ça veut dire, et quoi ' + 'lui' + ' proposer</h3><p>Ici, une fiche sourcée : ce qui se joue derrière cette nouveauté, ce qui vient souvent après, et des idées de jeux pour l\'accompagner.</p></div>' + (autreIdx !== undefined ? '<button type="button" class="linkbtn" id="acqDel" style="justify-self:start">Retirer cette nouveauté</button>' : ''));
+    const del = document.getElementById("acqDel"); if (del) del.addEventListener("click", () => { pn().autres.splice(autreIdx, 1); save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); });
   }
 
   function openNouveaute() {
+    const has = new Set(pn().autres.map(a => a.l));
+    const all = PN_ACQ_PLUS.flatMap(([g, l]) => l.map(x => [g, x])).filter(([, x]) => !has.has(x));
+    const norm = t => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const listHTML = q => { const r = all.filter(([, x]) => !q || norm(x).includes(norm(q)));
+      return r.length ? '<div class="pn-list">' + r.map(([g, x]) => '<button type="button" class="pn-check pn-hist" data-nv="' + esc(x) + '" data-nvg="' + g + '"><span>' + esc(x) + '<small>' + g + '</small></span></button>').join("") + '</div>' : '<p>Rien trouvé. La liste va s\'enrichir.</p>'; };
+    openSheet('<div class="sem-head"><h2>Quoi de neuf ?</h2><button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      '<input id="nvQ" type="search" placeholder="Pointe du doigt, se retourne…" autocomplete="off"><div id="nvR">' + listHTML("") + '</div>');
+    const bind = () => document.querySelectorAll("[data-nv]").forEach(b => b.addEventListener("click", () => { pn().autres.push({ l: b.dataset.nv, g: b.dataset.nvg, d: iso(today) }); save(); render(); openAcquis(b.dataset.nv, pn().autres.length - 1); }));
+    document.getElementById("nvQ").addEventListener("input", e => { document.getElementById("nvR").innerHTML = listHTML(e.target.value); bind(); });
+    bind();
+  }
+  function openNouveauteLibre() {
     openSheet('<h2>Quelque chose de nouveau ?</h2><form id="nvForm" style="display:grid;gap:12px"><div class="field"><label for="nvL">Ce que ' + esc(bebeAppel()) + ' fait</label><input id="nvL" type="text" placeholder="Pointe du doigt, attrape ses pieds…" required></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="submit">Noter</button><button class="btn" type="button" data-close>Annuler</button></div></form>');
     document.getElementById("nvForm").addEventListener("submit", e => { e.preventDefault(); const l = document.getElementById("nvL").value.trim(); if (!l) return; pn().autres.push({ l, d: iso(today) }); save(); render(); openAcquis(l); });
@@ -2146,9 +2198,10 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const fr = e.target.closest("[data-pn-frise]"); if (fr) { tab = "suivi"; render(); window.scrollTo(0, 0); return; }
     const sg = e.target.closest("[data-pn-sugg]"); if (sg) { if (sg.dataset.pnSugg === "add") p.suivre.push("sommeil"); else p.noSugg = true; rr(); return; }
     if (e.target.closest("[data-pn-mesure]")) { openMesure(); return; }
+    const cb = e.target.closest("[data-pn-courbe]"); if (cb) { pnCourbe = cb.dataset.pnCourbe; rr(); return; }
     const aq = e.target.closest("[data-pn-acq]"); if (aq) { const k = aq.dataset.pnAcq; if (p.acquis[k]) { delete p.acquis[k]; rr(); } else { p.acquis[k] = iso(today); rr(); openAcquis(aq.textContent.trim()); } return; }
     if (e.target.closest("[data-pn-new]")) { openNouveaute(); return; }
-    const au = e.target.closest("[data-pn-autre]"); if (au) { openAcquis(p.autres[+au.dataset.pnAutre].l); return; }
+    const au = e.target.closest("[data-pn-autre]"); if (au) { openAcquis(p.autres[+au.dataset.pnAutre].l, +au.dataset.pnAutre); return; }
     const rc = e.target.closest("[data-pn-rac]"); if (rc) { const k = rc.dataset.pnRac; p.courses[k] = p.courses[k] || {}; p.courses[k].rac = !p.courses[k].rac; rr(); return; }
     const wh = e.target.closest("[data-pn-who]"); if (wh) { const [k, w] = wh.dataset.pnWho.split(":"); p.courses[k] = p.courses[k] || {}; p.courses[k].qui = p.courses[k].qui === w ? "" : w; rr(); return; }
   });
