@@ -512,6 +512,9 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 .pn-ico-btn.pn-panier { padding-right: 14px; }
 .pn-ico-btn.pn-panier.on { color: var(--terracotta-dark); }
 .pn-ico-btn.pn-panier.on svg { fill: var(--terracotta-soft); }
+.pn-prod-row .pn-check[data-aj] { justify-content: flex-start; }
+.pn-qte { width: 64px; margin-right: 12px; padding: 6px 8px; text-align: center; }
+#ajOk:disabled { opacity: .45; }
 .pn-edit { background: none; border: 0; padding: 11px 12px; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
 .pn-txt { white-space: pre-wrap; font: inherit; font-size: 14px; background: var(--cream); border-radius: 12px; padding: 12px; margin: 0; }
 .pn-seg { margin-bottom: 4px; }
@@ -2066,42 +2069,70 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
   // Quotidien (Sandra 03/11) : « À racheter » commun en haut, « Nos produits » avec leur référence en dessous.
   // Toucher un produit = il manque ; toucher une ligne à racheter = c'est acheté. Pas de répartition par ligne.
   const PN_GROUPES = ["Change", "Repas", "Soins et pharmacie", "Vêtements"];
-  // Vêtements détaillés (Sandra 03/11) : chaque type a sa taille et sa quantité. Quantités de départ = le trousseau du proto grossesse.
+  // Quotidien, version du 03/11 (Sandra) : « Nos produits » ne montre que le récurrent (eau, lait, couches, carrés de coton).
+  // Le reste passe par « + Ajouter » : on choisit une famille, on coche, et ça part directement dans « À racheter ».
   const PN_TAILLES = ["Naissance", "1 mois", "3 mois", "6 mois", "9 mois", "12 mois", "18 mois", "24 mois"];
   const PN_VETEMENTS = [["bodies", "Bodies", 6], ["pyjamas", "Pyjamas ou grenouillères", 6], ["gigoteuses", "Gigoteuses", 2], ["brassieres", "Brassières ou gilets", 3], ["bonnets", "Bonnets", 2], ["chaussettes", "Chaussettes (paires)", 4], ["pantalons", "Pantalons", 3], ["combi", "Combinaison d'extérieur", 1]];
+  // ⚠️ Catalogue de départ, à relire avec Hugo.
+  const PN_CATALOGUE = [
+    ["Vêtements", PN_VETEMENTS.map(([, l, q]) => [l, q])],
+    ["Soins et pharmacie", [["Sérum physiologique"], ["Liniment oléo-calcaire"], ["Crème pour le change"], ["Mouche-bébé"], ["Thermomètre"], ["Médicament prescrit (ordonnance)"]]],
+    ["Repas", [["Tétines"], ["Biberons"], ["Goupillon"], ["Bavoirs"], ["Coussinets d'allaitement"]]],
+    ["Change et bain", [["Lingettes lavables"], ["Gel lavant doux"], ["Cape de bain"], ["Housse du matelas à langer"]]]
+  ];
+  const PN_RECURRENTS = [["couches", "Couches", "Change"], ["coton", "Carrés de coton", "Change"], ["lait", "Lait", "Repas"], ["eau", "Eau", "Repas"]];
   function produits() {
     const p = pn();
-    if (p.produits && p.produits.some(x => x.id === "vetements")) { const i = p.produits.findIndex(x => x.id === "vetements"); p.produits.splice(i, 1, ...PN_VETEMENTS.map(([id, l, q]) => ({ id, l, ref: "", g: "Vêtements", taille: "", qte: q }))); p.racheter = (p.racheter || []).filter(x => x !== "vetements"); }
-    if (!p.produits) {
-      const g = { couches: 0, coton: 0, lait: 1, eau: 1, serum: 2, pharmacie: 2, vetements: 3 };
-      p.produits = PN_COURSES.filter(([k]) => k !== "vetements").map(([k, l]) => ({ id: k, l, ref: "", g: PN_GROUPES[g[k]] })).concat(PN_VETEMENTS.map(([id, l, q]) => ({ id, l, ref: "", g: "Vêtements", taille: "", qte: q })));
-      p.produits.splice(4, 0, { id: "tetines", l: "Tétines", ref: "", g: "Repas" });
-      p.racheter = Object.keys(p.courses || {}).filter(k => p.courses[k].rac);
-    }
-    p.racheter = p.racheter || [];
+    if (!p.produits) p.produits = [];
+    // Migration : on ne garde que le récurrent (les 4 de base, et ce que le parent a créé lui-même).
+    if (!p.qv2) { const old = p.produits; p.produits = PN_RECURRENTS.map(([id, l, g]) => Object.assign({ id, l, ref: "", g }, old.find(x => x.id === id) || {}, { g })).concat(old.filter(x => /^p\d/.test(x.id)));
+      p.racheter = (p.racheter || Object.keys(p.courses || {}).filter(k => p.courses[k].rac)).filter(id => p.produits.some(x => x.id === id)); p.ponctuels = []; p.qv2 = true; }
+    p.racheter = p.racheter || []; p.ponctuels = p.ponctuels || [];
     return p.produits;
   }
-  const prodSub = x => [x.g === "Vêtements" && x.taille ? "Taille " + x.taille : "", x.g === "Vêtements" && x.qte ? x.qte + " à acheter" : "", x.ref].filter(Boolean).join(" · ");
+  const prodSub = x => [x.taille ? "Taille " + x.taille : "", x.qte ? x.qte + " à acheter" : "", x.ref].filter(Boolean).join(" · ");
+  const aRacheter = () => { const p = pn(), P = produits(); return p.racheter.map(id => P.find(x => x.id === id) || p.ponctuels.find(x => x.id === id)).filter(Boolean); };
+  const ICO_PANIER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16l-1.5 10.5a1 1 0 0 1-1 .5h-11a1 1 0 0 1-1-.5z"/><path d="M8.5 9l3.5-5 3.5 5"/></svg>';
+  const ICO_CRAYON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
   function pnQuotidien() {
-    const p = pn(), P = produits(), R = p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean);
-    const ligne = (x, attr, extra) => '<button type="button" class="pn-check pn-prod" ' + attr + '><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span>' + (extra || '') + '</button>';
+    const p = pn(), P = produits(), R = aRacheter();
     const haut = R.length ? '<section class="section"><div class="section-head"><h2>À racheter · ' + R.length + '</h2></div><div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button></section>' : '';
-    // Sandra 03/11 : « toucher pour ajouter » n'était pas clair → un panier pour la liste, un crayon pour la fiche.
-    const ICO_PANIER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16l-1.5 10.5a1 1 0 0 1-1 .5h-11a1 1 0 0 1-1-.5z"/><path d="M8.5 9l3.5-5 3.5 5"/></svg>';
-    const ICO_CRAYON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
-    const bas = PN_GROUPES.map(g => { const L = P.filter(x => x.g === g); return L.length ? '<div class="pn-acq-h">' + g + '</div><div class="pn-list">' + L.map(x => { const on = p.racheter.includes(x.id);
+    const bas = '<div class="pn-list">' + P.map(x => { const on = p.racheter.includes(x.id);
       return '<div class="pn-prod-row' + (on ? ' on' : '') + '"><button type="button" class="pn-check pn-prod" data-pn-fiche="' + x.id + '"><span>' + esc(x.l) + (prodSub(x) ? '<small>' + esc(prodSub(x)) + '</small>' : '') + '</span></button>' +
         '<button type="button" class="pn-ico-btn" data-pn-fiche="' + x.id + '" aria-label="Infos sur ' + esc(x.l) + '">' + ICO_CRAYON + '</button>' +
-        '<button type="button" class="pn-ico-btn pn-panier' + (on ? ' on' : '') + '" data-pn-' + (on ? 'achete' : 'manque') + '="' + x.id + '" aria-label="' + (on ? 'Retirer ' + esc(x.l) + ' de la liste' : 'Ajouter ' + esc(x.l) + ' à racheter') + '">' + ICO_PANIER + '</button></div>'; }).join("") + '</div>' : ''; }).join("");
-    return haut + '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-fiche="">+ Ajouter</button></div>' + (R.length ? '' : '<p class="group-intro">Touche le panier quand un produit manque.</p>') + bas + '</section>' +
+        '<button type="button" class="pn-ico-btn pn-panier' + (on ? ' on' : '') + '" data-pn-' + (on ? 'achete' : 'manque') + '="' + x.id + '" aria-label="' + (on ? 'Retirer ' + esc(x.l) + ' de la liste' : 'Ajouter ' + esc(x.l) + ' à racheter') + '">' + ICO_PANIER + '</button></div>'; }).join("") + '</div>';
+    return haut + '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-ajout>+ Ajouter</button></div>' + (R.length ? '' : '<p class="group-intro">Touche le panier quand un produit manque.</p>') + bas + '</section>' +
       '<section class="section"><div class="section-head"><h2>Près de chez vous</h2></div><div class="callout"><span class="pill">En développement</span><h3>Ce que propose la PMI</h3><p>Pesées, consultations, et parfois des ateliers de portage ou de massage. C\'est gratuit, et beaucoup de parents le découvrent par hasard.</p></div></section>';
   }
+  // Mini parcours « + Ajouter » : une famille, puis une liste à cocher.
+  function openAjout(fam) {
+    const X = '<button type="button" class="sem-x" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+    const right = chev.replace('class="chev"', 'class="chev pn-mod" style="transform:rotate(-90deg)"');
+    if (!fam) {
+      openSheet('<div class="sem-head"><h2>Ajouter à la liste</h2>' + X + '</div><div class="pn-list">' + PN_CATALOGUE.map(([f]) => '<button type="button" class="pn-check pn-hist" data-fam="' + f + '"><span>' + f + '</span>' + right + '</button>').join("") +
+        '<button type="button" class="pn-check pn-hist" data-fam=""><span>Un produit qu\'on rachète tout le temps<small>Il restera affiché dans « Nos produits »</small></span>' + right + '</button></div>');
+      document.querySelectorAll("[data-fam]").forEach(b => b.addEventListener("click", () => b.dataset.fam ? openAjout(b.dataset.fam) : openProduit("")));
+      return;
+    }
+    const L = PN_CATALOGUE.find(([f]) => f === fam)[1], vet = fam === "Vêtements", sel = new Map();
+    openSheet('<div class="sem-head"><h2>' + fam + '</h2>' + X + '</div>' +
+      (vet ? '<div class="field pn-heure"><label for="ajT">Taille</label><select id="ajT"><option value="">À choisir</option>' + PN_TAILLES.map(t => '<option>' + t + '</option>').join("") + '</select></div>' : '') +
+      '<div class="pn-list">' + L.map(([l, q], i) => '<div class="pn-prod-row"><button type="button" class="pn-check" data-aj="' + i + '"><span class="tick">' + tickSvg + '</span><span>' + esc(l) + '</span></button>' + (vet ? '<input class="pn-qte" type="number" inputmode="numeric" min="1" value="' + q + '" data-ajq="' + i + '" aria-label="Quantité de ' + esc(l) + '" hidden>' : '') + '</div>').join("") + '</div>' +
+      '<button class="btn primary" type="button" id="ajOk" style="justify-self:start" disabled>Ajouter à la liste</button>');
+    const ok = document.getElementById("ajOk");
+    document.querySelectorAll("[data-aj]").forEach(b => b.addEventListener("click", () => { const i = +b.dataset.aj, on = !sel.has(i); if (on) sel.set(i, true); else sel.delete(i); b.classList.toggle("on", on);
+      const q = document.querySelector('[data-ajq="' + i + '"]'); if (q) q.hidden = !on; ok.disabled = !sel.size; ok.textContent = sel.size ? "Ajouter " + sel.size + " à la liste" : "Ajouter à la liste"; }));
+    ok.addEventListener("click", () => { const p = pn(), t = vet ? document.getElementById("ajT").value : "";
+      [...sel.keys()].forEach(i => { const q = document.querySelector('[data-ajq="' + i + '"]'); const it = { id: "o" + Date.now() + i, l: L[i][0], taille: t, qte: q && q.value ? +q.value : null, ref: "" }; p.ponctuels.push(it); p.racheter.push(it.id); });
+      save(); document.getElementById("sheetRoot").innerHTML = ""; render(); window.scrollTo(0, 0); });
+  }
+
   function openProduit(id) {
     const p = pn(), P = produits(), x = id ? P.find(y => y.id === id) : { l: "", ref: "", g: "Change" }; let g = x.g;
     openSheet('<h2>' + (id ? esc(x.l) : "Nouveau produit") + '</h2><form id="prForm" style="display:grid;gap:12px">' +
       '<div class="field"><label for="prL">Produit</label><input id="prL" type="text" value="' + esc(x.l) + '" placeholder="Couches, lait, tétines…" required></div>' +
       '<div class="field"><label for="prR">Notre référence</label><input id="prR" type="text" value="' + esc(x.ref) + '" placeholder="Marque, modèle, taille…"></div>' +
-      '<div id="prVet" class="row2"' + (g === "Vêtements" ? '' : ' hidden') + '><div class="field"><label for="prT">Taille</label><select id="prT"><option value="">À choisir</option>' + PN_TAILLES.map(t => '<option' + (t === x.taille ? ' selected' : '') + '>' + t + '</option>').join("") + '</select></div>' +
+      '<div id="prVet" class="row2" hidden><div class="field"><label for="prT">Taille</label><select id="prT"><option value="">À choisir</option>' + PN_TAILLES.map(t => '<option' + (t === x.taille ? ' selected' : '') + '>' + t + '</option>').join("") + '</select></div>' +
       '<div class="field"><label for="prQ">Quantité</label><input id="prQ" type="number" inputmode="numeric" min="0" value="' + (x.qte != null ? x.qte : '') + '"></div></div>' +
       '<div class="field"><label for="prG">Rangé dans</label><select id="prG">' + PN_GROUPES.map(G => '<option' + (G === g ? ' selected' : '') + '>' + G + '</option>').join("") + '</select></div>' +
       '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button>' + (id ? '<button type="button" class="linkbtn" id="prDel">Supprimer</button>' : '') + '</div></form>');
@@ -2109,11 +2140,12 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const vet = () => g === "Vêtements" ? { taille: document.getElementById("prT").value, qte: document.getElementById("prQ").value ? +document.getElementById("prQ").value : null } : {};
     const close = () => { save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); };
     const del = document.getElementById("prDel"); if (del) del.addEventListener("click", () => { p.produits = P.filter(y => y.id !== id); p.racheter = p.racheter.filter(y => y !== id); close(); });
+    document.getElementById("prG").closest(".field").hidden = true;
     document.getElementById("prForm").addEventListener("submit", e => { e.preventDefault(); const l = document.getElementById("prL").value.trim(); if (!l) return;
       if (id) Object.assign(x, { l, ref: document.getElementById("prR").value.trim(), g }, vet()); else P.push(Object.assign({ id: "p" + Date.now(), l, ref: document.getElementById("prR").value.trim(), g }, vet())); close(); });
   }
   function envoyerListe() {
-    const p = pn(), P = produits(), txt = "À racheter pour " + bebeAppel() + " :\n" + p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean).map(x => "- " + x.l + (prodSub(x) ? " (" + prodSub(x) + ")" : "")).join("\n");
+    const p = pn(), P = produits(), txt = "À racheter pour " + bebeAppel() + " :\n" + aRacheter().map(x => "- " + x.l + (prodSub(x) ? " (" + prodSub(x) + ")" : "")).join("\n");
     const ok = () => openSheet('<h2>Liste copiée</h2><p>Colle-la dans un message à ' + esc(autre() === "Toi" ? "l'autre parent" : autre()) + '.</p><pre class="pn-txt">' + esc(txt) + '</pre><button class="btn" type="button" data-close style="justify-self:start">Fermer</button>');
     if (navigator.share) navigator.share({ text: txt }).catch(() => {}); else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, ok); else ok();
   }
@@ -2318,7 +2350,8 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     if (e.target.closest("[data-pn-new]")) { openNouveaute(); return; }
     const pf = e.target.closest("[data-pn-fiche]"); if (pf) { openProduit(pf.dataset.pnFiche); return; }
     const pm = e.target.closest("[data-pn-manque]"); if (pm) { if (!p.racheter.includes(pm.dataset.pnManque)) p.racheter.push(pm.dataset.pnManque); rr(); return; }
-    const pa = e.target.closest("[data-pn-achete]"); if (pa) { p.racheter = p.racheter.filter(x => x !== pa.dataset.pnAchete); rr(); return; }
+    const pa = e.target.closest("[data-pn-achete]"); if (pa) { const id = pa.dataset.pnAchete; p.racheter = p.racheter.filter(x => x !== id); p.ponctuels = (p.ponctuels || []).filter(x => x.id !== id); rr(); return; }
+    if (e.target.closest("[data-pn-ajout]")) { openAjout(); return; }
     if (e.target.closest("[data-pn-envoyer]")) { envoyerListe(); return; }
     const au = e.target.closest("[data-pn-autre]"); if (au) { openAcquis(p.autres[+au.dataset.pnAutre].l, +au.dataset.pnAutre); return; }
   });
