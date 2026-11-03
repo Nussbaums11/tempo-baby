@@ -502,6 +502,13 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
 .pn-acq-g { display: grid; gap: 6px; }
 .pn-acq-h { font-size: 13px; font-weight: 700; color: var(--muted); }
 .pn-heure input { width: auto; }
+.pn-prod small { display: block; color: var(--muted); font-size: 13px; }
+.pn-prod-row { display: flex; align-items: center; border-top: 1px solid var(--border); }
+.pn-prod-row:first-child { border-top: 0; }
+.pn-prod-row .pn-check { border-top: 0; flex: 1; justify-content: space-between; }
+.pn-prod-row em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--terracotta-dark); white-space: nowrap; }
+.pn-edit { background: none; border: 0; padding: 11px 12px; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+.pn-txt { white-space: pre-wrap; font: inherit; font-size: 14px; background: var(--cream); border-radius: 12px; padding: 12px; margin: 0; }
 .pn-seg { margin-bottom: 4px; }
 .pn-courbe { width: 100%; height: auto; display: block; }
 .pn-courbe text { font-size: 10px; fill: var(--muted); }
@@ -2014,14 +2021,48 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     return carte + courbes + '<section class="section"><div class="section-head"><h2>' + 'Ce que ' + esc(bebeAppel()) + ' sait faire' + '</h2></div>' + grp + autres + '<button type="button" class="linkbtn" data-pn-new style="justify-self:start">+ Autre chose de nouveau</button></section>';
   }
 
+  // Quotidien (Sandra 03/11) : « À racheter » commun en haut, « Nos produits » avec leur référence en dessous.
+  // Toucher un produit = il manque ; toucher une ligne à racheter = c'est acheté. Pas de répartition par ligne.
+  const PN_GROUPES = ["Change", "Repas", "Soins et pharmacie", "Vêtements"];
+  function produits() {
+    const p = pn();
+    if (!p.produits) {
+      const g = { couches: 0, coton: 0, lait: 1, eau: 1, serum: 2, pharmacie: 2, vetements: 3 };
+      p.produits = PN_COURSES.map(([k, l]) => ({ id: k, l, ref: "", g: PN_GROUPES[g[k]] }));
+      p.produits.splice(4, 0, { id: "tetines", l: "Tétines", ref: "", g: "Repas" });
+      p.racheter = Object.keys(p.courses || {}).filter(k => p.courses[k].rac);
+    }
+    p.racheter = p.racheter || [];
+    return p.produits;
+  }
   function pnQuotidien() {
-    const p = pn(), who = [["moi", "Moi"], ["autre", autre()], ["deux", "À deux"]];
-    const row1 = ([k, l]) => { const c = p.courses[k] || {};
-      return '<div class="pn-course' + (c.rac ? ' rac' : '') + '"><button type="button" class="tick" data-pn-rac="' + k + '" aria-label="' + (c.rac ? "C'est racheté" : "À racheter") + '">' + tickSvg + '</button><span class="pn-row-t"><b>' + l + '</b>' + (c.rac ? '<small class="pn-rac">À racheter</small>' : '') + '</span>' +
-        '<span class="pn-who">' + who.map(([w, wl]) => '<button type="button" data-pn-who="' + k + ':' + w + '" aria-selected="' + (c.qui === w) + '">' + esc(wl) + '</button>').join("") + '</span></div>'; };
-    const rows = PN_COURSES_G.map(([g, ks]) => '<div class="pn-acq-h">' + g + '</div>' + ks.map(k => row1(PN_COURSES.find(x => x[0] === k))).join("")).join("");
-    return '<section class="section"><div class="section-head"><h2>Les courses qui reviennent</h2></div><p class="group-intro">Coche ce qu\'il faut racheter, et qui s\'en charge.</p>' + rows + '</section>' +
+    const p = pn(), P = produits(), R = p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean);
+    const ligne = (x, attr, extra) => '<button type="button" class="pn-check pn-prod" ' + attr + '><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span>' + (extra || '') + '</button>';
+    const haut = R.length ? '<div class="pn-list">' + R.map(x => '<button type="button" class="pn-check pn-prod" data-pn-achete="' + x.id + '"><span class="tick">' + tickSvg + '</span><span>' + esc(x.l) + (x.ref ? '<small>' + esc(x.ref) + '</small>' : '') + '</span></button>').join("") + '</div><button type="button" class="btn primary" data-pn-envoyer style="justify-self:start">Envoyer la liste</button>'
+      : '<p class="group-intro">Rien à racheter. Touche un produit quand il manque.</p>';
+    const bas = PN_GROUPES.map(g => { const L = P.filter(x => x.g === g); return L.length ? '<div class="pn-acq-h">' + g + '</div><div class="pn-list">' + L.map(x => { const on = p.racheter.includes(x.id);
+      return '<div class="pn-prod-row' + (on ? ' on' : '') + '">' + ligne(x, 'data-pn-manque="' + x.id + '"', on ? '<em>À racheter</em>' : '') + '<button type="button" class="pn-edit" data-pn-fiche="' + x.id + '" aria-label="Modifier ' + esc(x.l) + '">' + chev.replace('class="chev"', 'class="chev" style="transform:rotate(-90deg)"') + '</button></div>'; }).join("") + '</div>' : ''; }).join("");
+    return '<section class="section"><div class="section-head"><h2>À racheter' + (R.length ? ' · ' + R.length : '') + '</h2></div>' + haut + '</section>' +
+      '<section class="section"><div class="section-head"><h2>Nos produits</h2><button type="button" class="linkbtn" data-pn-fiche="">+ Ajouter</button></div>' + bas + '</section>' +
       '<section class="section"><div class="section-head"><h2>Près de chez vous</h2></div><div class="callout"><span class="pill">En développement</span><h3>Ce que propose la PMI</h3><p>Pesées, consultations, et parfois des ateliers de portage ou de massage. C\'est gratuit, et beaucoup de parents le découvrent par hasard.</p></div></section>';
+  }
+  function openProduit(id) {
+    const p = pn(), P = produits(), x = id ? P.find(y => y.id === id) : { l: "", ref: "", g: "Change" }; let g = x.g;
+    openSheet('<h2>' + (id ? esc(x.l) : "Nouveau produit") + '</h2><form id="prForm" style="display:grid;gap:12px">' +
+      '<div class="field"><label for="prL">Produit</label><input id="prL" type="text" value="' + esc(x.l) + '" placeholder="Couches, lait, tétines…" required></div>' +
+      '<div class="field"><label for="prR">Notre référence</label><input id="prR" type="text" value="' + esc(x.ref) + '" placeholder="Marque, modèle, taille…"></div>' +
+      '<div class="field"><label>Rangé dans</label><div class="chips md-chips">' + PN_GROUPES.map(G => '<button type="button" class="chip" data-prg="' + G + '" aria-selected="' + (G === g) + '">' + G + '</button>').join("") + '</div></div>' +
+      '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit">Enregistrer</button>' + (id ? '<button type="button" class="linkbtn" id="prDel">Supprimer</button>' : '') + '</div></form>');
+    document.querySelectorAll("[data-prg]").forEach(b => b.addEventListener("click", () => { g = b.dataset.prg; document.querySelectorAll("[data-prg]").forEach(y => y.setAttribute("aria-selected", y.dataset.prg === g)); }));
+    const close = () => { save(); document.getElementById("sheetRoot").innerHTML = ""; const keep = window.scrollY; render(); window.scrollTo(0, keep); };
+    const del = document.getElementById("prDel"); if (del) del.addEventListener("click", () => { p.produits = P.filter(y => y.id !== id); p.racheter = p.racheter.filter(y => y !== id); close(); });
+    document.getElementById("prForm").addEventListener("submit", e => { e.preventDefault(); const l = document.getElementById("prL").value.trim(); if (!l) return;
+      if (id) Object.assign(x, { l, ref: document.getElementById("prR").value.trim(), g }); else P.push({ id: "p" + Date.now(), l, ref: document.getElementById("prR").value.trim(), g }); close(); });
+  }
+  function envoyerListe() {
+    const p = pn(), P = produits(), txt = "À racheter pour " + bebeAppel() + " :\n" + p.racheter.map(id => P.find(x => x.id === id)).filter(Boolean).map(x => "- " + x.l + (x.ref ? " (" + x.ref + ")" : "")).join("\n");
+    const ok = () => openSheet('<h2>Liste copiée</h2><p>Colle-la dans un message à ' + esc(autre() === "Toi" ? "l'autre parent" : autre()) + '.</p><pre class="pn-txt">' + esc(txt) + '</pre><button class="btn" type="button" data-close style="justify-self:start">Fermer</button>');
+    if (navigator.share) navigator.share({ text: txt }).catch(() => {}); else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, ok); else ok();
   }
 
   function openToi() {
@@ -2222,9 +2263,11 @@ nav.tabs button .tab-l { max-width: 100%; overflow: hidden; text-overflow: ellip
     const cb = e.target.closest("[data-pn-courbe]"); if (cb) { pnCourbe = cb.dataset.pnCourbe; rr(); return; }
     const aq = e.target.closest("[data-pn-acq]"); if (aq) { const k = aq.dataset.pnAcq; if (p.acquis[k]) { delete p.acquis[k]; rr(); } else { p.acquis[k] = iso(today); rr(); openAcquis(aq.textContent.trim()); } return; }
     if (e.target.closest("[data-pn-new]")) { openNouveaute(); return; }
+    const pf = e.target.closest("[data-pn-fiche]"); if (pf) { openProduit(pf.dataset.pnFiche); return; }
+    const pm = e.target.closest("[data-pn-manque]"); if (pm) { if (!p.racheter.includes(pm.dataset.pnManque)) p.racheter.push(pm.dataset.pnManque); rr(); return; }
+    const pa = e.target.closest("[data-pn-achete]"); if (pa) { p.racheter = p.racheter.filter(x => x !== pa.dataset.pnAchete); rr(); return; }
+    if (e.target.closest("[data-pn-envoyer]")) { envoyerListe(); return; }
     const au = e.target.closest("[data-pn-autre]"); if (au) { openAcquis(p.autres[+au.dataset.pnAutre].l, +au.dataset.pnAutre); return; }
-    const rc = e.target.closest("[data-pn-rac]"); if (rc) { const k = rc.dataset.pnRac; p.courses[k] = p.courses[k] || {}; p.courses[k].rac = !p.courses[k].rac; rr(); return; }
-    const wh = e.target.closest("[data-pn-who]"); if (wh) { const [k, w] = wh.dataset.pnWho.split(":"); p.courses[k] = p.courses[k] || {}; p.courses[k].qui = p.courses[k].qui === w ? "" : w; rr(); return; }
   });
 
   document.getElementById("view").addEventListener("change", e => {
