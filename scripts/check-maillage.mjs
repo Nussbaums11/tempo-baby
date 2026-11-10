@@ -19,6 +19,9 @@
  * (26 ancres amputées au 01/09/2026), et un contrôle rouge dès le premier
  * jour finit par être ignoré. À rebrancher ici quand ce lot sera soldé.
  *
+ * Il signale aussi, en avertissement, une même ancre qui pointe vers deux
+ * pages différentes (une ancre = une seule page cible, ajouté le 10/11/2026).
+ *
  * Usage : npm run check:maillage    (sortie 1 si une faute est trouvée)
  */
 import { readdirSync, readFileSync } from 'node:fs';
@@ -110,6 +113,28 @@ for (const cocon of new Set(live.map((a) => a.cocon))) {
       );
     }
   }
+}
+
+// Une ancre = une seule page cible sur tout le site (formation SEO M7, ajouté le
+// 10/11/2026). Le même texte d'ancre vers deux URL brouille la page de référence
+// pour Google. Avertissement seulement (arbitrage de Sandra), pas une erreur.
+const ANCHOR = /\[([^\]\n]+)\]\((?:https:\/\/tempo-baby\.com)?\/([a-z0-9-]+)\/\)/g;
+const norm = (t) => t.replace(/[*_]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+const ancres = new Map();
+for (const a of live) {
+  for (const [, texte, cible] of a.body.matchAll(ANCHOR)) {
+    if (cible === a.slug) continue;
+    const k = norm(texte);
+    if (!ancres.has(k)) ancres.set(k, new Map());
+    const m = ancres.get(k);
+    if (!m.has(cible)) m.set(cible, new Set());
+    m.get(cible).add(a.slug);
+  }
+}
+for (const [k, m] of ancres) {
+  if (m.size < 2) continue;
+  const detail = [...m].map(([c, src]) => `/${c}/ (depuis ${[...src].join(', ')})`).join(' · ');
+  warns.push(`ancre « ${k} » pointe vers ${m.size} pages : ${detail}`);
 }
 
 for (const w of warns) console.log(`⚠️  ${w}`);
