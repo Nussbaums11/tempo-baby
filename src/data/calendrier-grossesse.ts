@@ -242,6 +242,16 @@ export const phases: Phase[] = [
         when: 'Avant la consultation d’anesthésie',
       },
       {
+        id: 'arrivee',
+        title: 'Préparer l’arrivée de bébé à la maison',
+        article: 'preparer-l-arrivee-de-bebe',
+        text: 'Le coin de sommeil près de votre lit, l’aide et les repas des premières semaines, le médecin qui suivra bébé.',
+        kind: 'repere',
+        from: sa(29),
+        to: sa(35, 6),
+        when: '7e et 8e mois',
+      },
+      {
         id: 'anesthesie',
         title: 'Consultation pré-anesthésique',
         text: 'Obligatoire, même si vous ne prévoyez pas de péridurale.',
