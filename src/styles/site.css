@@ -29,9 +29,10 @@ body{margin:0}
 /* Article : sommaire et appel dans une seule colonne, à gauche (variante .gauche de
    st-grille, 24/11/2026, retour de Sandra sur le modèle d'Orus). À proposer à Hugo. */
 .st-grille.gauche{grid-template-columns:260px minmax(0,var(--st-colonne));gap:64px}
-.st-colonne-gauche{position:sticky;top:var(--st-haut-fixe);align-self:start;display:grid;gap:var(--e-6);max-height:calc(100vh - var(--st-haut-fixe) - var(--e-4));overflow:auto;scrollbar-width:none}
+.st-colonne-gauche{position:sticky;top:var(--st-haut-fixe);align-self:start;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--e-6);min-width:0;max-height:calc(100vh - var(--st-haut-fixe) - var(--e-4));overflow:auto;scrollbar-width:none}
 .st-colonne-gauche::-webkit-scrollbar{display:none}
 .st-colonne-gauche .st-sommaire__fixe,.st-colonne-gauche .st-appel{position:static}
 @container page (max-width:1179px){.st-grille.gauche{grid-template-columns:240px minmax(0,var(--st-colonne));gap:40px}}
 @container page (max-width:899px){.st-grille.gauche{grid-template-columns:minmax(0,1fr)}.st-colonne-gauche{display:none}}
 .st-colonne-gauche .st-sommaire ol{max-height:calc(100vh - var(--st-haut-fixe) - 470px);min-height:120px;overflow:auto;scrollbar-width:thin}
+.st-colonne-gauche .st-appel .bouton{box-sizing:border-box;width:100%;min-width:0;height:auto;min-height:var(--cible);padding:10px 16px;white-space:normal;text-align:center;line-height:1.25}
