@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/check-mentions.mjs --build && astro build",
     "check:maillage": "node scripts/check-maillage.mjs",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "check:mentions": "node scripts/check-mentions.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "7.0.2",

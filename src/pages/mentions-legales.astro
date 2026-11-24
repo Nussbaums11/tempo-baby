@@ -1,0 +1,25 @@
+---
+// Mentions légales (24/11/2026). Les champs [À COMPLÉTER] attendent Sandra :
+// ne pas publier tant qu'il en reste (scripts/check-mentions.mjs le vérifie au build).
+import SiteLayout from '../layouts/SiteLayout.astro';
+import TetePage from '../components/site/TetePage.astro';
+---
+<SiteLayout title="Mentions légales — Tempo" description="Éditeur, hébergeur et conditions d'utilisation du site tempo-baby.com." path="/mentions-legales/">
+  <div class="page-simple">
+    <TetePage titre="Mentions légales" ariane="Mentions légales" />
+    <div class="st-texte">
+      <h2>Éditeur du site</h2>
+      <p>Le site tempo-baby.com est édité par [À COMPLÉTER : nom ou raison sociale, forme juridique], [À COMPLÉTER : adresse], [À COMPLÉTER : numéro SIREN si société].</p>
+      <p>Contact : [À COMPLÉTER : adresse e-mail de contact].</p>
+      <p>Directrice de la publication : [À COMPLÉTER : nom].</p>
+      <h2>Hébergement</h2>
+      <p>Le site est hébergé par Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, États-Unis (cloudflare.com).</p>
+      <h2>Contenus de santé</h2>
+      <p>Les contenus de Tempo sont informatifs. Ils s'appuient sur des sources officielles citées dans chaque article et ne remplacent pas l'avis d'un professionnel de santé qui connaît votre enfant. En cas d'urgence, appelez le 15.</p>
+      <h2>Propriété intellectuelle</h2>
+      <p>Les textes, illustrations et éléments graphiques du site sont la propriété de Tempo. Toute reproduction sans autorisation est interdite, à l'exception des ressources expressément libres de partage (comme le tableau des siestes à imprimer), à condition de citer Tempo.</p>
+      <h2>Données personnelles</h2>
+      <p>La façon dont Tempo traite vos données est décrite dans notre <a href="/confidentialite/">politique de confidentialité</a>.</p>
+    </div>
+  </div>
+</SiteLayout>
