@@ -1,0 +1,44 @@
+---
+// Menu du téléphone, ouvert par le burger (st-burger). Le catalogue n'a pas de menu
+// mobile : on reprend la feuille du bas validée par Hugo (section 9 : .voile, .feuille),
+// positionnée sur l'écran. Ajouté le 24/11/2026, à signaler à Hugo.
+import { icone } from '../../lib/tempo';
+const liens = [
+  { href: '/ressources/', texte: 'Ressources' },
+  { href: '/calendrier-grossesse/', texte: 'Calendrier de grossesse' },
+  { href: '/#tempo', texte: "L'app" },
+  { href: '/qui-sommes-nous/', texte: 'Qui sommes-nous' },
+];
+---
+<div class="menu-mobile" hidden data-menu>
+  <div class="voile" data-menu-fermer></div>
+  <nav class="feuille" aria-label="Menu" role="dialog" aria-modal="true">
+    <div class="feuille__poignee" aria-hidden="true"></div>
+    <div class="feuille__tete">
+      <p class="feuille__titre">Menu</p>
+      <button class="feuille__fermer" type="button" aria-label="Fermer le menu" data-menu-fermer set:html={icone('croix', 18, 2.2)} />
+    </div>
+    <div class="feuille__corps">
+      <ul class="menu-mobile__liens">
+        {liens.map((l) => <li><a href={l.href}>{l.texte}<span set:html={icone('chevron', 18, 2.2)} /></a></li>)}
+      </ul>
+      <a class="bouton" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
+    </div>
+  </nav>
+</div>
+<script is:inline>
+  (function () {
+    var menu = document.querySelector('[data-menu]');
+    if (!menu || menu.dataset.pret) return;
+    menu.dataset.pret = '1';
+    var burgers = document.querySelectorAll('[data-burger]');
+    function ouvrir() { menu.hidden = false; burgers.forEach(function (b) { b.setAttribute('aria-expanded', 'true'); }); document.documentElement.style.overflow = 'hidden'; }
+    function fermer() { menu.hidden = true; burgers.forEach(function (b) { b.setAttribute('aria-expanded', 'false'); }); document.documentElement.style.overflow = ''; }
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-burger]')) { e.preventDefault(); ouvrir(); return; }
+      if (e.target.closest('[data-menu-fermer]')) { fermer(); return; }
+      if (!menu.hidden && e.target.closest('.menu-mobile a')) fermer();
+    });
+    addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) fermer(); });
+  })();
+</script>

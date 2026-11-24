@@ -11,6 +11,7 @@ import { getCollection } from 'astro:content';
 import Analytics from '../components/Analytics.astro';
 import Pied from '../components/site/Pied.astro';
 import Fenetre from '../components/site/Fenetre.astro';
+import MenuMobile from '../components/site/MenuMobile.astro';
 import { organizationJsonLd } from '../data/organization';
 import { cocons } from '../data/cocons';
 import { rubrique } from '../data/rubriques';
@@ -71,8 +72,10 @@ const PLAY = '<i aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 
   <div class="accueil-barre-droite">
     <button type="button" class="s-lien" data-film><Fragment set:html={PLAY} />Le film</button>
     <a class="bouton secondaire accueil-barre-bouton" href="#liste-attente" data-ouvrir-inscription>Liste d'attente</a>
+    <button class="st-burger accueil-burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" data-burger><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 16h14"/></svg></button>
   </div>
 </header>
+<MenuMobile />
 
 <main>
 <section class="s-tete intro" id="haut">

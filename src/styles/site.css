@@ -36,3 +36,11 @@ body{margin:0}
 @container page (max-width:899px){.st-grille.gauche{grid-template-columns:minmax(0,1fr)}.st-colonne-gauche{display:none}}
 .st-colonne-gauche .st-sommaire ol{max-height:calc(100vh - var(--st-haut-fixe) - 470px);min-height:120px;overflow:auto;scrollbar-width:thin}
 .st-colonne-gauche .st-appel .bouton{box-sizing:border-box;width:100%;min-width:0;height:auto;min-height:var(--cible);padding:10px 16px;white-space:normal;text-align:center;line-height:1.25}
+/* Menu du téléphone : la feuille du bas du catalogue, fixée sur l'écran. */
+.menu-mobile[hidden]{display:none}
+.menu-mobile .voile{position:fixed;z-index:70}
+.menu-mobile .feuille{position:fixed;z-index:71;max-height:85vh;padding-bottom:env(safe-area-inset-bottom)}
+.menu-mobile__liens{margin:0 0 var(--e-6);padding:0;list-style:none}
+.menu-mobile__liens a{display:flex;align-items:center;justify-content:space-between;min-height:56px;border-bottom:1px solid var(--line);color:var(--ink);font:750 19px/1.2 var(--font);letter-spacing:-.015em;text-decoration:none}
+.menu-mobile__liens span{color:var(--ink-2);display:grid}
+.menu-mobile .bouton{width:100%;box-sizing:border-box}

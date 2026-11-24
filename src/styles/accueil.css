@@ -338,3 +338,6 @@ body.fige{overflow:hidden}
 .accueil-questions{padding-top:0}
 .st-rubrique-corps.accueil-questions h2.st-intertitre,.accueil-questions .st-faq{max-width:var(--st-colonne);margin-left:auto;margin-right:auto}
 .st-rubrique-corps.accueil-questions h2.st-intertitre{margin-bottom:var(--e-6)}
+/* Burger de l'accueil : visible sur téléphone seulement, comme dans l'en-tête du site. */
+.accueil-burger{display:none;margin-left:0}
+@media (max-width:899px){.accueil-burger{display:grid}}
