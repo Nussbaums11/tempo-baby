@@ -1,12 +1,11 @@
 ---
 // Fenêtre d'inscription (section 23 : st-voile, st-fenetre, st-inscription).
-// Sert de LISTE D'ATTENTE de l'app (arbitrage de Sandra du 24/11/2026) :
-// ouverte par tous les boutons [data-ouvrir-inscription], et une fois par visite
-// aux deux tiers de la lecture sur ordinateur.
-// TODO : brancher le formulaire sur Brevo (compte à créer par Sandra). D'ici là,
-// le formulaire n'envoie rien et le dit, pour ne perdre personne en silence.
+// Sert de LISTE D'ATTENTE de l'app (arbitrage de Sandra du 24/11/2026) : ouverte
+// par tous les boutons [data-ouvrir-inscription], et une fois par visite aux deux
+// tiers de la lecture sur ordinateur.
+// Envoi : functions/api/liste-attente.js (stockage KV chez Cloudflare, sans
+// prestataire). Le traitement du formulaire est ici, une seule fois pour tout le site.
 import { icone } from '../../lib/tempo';
-const BREVO_ACTION = ''; // URL du formulaire Brevo, à renseigner
 ---
 <div class="st-voile" hidden data-voile>
   <div class="st-fenetre" role="dialog" aria-modal="true" aria-labelledby="titre-fenetre">
@@ -15,13 +14,47 @@ const BREVO_ACTION = ''; // URL du formulaire Brevo, à renseigner
       <button class="st-fermer" type="button" data-fermer aria-label="Fermer" set:html={icone('croix', 20, 2.2)} />
     </div>
     <div class="st-fenetre__corps">
-      <p>L'app Tempo arrive bientôt. Laissez votre adresse : on vous écrit le jour de son ouverture, et pas avant.</p>
-      <form class="st-inscription" method="post" action={BREVO_ACTION || undefined} data-inscription data-actif={BREVO_ACTION ? 'oui' : 'non'}>
-        <label class="champ"><span class="champ__nom">Votre adresse e-mail</span><input type="email" name="EMAIL" required placeholder="prenom@exemple.fr" autocomplete="email" /></label>
+      <p data-intro>L'app Tempo arrive bientôt. Laissez votre adresse : on vous écrit le jour de son ouverture, et pas avant.</p>
+      <form class="st-inscription" method="post" action="/api/liste-attente" data-inscription>
+        <label class="champ"><span class="champ__nom">Votre adresse e-mail</span><input type="email" name="email" required maxlength="254" placeholder="prenom@exemple.fr" autocomplete="email" /></label>
+        <input type="text" name="site" tabindex="-1" autocomplete="off" aria-hidden="true" class="inscription-piege" />
         <button class="bouton" type="submit">Je m'inscris</button>
       </form>
-      <p class="st-mention">Désinscription en un clic. Tempo n'utilise votre adresse que pour vous prévenir de l'ouverture de l'app.</p>
+      <p class="st-mention" data-retour role="status"></p>
+      <p class="st-mention">Désinscription sur simple demande. Tempo n'utilise votre adresse que pour vous prévenir de l'ouverture de l'app. Détails dans notre <a href="/confidentialite/">politique de confidentialité</a>.</p>
     </div>
     <div class="st-fenetre__pied"><span class="st-icone-app petite" aria-hidden="true">t</span><span>Envie d'en savoir plus ? <a href="/#tempo">Découvrir l'app</a></span></div>
   </div>
 </div>
+<script is:inline>
+  (function () {
+    var voile = document.querySelector('[data-voile]');
+    var form = voile && voile.querySelector('[data-inscription]');
+    if (!form || form.dataset.pret) return;
+    form.dataset.pret = '1';
+    var retour = voile.querySelector('[data-retour]');
+    var bouton = form.querySelector('button');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var donnees = new FormData(form);
+      donnees.append('page', location.pathname);
+      bouton.disabled = true;
+      retour.textContent = '';
+      fetch(form.action, { method: 'POST', body: donnees })
+        .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+        .then(function (res) {
+          if (res.ok) {
+            form.style.display = 'none';
+            voile.querySelector('[data-intro]').hidden = true;
+            retour.textContent = 'C’est noté, merci ! On vous écrit le jour de l’ouverture de l’app.';
+          } else {
+            bouton.disabled = false;
+            retour.textContent = res.erreur === 'adresse'
+              ? 'Cette adresse ne semble pas valide. Pouvez-vous la vérifier ?'
+              : 'L’inscription n’a pas fonctionné. Réessayez dans un instant.';
+          }
+        })
+        .catch(function () { bouton.disabled = false; retour.textContent = 'L’inscription n’a pas fonctionné. Réessayez dans un instant.'; });
+    });
+  })();
+</script>

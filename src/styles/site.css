@@ -50,3 +50,6 @@ body{margin:0}
    le titre, qui changeait de nombre de lignes au fil de la lecture et faisait bouger
    toute la liste. Elle reste signalée par la couleur et la pastille. À signaler à Hugo. */
 .st-sommaire a.actif{font-weight:600}
+.inscription-piege{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+[data-retour]:empty{display:none}
+[data-retour]{color:var(--ink);font-weight:650}

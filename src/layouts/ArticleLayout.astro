@@ -133,6 +133,7 @@ const coches = ["Votre semaine, en un coup d'œil", 'Vos rendez-vous et démarch
     <meta property="og:type" content="article" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
@@ -291,14 +292,7 @@ const coches = ["Votre semaine, en un coup d'œil", 'Vos rendez-vous et démarch
         });
         addEventListener('keydown', function (e) { if (e.key === 'Escape') fermer(); });
 
-        // Liste d'attente pas encore branchée (Brevo à créer) : on le dit plutôt que de perdre l'adresse.
-        var form = voile.querySelector('[data-inscription]');
-        form.addEventListener('submit', function (e) {
-          if (form.dataset.actif === 'oui') return;
-          e.preventDefault();
-          form.insertAdjacentHTML('afterend', '<p class="st-mention">La liste d’attente ouvre dans quelques jours. Revenez bientôt, merci de votre patience.</p>');
-          form.querySelector('button').disabled = true;
-        });
+
       })();
     </script>
   </body>
