@@ -1,8 +1,8 @@
 ---
 // Page de rubrique (section 23 : st-tete-rubrique, st-recherche, onglets, st-une,
 // st-cartes). Sert /ressources/ (onglet « Tout ») et /ressources/<cocon>/.
-// Les onglets filtrent les cartes sur /ressources/ ; sur une page de cocon, ils
-// mènent à la page du cocon choisi. Chaque page de cocon reste une vraie URL,
+// Les onglets mènent à la page du cocon choisi (24/11/2026 : en simple filtre sur
+// /ressources/, rien ne changeait à l'écran, l'article à la une restant le même). Chaque page de cocon reste une vraie URL,
 // liée en dur depuis le pied de page, le fil d'Ariane et les articles.
 import { getCollection } from 'astro:content';
 import { cocons } from '../../data/cocons';
@@ -37,7 +37,7 @@ const LOUPE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" strok
     <div><h1>{titre}</h1><p>{chapeau}</p></div>
     <label class="st-recherche"><Fragment set:html={LOUPE} /><input type="search" placeholder="Rechercher un article" aria-label="Rechercher un article" data-recherche /></label>
   </div>
-  <div class="onglets" role="tablist" data-onglets={cocon ? 'liens' : 'filtre'}>
+  <div class="onglets" role="tablist" data-onglets="liens">
     <button type="button" role="tab" aria-selected={!cocon} data-cocon="" data-href="/ressources/">Tout</button>
     {vivants.map((c) => (
       <button type="button" role="tab" aria-selected={cocon === c.slug} data-cocon={c.slug} data-href={`/ressources/${c.slug}/`}>{rubrique(c.slug).nom}</button>
@@ -67,8 +67,7 @@ const LOUPE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" strok
             <span><span class={`pastille petite ${r.nature}`}>{r.nom}</span></span>
             <h3>{a.data.title}</h3>
             <p>{a.data.description}</p>
-            {a.data.readingTime && <small><Fragment set:html={icone('horloge', 14, 2)} /> {a.data.readingTime}</small>}
-          </span>
+                      </span>
         </a>
       );
     })}

@@ -2,5 +2,23 @@
 // Tout tableau Markdown d'un article passe dans st-tableau (section 23).
 // Branché via `components={{ table: Tableau }}` dans [...slug].astro : le
 // contenu des articles ne bouge pas.
+// 24/11/2026 (retour de Sandra, tableaux tronqués) : le composant de Hugo est
+// dessiné pour « âge | chiffre | description courte » (cellules sur une ligne,
+// 2e colonne en gros chiffre). Quand les cellules sont du texte long ou qu'il y a
+// 4 colonnes ou plus, on ajoute la variante `.texte` (retour à la ligne, poids
+// normal, en-tête de colonne rappelé dans chaque cellule sur téléphone).
+// Variante à proposer à Hugo.
+const html = await Astro.slots.render('default');
+const texte = (s: string) => s.replace(/<[^>]+>/g, '').replace(/&[a-z#0-9]+;/gi, ' ').trim();
+const entetes = [...html.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => texte(m[1]));
+const lignes = [...html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)].map((m) => [...m[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map((c) => texte(c[1])));
+const col = (i: number) => Math.max(0, ...lignes.map((l) => (l[i] ?? '').length));
+const variante = entetes.length >= 4 || col(0) > 28 || col(1) > 22;
+// Sur téléphone, chaque cellule rappelle l'en-tête de sa colonne.
+let k = 0;
+const avecEtiquettes = html.replace(/<tr([^>]*)>([\s\S]*?)<\/tr>/g, (tr, attrs, inner) => {
+  k = 0;
+  return `<tr${attrs}>${inner.replace(/<td([^>]*)>/g, (_m: string, a: string) => `<td${a} data-col="${(entetes[k++] ?? '').replace(/"/g, '&quot;')}">`)}</tr>`;
+});
 ---
-<div class="st-tableau"><table><slot /></table></div>
+<div class:list={['st-tableau', { texte: variante }]}><table set:html={avecEtiquettes} /></div>

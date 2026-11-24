@@ -1,0 +1,3 @@
+PDF du site générés depuis ces pages HTML (Chrome sans interface, format A4, une page).
+Exemple, depuis la racine du repo :
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --no-pdf-header-footer --virtual-time-budget=5000 --print-to-pdf=public/pdf/tableau-siestes-bebe-tempo.pdf "file://$PWD/templates/pdf/tableau-siestes-bebe.html"

@@ -10,7 +10,7 @@ import '../styles/tempo/valeurs.css';
 import '../styles/tempo/composants.css';
 import '../styles/site.css';
 
-interface Props { title: string; description: string; path: string; actif?: 'ressources' | 'app' | 'qui' }
+interface Props { title: string; description: string; path: string; actif?: 'ressources' | 'calendrier' | 'app' | 'qui' }
 const { title, description, path, actif } = Astro.props;
 const orgSchema = organizationJsonLd(Astro.site);
 ---

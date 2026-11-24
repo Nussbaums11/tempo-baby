@@ -18,3 +18,20 @@ body{margin:0}
 .page-simple .centre .st-actions{justify-content:center}
 .page-simple .st-appel.tarif{position:static;max-width:420px;margin:var(--e-6) auto var(--e-4)}
 .page-simple.centre .st-tete-article,.page-simple.centre .st-chapeau{text-align:center;margin-left:auto;margin-right:auto}
+/* Variante .texte de st-tableau (24/11/2026) : cellules de texte long. À proposer à Hugo. */
+.st-tableau.texte td{white-space:normal;font-weight:500;font-size:16px;letter-spacing:0;color:var(--ink-2)}
+.st-tableau.texte td:first-child{font-weight:700;color:var(--ink)}
+@container page (max-width:639px){
+  .st-tableau.texte tr{grid-template-columns:1fr}
+  .st-tableau.texte td:nth-child(2){text-align:left;color:var(--ink-2)}
+  .st-tableau.texte td:not(:first-child)::before{content:attr(data-col);display:block;margin-bottom:2px;font:700 12px/1.3 var(--font);color:var(--ink-2);text-transform:none}
+}
+/* Article : sommaire et appel dans une seule colonne, à gauche (variante .gauche de
+   st-grille, 24/11/2026, retour de Sandra sur le modèle d'Orus). À proposer à Hugo. */
+.st-grille.gauche{grid-template-columns:260px minmax(0,var(--st-colonne));gap:64px}
+.st-colonne-gauche{position:sticky;top:var(--st-haut-fixe);align-self:start;display:grid;gap:var(--e-6);max-height:calc(100vh - var(--st-haut-fixe) - var(--e-4));overflow:auto;scrollbar-width:none}
+.st-colonne-gauche::-webkit-scrollbar{display:none}
+.st-colonne-gauche .st-sommaire__fixe,.st-colonne-gauche .st-appel{position:static}
+@container page (max-width:1179px){.st-grille.gauche{grid-template-columns:240px minmax(0,var(--st-colonne));gap:40px}}
+@container page (max-width:899px){.st-grille.gauche{grid-template-columns:minmax(0,1fr)}.st-colonne-gauche{display:none}}
+.st-colonne-gauche .st-sommaire ol{max-height:calc(100vh - var(--st-haut-fixe) - 470px);min-height:120px;overflow:auto;scrollbar-width:thin}

@@ -144,13 +144,22 @@ const coches = ["Votre semaine, en un coup d'œil", 'Vos rendez-vous et démarch
     <div class="st-page"><div class="st-site">
       <Entete actif="ressources" progression />
 
-      <div class="st-grille">
-        <nav class="st-sommaire" aria-label="Sommaire"><div class="st-sommaire__fixe">
-          <p class="st-sommaire__titre">Dans cet article</p>
-          <ol>{parties.map((p, k) => <li><a href={`#${p.id}`} data-ancre={p.id} class={k === 0 ? 'actif' : undefined}>{p.texte}</a></li>)}</ol>
-          <button class="st-sommaire__haut" type="button" data-haut><Fragment set:html={icone('haut', 15, 2.2)} /> Haut de page</button>
-        </div></nav>
+      <div class="st-grille gauche">
+        {/* 24/11/2026 (retour de Sandra, modèle Orus) : sommaire et appel réunis dans
+            une seule colonne à gauche, plus rien à droite. Variante à proposer à Hugo. */}
+        <div class="st-colonne-gauche">
+          <nav class="st-sommaire" aria-label="Sommaire"><div class="st-sommaire__fixe">
+            <p class="st-sommaire__titre">Dans cet article</p>
+            <ol>{parties.map((p, k) => <li><a href={`#${p.id}`} data-ancre={p.id} class={k === 0 ? 'actif' : undefined}>{p.texte}</a></li>)}</ol>
+            <button class="st-sommaire__haut" type="button" data-haut><Fragment set:html={icone('haut', 15, 2.2)} /> Haut de page</button>
+          </div></nav>
 
+          <aside class="st-colonne-appel"><div class="st-appel">
+          <div class="st-appel__tete"><span class="st-icone-app" aria-hidden="true">t</span><div><b>Tempo</b><small>Devenir parents, au bon tempo.</small></div></div>
+          <ul class="st-coches">{coches.map((c) => <li><i set:html={icone('coche', 13, 3)} /><span>{c}</span></li>)}</ul>
+          <a class="bouton secondaire" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
+        </div></aside>
+        </div>
         <article class="st-article">
           <div class="st-tete-article">
             <ol class="st-ariane" aria-label="Fil d'Ariane">
@@ -163,7 +172,7 @@ const coches = ["Votre semaine, en un coup d'œil", 'Vos rendez-vous et démarch
             <p class="st-chapeau">{description}</p>
             <div class="st-meta">
               <div class="st-signature"><span class="st-avatar">{articleAuthor.initials}</span><div><b>{articleAuthor.name}</b><small>Cofondatrice de Tempo</small></div></div>
-              <span class="st-date"><Fragment set:html={icone('horloge', 16, 2)} /> Mis à jour le {formattedDate}{readingTime && ` · ${readingTime}`}</span>
+              <span class="st-date"><Fragment set:html={icone('horloge', 16, 2)} /> Mis à jour le {formattedDate}</span>
             </div>
             <div class="st-visuel" aria-hidden="true">
               {r.nuit && (
@@ -208,11 +217,7 @@ const coches = ["Votre semaine, en un coup d'œil", 'Vos rendez-vous et démarch
           </div>
         </article>
 
-        <aside class="st-colonne-appel"><div class="st-appel">
-          <div class="st-appel__tete"><span class="st-icone-app" aria-hidden="true">t</span><div><b>Tempo</b><small>Devenir parents, au bon tempo.</small></div></div>
-          <ul class="st-coches">{coches.map((c) => <li><i set:html={icone('coche', 13, 3)} /><span>{c}</span></li>)}</ul>
-          <a class="bouton secondaire" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
-        </div></aside>
+
       </div>
 
       <Suite cocon={cocon} currentSlug={slug} />

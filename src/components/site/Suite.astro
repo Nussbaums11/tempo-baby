@@ -32,30 +32,33 @@ else if (isSoeur) {
   if (pilier) groups.push({ title: 'Le guide complet', items: [pilier] });
 } else if (pilier) groups.push({ title: 'Le guide complet', items: [pilier] });
 
-const shown = groups.filter((g) => g.items.length > 0);
+// 24/11/2026 (retour de Sandra) : une seule section au lieu de « série » puis
+// « guide complet » (deux bandeaux, un saut visuel). Le guide complet passe en
+// tête, puis la série ; même couloir de maillage qu'avant.
+const vus = new Set<string>();
+const items = [...groups.filter((g) => g.title === 'Le guide complet'), ...groups.filter((g) => g.title !== 'Le guide complet')]
+  .flatMap((g) => g.items)
+  .filter((a) => a.id !== currentSlug && !vus.has(a.id) && vus.add(a.id));
 const r = rubrique(cocon);
 const hub = cocons.find((c) => c.slug === cocon);
-// Une illustration par carte, en tournant dans la scène de la rubrique.
-const ills = [...r.scene, ...(r.nuit ? ['gigoteuse'] : [])];
 ---
-{shown.map((g, gi) => (
+{items.length > 0 && (
   <section class="st-suite">
     <div class="st-suite__tete">
-      <h2>{g.title}</h2>
-      {gi === 0 && hub && <a href={`/ressources/${cocon}/`}>{r.nom === 'Sommeil' ? 'Tout le sommeil' : `Toute la rubrique ${r.nom}`}</a>}
+      <h2>Dans la même rubrique</h2>
+      {hub && <a href={`/ressources/${cocon}/`}>{r.nom === 'Sommeil' ? 'Tout le sommeil' : `Toute la rubrique ${r.nom}`}</a>}
     </div>
     <div class="st-cartes">
-      {g.items.map((a, k) => (
+      {items.map((a) => (
         <a class="st-carte" href={`/${a.id}/`}>
           <span class="st-carte__visuel" style={`--cf:var(${r.fond})`} set:html={illustration(illustrationPour(a.id, cocon), 96)} />
           <span class="st-carte__corps">
-            <span><span class={`pastille petite ${r.nature}`}>{r.nom}</span></span>
+            <span><span class={`pastille petite ${r.nature}`}>{a.data.pilier ? `${r.nom} · Le guide complet` : r.nom}</span></span>
             <h3>{a.data.title}</h3>
             {a.data.description && <p>{a.data.description}</p>}
-            {a.data.readingTime && <small><Fragment set:html={icone('horloge', 14, 2)} /> {a.data.readingTime}</small>}
           </span>
         </a>
       ))}
     </div>
   </section>
-))}
+)}

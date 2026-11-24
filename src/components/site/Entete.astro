@@ -1,11 +1,12 @@
 ---
 // En-tête du site public (design system, section 23 : st-entete + st-progression).
 // Balisage repris de la planche 19-site-composants (C.entete).
-interface Props { actif?: 'ressources' | 'app' | 'qui'; progression?: boolean }
+interface Props { actif?: 'ressources' | 'calendrier' | 'app' | 'qui'; progression?: boolean }
 const { actif, progression = false } = Astro.props;
 const BURGER = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 16h14"/></svg>';
 const liens = [
   { cle: 'ressources', href: '/ressources/', texte: 'Ressources' },
+  { cle: 'calendrier', href: '/calendrier-grossesse/', texte: 'Calendrier de grossesse' },
   { cle: 'app', href: '/#tempo', texte: "L'app" },
   { cle: 'qui', href: '/qui-sommes-nous/', texte: 'Qui sommes-nous' },
 ];
