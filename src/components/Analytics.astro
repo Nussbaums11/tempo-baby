@@ -1,20 +1,55 @@
 ---
-// Google Analytics 4 — propriété "tempo-baby.com" (compte GA "Tempo")
+// Mesure d'audience : Google Analytics 4 — propriété "tempo-baby.com" (compte GA "Tempo").
+// 24/11/2026 (arbitrage de Sandra) : GA gardé, mais chargé SEULEMENT après accord du
+// visiteur dans le bandeau de consentement (CNIL). Choix gardé 6 mois dans le navigateur
+// (clé tempo-consentement), modifiable via les boutons [data-cookies] (pied de page).
 // L'ID de mesure GA4 n'est pas secret : il est exposé côté navigateur.
 const GA_ID = 'G-63CF4B776F';
 ---
-
-<!-- Google tag (gtag.js) — ne se déclenche que sur le domaine de prod -->
 <script is:inline define:vars={{ GA_ID }}>
-  if (location.hostname === 'tempo-baby.com' || location.hostname === 'www.tempo-baby.com') {
-    const s = document.createElement('script');
-    s.async = true;
-    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-    document.head.appendChild(s);
-
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', GA_ID);
-  }
+  (function () {
+    var CLE = 'tempo-consentement', SIX_MOIS = 183 * 864e5;
+    var prod = location.hostname === 'tempo-baby.com' || location.hostname === 'www.tempo-baby.com';
+    function lire() { try { var c = JSON.parse(localStorage.getItem(CLE)); return c && Date.now() - c.date < SIX_MOIS ? c.choix : null; } catch (e) { return null; } }
+    function ecrire(choix) { try { localStorage.setItem(CLE, JSON.stringify({ choix: choix, date: Date.now() })); } catch (e) {} }
+    var chargee = false;
+    function chargerGA() {
+      if (chargee || !prod) return; chargee = true;
+      var s = document.createElement('script'); s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID; document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments); };
+      gtag('js', new Date()); gtag('config', GA_ID, { cookie_expires: 395 * 24 * 3600 }); // 13 mois max (CNIL), GA garde 2 ans par défaut
+    }
+    function effacerCookiesGA() {
+      document.cookie.split(';').forEach(function (c) {
+        var nom = c.split('=')[0].trim();
+        if (/^_ga/.test(nom)) ['', '.' + location.hostname.replace(/^www\./, '')].forEach(function (d) {
+          document.cookie = nom + '=; Max-Age=0; path=/' + (d ? '; domain=' + d : '');
+        });
+      });
+    }
+    function bandeau() {
+      if (document.querySelector('[data-bandeau-cookies]')) return;
+      var b = document.createElement('div');
+      b.className = 'bandeau-cookies'; b.setAttribute('data-bandeau-cookies', '');
+      b.setAttribute('role', 'dialog'); b.setAttribute('aria-label', 'Cookies de mesure d’audience');
+      b.innerHTML = '<p>Tempo aimerait mesurer son audience avec Google Analytics, qui dépose des cookies. Sans votre accord, rien n’est déposé. <a href="/confidentialite/">En savoir plus</a></p>'
+        + '<div class="bandeau-cookies__actions"><button type="button" class="bouton secondaire" data-choix="refus">Refuser</button><button type="button" class="bouton secondaire" data-choix="accord">Accepter</button></div>';
+      document.body.appendChild(b);
+      b.addEventListener('click', function (e) {
+        var c = e.target.closest('[data-choix]'); if (!c) return;
+        ecrire(c.dataset.choix);
+        if (c.dataset.choix === 'accord') chargerGA(); else effacerCookiesGA();
+        b.remove();
+      });
+    }
+    var choix = lire();
+    if (choix === 'accord') chargerGA();
+    function pret() {
+      if (choix === null) bandeau();
+      document.addEventListener('click', function (e) { if (e.target.closest('[data-cookies]')) { e.preventDefault(); bandeau(); } });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pret); else pret();
+  })();
 </script>
