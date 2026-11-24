@@ -1,7 +1,8 @@
 ---
-// Menu du téléphone, ouvert par le burger (st-burger). Le catalogue n'a pas de menu
-// mobile : on reprend la feuille du bas validée par Hugo (section 9 : .voile, .feuille),
-// positionnée sur l'écran. Ajouté le 24/11/2026, à signaler à Hugo.
+// Menu du téléphone, ouvert par le burger (st-burger) : panneau plein écran qui
+// descend sous l'en-tête, le burger devient une croix au même endroit (choix de
+// Sandra du 24/11/2026, convention des sites). Pas de composant au catalogue :
+// construit avec les valeurs de valeurs.css, à proposer à Hugo.
 import { icone } from '../../lib/tempo';
 const liens = [
   { href: '/ressources/', texte: 'Ressources' },
@@ -9,21 +10,14 @@ const liens = [
   { href: '/#tempo', texte: "L'app" },
   { href: '/qui-sommes-nous/', texte: 'Qui sommes-nous' },
 ];
+const CROIX = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>';
 ---
-<div class="menu-mobile" hidden data-menu>
-  <div class="voile" data-menu-fermer></div>
-  <nav class="feuille" aria-label="Menu" role="dialog" aria-modal="true">
-    <div class="feuille__poignee" aria-hidden="true"></div>
-    <div class="feuille__tete">
-      <p class="feuille__titre">Menu</p>
-      <button class="feuille__fermer" type="button" aria-label="Fermer le menu" data-menu-fermer set:html={icone('croix', 18, 2.2)} />
-    </div>
-    <div class="feuille__corps">
-      <ul class="menu-mobile__liens">
-        {liens.map((l) => <li><a href={l.href}>{l.texte}<span set:html={icone('chevron', 18, 2.2)} /></a></li>)}
-      </ul>
-      <a class="bouton" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
-    </div>
+<div class="menu-mobile" id="menu-mobile" hidden data-menu data-croix={CROIX}>
+  <nav class="menu-mobile__panneau" aria-label="Menu">
+    <ul class="menu-mobile__liens">
+      {liens.map((l) => <li><a href={l.href}>{l.texte}<span set:html={icone('chevron', 20, 2.2)} /></a></li>)}
+    </ul>
+    <a class="bouton" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
   </nav>
 </div>
 <script is:inline>
@@ -31,14 +25,28 @@ const liens = [
     var menu = document.querySelector('[data-menu]');
     if (!menu || menu.dataset.pret) return;
     menu.dataset.pret = '1';
-    var burgers = document.querySelectorAll('[data-burger]');
-    function ouvrir() { menu.hidden = false; burgers.forEach(function (b) { b.setAttribute('aria-expanded', 'true'); }); document.documentElement.style.overflow = 'hidden'; }
-    function fermer() { menu.hidden = true; burgers.forEach(function (b) { b.setAttribute('aria-expanded', 'false'); }); document.documentElement.style.overflow = ''; }
+    var burgers = [].slice.call(document.querySelectorAll('[data-burger]'));
+    burgers.forEach(function (b) { b.dataset.burgerSvg = b.innerHTML; b.setAttribute('aria-controls', 'menu-mobile'); });
+    function ouvert() { return !menu.hidden; }
+    function ouvrir(b) {
+      // Le panneau commence juste sous l'en-tête qui porte le burger.
+      var tete = b.closest('header');
+      menu.style.top = Math.max(0, Math.round(tete ? tete.getBoundingClientRect().bottom : 0)) + 'px';
+      menu.hidden = false;
+      burgers.forEach(function (x) { x.setAttribute('aria-expanded', 'true'); x.setAttribute('aria-label', 'Fermer le menu'); x.innerHTML = menu.dataset.croix; });
+      document.documentElement.style.overflow = 'hidden';
+    }
+    function fermer() {
+      menu.hidden = true;
+      burgers.forEach(function (x) { x.setAttribute('aria-expanded', 'false'); x.setAttribute('aria-label', 'Ouvrir le menu'); x.innerHTML = x.dataset.burgerSvg; });
+      document.documentElement.style.overflow = '';
+    }
     document.addEventListener('click', function (e) {
-      if (e.target.closest('[data-burger]')) { e.preventDefault(); ouvrir(); return; }
-      if (e.target.closest('[data-menu-fermer]')) { fermer(); return; }
-      if (!menu.hidden && e.target.closest('.menu-mobile a')) fermer();
+      var b = e.target.closest('[data-burger]');
+      if (b) { e.preventDefault(); ouvert() ? fermer() : ouvrir(b); return; }
+      if (ouvert() && e.target.closest('.menu-mobile a')) fermer();
     });
-    addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) fermer(); });
+    addEventListener('keydown', function (e) { if (e.key === 'Escape' && ouvert()) fermer(); });
+    addEventListener('resize', function () { if (ouvert() && innerWidth >= 900) fermer(); });
   })();
 </script>
