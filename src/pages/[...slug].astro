@@ -4,6 +4,7 @@
 // L'URL ne reflète pas le cocon, seul le frontmatter `cocon` le fait (choix de Sandra).
 import { getCollection, render } from 'astro:content';
 import ArticleLayout from '../layouts/ArticleLayout.astro';
+import Tableau from '../components/site/Tableau.astro';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles', ({ data }) => !data.draft);
@@ -19,6 +20,7 @@ const { Content, headings } = await render(article);
 
 <ArticleLayout
   title={article.data.title}
+  h1={article.data.h1}
   description={article.data.description}
   slug={article.id}
   cocon={article.data.cocon}
@@ -29,5 +31,5 @@ const { Content, headings } = await render(article);
   faq={article.data.faq}
   headings={headings}
 >
-  <Content />
+  <Content components={{ table: Tableau }} />
 </ArticleLayout>

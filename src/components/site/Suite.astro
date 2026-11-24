@@ -1,0 +1,61 @@
+---
+// Suite de rubrique en fin d'article (section 23 : st-suite, st-cartes, st-carte).
+// Même logique de couloir que l'ancien RelatedArticles.astro (maillage mère /
+// sœur / fille, voir content.config.ts) : seul l'habillage change.
+import { getCollection } from 'astro:content';
+import { cocons } from '../../data/cocons';
+import { rubrique, illustrationPour } from '../../data/rubriques';
+import { icone, illustration } from '../../lib/tempo';
+
+interface Props { cocon: string; currentSlug: string }
+const { cocon, currentSlug } = Astro.props;
+
+const all = await getCollection('articles', ({ data }) => !data.draft);
+const inCocon = all.filter((a) => a.data.cocon === cocon);
+const externe = cocons.find((c) => c.slug === cocon)?.pilierExterne;
+const pilier: any = inCocon.find((a) => a.data.pilier) ?? (externe ? { id: externe.slug, data: { title: externe.title, pilier: true, description: '' } } : undefined);
+const me = inCocon.find((a) => a.id === currentSlug);
+const byTitle = (a: any, b: any) => a.data.title.localeCompare(b.data.title, 'fr');
+const childrenOf = (slug: string) => inCocon.filter((a) => a.data.parent === slug).sort(byTitle);
+const isPilier = Boolean(me?.data.pilier);
+const isSoeur = Boolean(me && !isPilier && pilier && me.data.parent === pilier.id);
+
+const groups: { title: string; items: any[] }[] = [];
+if (isPilier) groups.push({ title: 'Les grands sujets de ce guide', items: childrenOf(currentSlug) });
+else if (isSoeur) {
+  groups.push({ title: 'Dans cette série', items: childrenOf(currentSlug) });
+  if (pilier) groups.push({ title: 'Le guide complet', items: [pilier] });
+} else if (me?.data.parent) {
+  const soeur = inCocon.find((a) => a.id === me.data.parent);
+  const fratrie = childrenOf(me.data.parent).filter((a) => a.id !== currentSlug);
+  groups.push({ title: 'Dans la même série', items: [...(soeur ? [soeur] : []), ...fratrie] });
+  if (pilier) groups.push({ title: 'Le guide complet', items: [pilier] });
+} else if (pilier) groups.push({ title: 'Le guide complet', items: [pilier] });
+
+const shown = groups.filter((g) => g.items.length > 0);
+const r = rubrique(cocon);
+const hub = cocons.find((c) => c.slug === cocon);
+// Une illustration par carte, en tournant dans la scène de la rubrique.
+const ills = [...r.scene, ...(r.nuit ? ['gigoteuse'] : [])];
+---
+{shown.map((g, gi) => (
+  <section class="st-suite">
+    <div class="st-suite__tete">
+      <h2>{g.title}</h2>
+      {gi === 0 && hub && <a href={`/ressources/${cocon}/`}>{r.nom === 'Sommeil' ? 'Tout le sommeil' : `Toute la rubrique ${r.nom}`}</a>}
+    </div>
+    <div class="st-cartes">
+      {g.items.map((a, k) => (
+        <a class="st-carte" href={`/${a.id}/`}>
+          <span class="st-carte__visuel" style={`--cf:var(${r.fond})`} set:html={illustration(illustrationPour(a.id, cocon), 96)} />
+          <span class="st-carte__corps">
+            <span><span class={`pastille petite ${r.nature}`}>{r.nom}</span></span>
+            <h3>{a.data.title}</h3>
+            {a.data.description && <p>{a.data.description}</p>}
+            {a.data.readingTime && <small><Fragment set:html={icone('horloge', 14, 2)} /> {a.data.readingTime}</small>}
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+))}

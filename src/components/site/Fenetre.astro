@@ -1,0 +1,27 @@
+---
+// Fenêtre d'inscription (section 23 : st-voile, st-fenetre, st-inscription).
+// Sert de LISTE D'ATTENTE de l'app (arbitrage de Sandra du 24/11/2026) :
+// ouverte par tous les boutons [data-ouvrir-inscription], et une fois par visite
+// aux deux tiers de la lecture sur ordinateur.
+// TODO : brancher le formulaire sur Brevo (compte à créer par Sandra). D'ici là,
+// le formulaire n'envoie rien et le dit, pour ne perdre personne en silence.
+import { icone } from '../../lib/tempo';
+const BREVO_ACTION = ''; // URL du formulaire Brevo, à renseigner
+---
+<div class="st-voile" hidden data-voile>
+  <div class="st-fenetre" role="dialog" aria-modal="true" aria-labelledby="titre-fenetre">
+    <div class="st-fenetre__tete">
+      <h2 id="titre-fenetre">Soyez parmi les premiers.</h2>
+      <button class="st-fermer" type="button" data-fermer aria-label="Fermer" set:html={icone('croix', 20, 2.2)} />
+    </div>
+    <div class="st-fenetre__corps">
+      <p>L'app Tempo arrive bientôt. Laissez votre adresse : on vous écrit le jour de son ouverture, et pas avant.</p>
+      <form class="st-inscription" method="post" action={BREVO_ACTION || undefined} data-inscription data-actif={BREVO_ACTION ? 'oui' : 'non'}>
+        <label class="champ"><span class="champ__nom">Votre adresse e-mail</span><input type="email" name="EMAIL" required placeholder="prenom@exemple.fr" autocomplete="email" /></label>
+        <button class="bouton" type="submit">Je m'inscris</button>
+      </form>
+      <p class="st-mention">Désinscription en un clic. Tempo n'utilise votre adresse que pour vous prévenir de l'ouverture de l'app.</p>
+    </div>
+    <div class="st-fenetre__pied"><span class="st-icone-app petite" aria-hidden="true">t</span><span>Envie d'en savoir plus ? <a href="/#tempo">Découvrir l'app</a></span></div>
+  </div>
+</div>

@@ -1,0 +1,101 @@
+---
+// Page de rubrique (section 23 : st-tete-rubrique, st-recherche, onglets, st-une,
+// st-cartes). Sert /ressources/ (onglet « Tout ») et /ressources/<cocon>/.
+// Les onglets filtrent les cartes sur /ressources/ ; sur une page de cocon, ils
+// mènent à la page du cocon choisi. Chaque page de cocon reste une vraie URL,
+// liée en dur depuis le pied de page, le fil d'Ariane et les articles.
+import { getCollection } from 'astro:content';
+import { cocons } from '../../data/cocons';
+import { rubrique, illustrationPour } from '../../data/rubriques';
+import { icone, illustration } from '../../lib/tempo';
+
+interface Props { cocon?: string; titre: string; chapeau: string }
+const { cocon, titre, chapeau } = Astro.props;
+
+const tous = await getCollection('articles', ({ data }) => !data.draft);
+const recents = [...tous].sort((a, b) => b.data.updated.valueOf() - a.data.updated.valueOf());
+const vivants = cocons.filter((c) => tous.some((a) => a.data.cocon === c.slug));
+const liste = cocon ? recents.filter((a) => a.data.cocon === cocon) : recents;
+// À la une : le pilier du cocon, ou celui du sommeil sur la page générale.
+// Un cocon dont la mère n'est pas un article (futurs parents : le calendrier
+// de grossesse) met cette page-là à la une.
+const externe = cocon ? cocons.find((c) => c.slug === cocon)?.pilierExterne : undefined;
+const une: any = externe
+  ? { id: externe.slug, data: { title: externe.title, description: cocons.find((c) => c.slug === cocon)?.description ?? '', cocon } }
+  : liste.find((a) => a.data.pilier && a.data.cocon === (cocon ?? 'sommeil')) ?? liste[0];
+const cartes = liste.filter((a) => a.id !== une?.id);
+const ru = une ? rubrique(une.data.cocon) : null;
+const LOUPE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>';
+---
+<section class="st-tete-rubrique">
+  {cocon && (
+    <ol class="st-ariane" aria-label="Fil d'Ariane" style="max-width:1220px;margin:0 auto var(--e-4)">
+      <li><a href="/">Accueil</a></li><li set:html={icone('chevron', 14, 2.2)} /><li><a href="/ressources/">Ressources</a></li>
+    </ol>
+  )}
+  <div class="st-tete-rubrique__ligne">
+    <div><h1>{titre}</h1><p>{chapeau}</p></div>
+    <label class="st-recherche"><Fragment set:html={LOUPE} /><input type="search" placeholder="Rechercher un article" aria-label="Rechercher un article" data-recherche /></label>
+  </div>
+  <div class="onglets" role="tablist" data-onglets={cocon ? 'liens' : 'filtre'}>
+    <button type="button" role="tab" aria-selected={!cocon} data-cocon="" data-href="/ressources/">Tout</button>
+    {vivants.map((c) => (
+      <button type="button" role="tab" aria-selected={cocon === c.slug} data-cocon={c.slug} data-href={`/ressources/${c.slug}/`}>{rubrique(c.slug).nom}</button>
+    ))}
+  </div>
+  {une && ru && (
+    <a class="st-une" href={`/${une.id}/`}>
+      <span class="st-une__texte">
+        <span><span class={`pastille ${ru.nature}`}><Fragment set:html={icone(ru.icone, 13, 2.2)} /> {ru.nom} · À la une</span></span>
+        <h2>{une.data.title}</h2>
+        <p>{une.data.description}</p>
+        <span class="st-signature"><span class="st-avatar">SN</span><span><b>Sandra Nussbaum</b><small>Cofondatrice de Tempo</small></span></span>
+      </span>
+      <span class="st-une__visuel" set:html={illustration(illustrationPour(une.id, une.data.cocon), 220)} />
+    </a>
+  )}
+</section>
+<section class="st-rubrique-corps">
+  <h2 class="st-intertitre">Les derniers articles</h2>
+  <div class="st-cartes" data-cartes>
+    {cartes.map((a, k) => {
+      const r = rubrique(a.data.cocon);
+      return (
+        <a class="st-carte" href={`/${a.id}/`} data-cocon={a.data.cocon} data-titre={a.data.title.toLowerCase()}>
+          <span class="st-carte__visuel" style={`--cf:var(${r.fond})`} set:html={illustration(illustrationPour(a.id, a.data.cocon), 96)} />
+          <span class="st-carte__corps">
+            <span><span class={`pastille petite ${r.nature}`}>{r.nom}</span></span>
+            <h3>{a.data.title}</h3>
+            <p>{a.data.description}</p>
+            {a.data.readingTime && <small><Fragment set:html={icone('horloge', 14, 2)} /> {a.data.readingTime}</small>}
+          </span>
+        </a>
+      );
+    })}
+  </div>
+  <p class="st-mention" hidden data-aucun>Aucun article ne correspond à cette recherche.</p>
+</section>
+<script is:inline>
+  (function () {
+    var onglets = document.querySelector('[data-onglets]');
+    var cartes = Array.prototype.slice.call(document.querySelectorAll('[data-cartes] .st-carte'));
+    var champ = document.querySelector('[data-recherche]');
+    var aucun = document.querySelector('[data-aucun]');
+    var filtre = '';
+    function appliquer() {
+      var q = (champ.value || '').trim().toLowerCase(), vus = 0;
+      cartes.forEach(function (c) {
+        var ok = (!filtre || c.dataset.cocon === filtre) && (!q || c.dataset.titre.indexOf(q) > -1);
+        c.hidden = !ok; if (ok) vus++;
+      });
+      aucun.hidden = vus > 0;
+    }
+    onglets.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      if (onglets.dataset.onglets === 'liens') { location.href = b.dataset.href; return; }
+      onglets.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-selected', x === b); });
+      filtre = b.dataset.cocon; appliquer();
+    });
+    champ.addEventListener('input', appliquer);
+  })();
+</script>

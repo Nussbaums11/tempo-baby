@@ -1,0 +1,340 @@
+/* Page d'accueil : styles de la LP de Hugo (« Tempo, la page d'accueil », 17/11/2026),
+   repris tels quels. Ne pas retoucher ici sans le dire à Hugo. */
+
+/* Moteur de l'app idéale, repris tel quel de la planche 17 (fabrique.py) */
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.4 var(--font);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit}
+.pl{max-width:1180px;margin:0 auto;padding:36px max(16px,env(safe-area-inset-right)) 96px max(16px,env(safe-area-inset-left))}
+.pl-sur{font-size:13px;font-weight:800;color:var(--accent);letter-spacing:.02em}
+.pl h1{margin-top:8px;font-size:clamp(32px,5vw,46px);line-height:1.02;font-weight:800;letter-spacing:-.04em;max-width:820px}
+.chapo{margin-top:14px;max-width:680px;color:var(--ink-2);font-size:17px}
+.pl-tels{display:flex;flex-wrap:wrap;justify-content:center;gap:32px 44px;margin-top:34px}
+.pl-tels figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:320px}
+.pl-tels figcaption{text-align:center}
+.pl-tels figcaption b{display:block;font-size:17px;font-weight:800;letter-spacing:-.01em}
+.pl-tels figcaption span{display:block;margin-top:4px;font-size:13.5px;color:var(--ink-2);line-height:1.35}
+.pl-h2{margin:64px 0 14px;font-size:clamp(24px,3vw,30px);line-height:1.1;font-weight:800;letter-spacing:-.025em}
+.pl-liste{margin:0;padding:0;list-style:none;max-width:780px}
+.pl-liste li{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
+.pl-liste li:last-child{border-bottom:1px solid var(--line)}
+.pl-liste i{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-style:normal;font-size:12px;font-weight:800;margin-top:1px}
+.pl-liste b{font-weight:750}
+
+/* Le téléphone */
+.tel{position:relative;width:375px;height:812px;border-radius:46px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 9px #17100c,0 0 0 10px #3a2c24,0 30px 60px -20px rgba(42,26,20,.45);zoom:.8;flex:none;-webkit-user-select:none;user-select:none}
+.tel__statut{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;height:50px;padding:14px 30px 0 34px;font-size:15px;font-weight:700}
+.tel__statut span{display:flex;gap:6px;align-items:center}
+.ecran{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;background:var(--bg);transition:transform .42s var(--courbe-douce),opacity .42s var(--courbe-douce)}
+.ecran::-webkit-scrollbar{display:none}
+
+/* Accueil : le dégradé de ciel derrière la recherche et la carte de la semaine */
+.ac-degrade{position:absolute;top:0;left:0;right:0;height:380px;pointer-events:none}
+.ac-degrade.matin{background:linear-gradient(#f1ad7d,#f4c59c 38%,#f6d9b9 64%,var(--bg))}
+.ac-degrade.soir{background:linear-gradient(#c46f6a,#d99a88 38%,#eecfbf 64%,var(--bg))}
+.ac-degrade.nuit{background:linear-gradient(#5b3352,#3c2542 40%,var(--bg))}
+.ac-tete{position:relative;z-index:3;display:flex;gap:10px;align-items:center;padding:8px 16px 0}
+.ac-profil{flex:none;display:grid;place-items:center;width:48px;height:48px;border:0;border-radius:50%;background:color-mix(in srgb,var(--surface) 74%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:0;cursor:pointer}
+.accueil .semaine{margin-top:12px}
+.accueil .semaine + .titre-discret{margin-top:14px}
+/* La carte centrée sur le bébé est au catalogue : composants.css, section 3, variante .bebe (17/11). */
+.pl-groupe{margin-top:56px;font-size:clamp(22px,2.6vw,26px);font-weight:800;letter-spacing:-.02em}
+.pl-groupe + p{margin-top:6px;color:var(--ink-2);max-width:720px}
+.accueil .tel__corps{position:relative;z-index:2;padding:0 16px 120px}
+.accueil .titre-discret{margin-top:14px}
+
+/* Barre du bas, à la manière d'Alan : les onglets, et la porte de Mezzo */
+.ac-bas{position:absolute;left:12px;right:12px;bottom:24px;z-index:6;display:flex;gap:10px;align-items:center}
+.ac-onglets{flex:1;display:grid;grid-template-columns:repeat(4,1fr);height:66px;padding:6px;border-radius:33px;background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 10px 26px -10px rgba(42,26,20,.28),inset 0 0 0 1px var(--line)}
+.ac-onglets button{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;font-weight:650;color:var(--ink-2);border-radius:27px;cursor:pointer;padding:0}
+.ac-onglets button[aria-current="page"]{background:var(--surface-2);color:var(--ink);font-weight:750}
+.mezzo-porte{position:relative;flex:none;width:66px;height:66px;border-radius:50%;border:0;padding:0;cursor:pointer;background:#fbecd2 center 30%/cover no-repeat;box-shadow:0 10px 26px -10px rgba(42,26,20,.4),0 0 0 3px var(--surface);transition:transform .16s var(--courbe-douce)}
+.mezzo-porte:active{transform:scale(.92)}
+.mezzo-porte::after{content:"";position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(240,180,94,.35),transparent 70%);z-index:-1}
+
+/* Le chat */
+.chat{transform:translateY(100%);z-index:8;display:flex;flex-direction:column;overflow:hidden}
+.tel[data-vue="chat"] .chat{transform:none}
+.tel[data-vue="chat"] .accueil{transform:scale(.94);opacity:.4}
+.ch-tete{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;padding:4px 10px 0}
+.ch-retour{width:44px;height:44px;border:0;border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.ch-titre{text-align:center;font-weight:750;font-size:16px}
+.ch-fil{flex:1;overflow-y:auto;scrollbar-width:none;padding:0 16px 16px}
+.ch-fil::-webkit-scrollbar{display:none}
+.ch-mezzo{position:relative;width:250px;aspect-ratio:1;margin:0 auto;touch-action:none;cursor:crosshair}
+.ch-intro{margin-top:-6px;text-align:center;font-size:15.5px;color:var(--ink-2);padding:0 12px}
+.ch-intro b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--ink);margin-bottom:4px}
+.ch-fil .titre-discret{margin-top:18px}
+.ch-bas{padding:10px 16px 30px;background:linear-gradient(color-mix(in srgb,var(--bg) 0%,transparent),var(--bg) 26%)}
+.ch-bas .question{cursor:text}
+.ch-doute{margin-top:12px;text-align:center;font-size:14px;color:var(--ink-2)}
+.ch-doute b{color:var(--ink);font-weight:750;text-decoration:underline;text-underline-offset:3px}
+.bulle-moi{margin:12px 0 0 auto;max-width:78%;width:fit-content;text-wrap:balance;padding:11px 16px;border-radius:20px 20px 6px 20px;background:var(--ink);color:var(--bg);font-weight:650;font-size:15.5px;line-height:1.3;animation:entre .26s var(--courbe-douce) both}
+.ch-reponse{margin-top:14px;animation:entre .26s var(--courbe-douce) both}
+.ch-qui{display:flex;align-items:center;gap:10px}
+.ch-mini{position:relative;width:84px;height:84px;flex:none;-webkit-mask-image:radial-gradient(circle closest-side,#000 74%,transparent 100%);mask-image:radial-gradient(circle closest-side,#000 74%,transparent 100%)}
+.ch-mini img{width:100%;height:100%;display:block}
+.ch-mini.pop img{animation:pop .42s var(--courbe-douce)}
+.ch-qui span{font-size:13.5px;font-weight:700;color:var(--ink-2)}
+.ch-cherche{color:transparent!important;background:linear-gradient(90deg,var(--ink-2) 0 35%,var(--ink) 50%,var(--ink-2) 65% 100%) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text;animation:reflet 1.2s linear infinite}
+.ch-reponse .reponse{margin-top:6px}
+@keyframes entre{from{opacity:0;transform:translateY(8px)}}
+@keyframes pop{0%{transform:scale(.8)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes reflet{to{background-position:-200% 0}}
+
+/* La recherche est au catalogue (composants.css, section 22). Ici, seulement la place du clavier dessiné. */
+.recherche-ouverte__corps{padding-bottom:320px}
+.recherche-ouverte .eq__toast{bottom:300px}
+.clavier{position:absolute;left:0;right:0;bottom:0;z-index:40;padding:8px 3px 34px;background:#d3d5db}
+[data-mode="nuit"] .clavier{background:#2b2b2e}
+.clavier .rang{display:flex;justify-content:center;gap:6px;margin-bottom:11px}
+.clavier .t{flex:0 0 31px;height:42px;border-radius:6px;background:#fff;color:#111;display:grid;place-items:center;font:400 21px/1 -apple-system,system-ui,sans-serif;box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.clavier .t.g{flex:0 0 44px;background:#abb0ba;font-size:15px}
+.clavier .t.l{flex:1 1 auto;max-width:190px;font-size:15px}
+.clavier .t.v{flex:0 0 92px;background:#abb0ba;font-size:15px}
+[data-mode="nuit"] .clavier .t{background:#6b6b70;color:#fff;box-shadow:0 1px 0 rgba(0,0,0,.5)}
+
+/* La tête de Mezzo : de jour, et en veilleuse la nuit */
+.tel{--mezzo-tete:url(/accueil/rendus/pastille.jpg)}
+.tel[data-mode="nuit"]{--mezzo-tete:url(/accueil/rendus/nuit-pastille.jpg)}
+.mezzo-porte,.tel .carre.mezzo,.ch-avatar{background-image:var(--mezzo-tete)}
+.tel[data-mode="nuit"] .mezzo-porte,.tel[data-mode="nuit"] .ch-avatar{background-color:#1a0b1c}
+.ch-avatar{justify-self:center;width:46px;height:46px;border:0;border-radius:50%;padding:0;background-color:#fbecd2;background-position:center 30%;background-size:cover;background-repeat:no-repeat;box-shadow:0 0 0 3px var(--surface),var(--ombre-douce);cursor:pointer}
+.ch-erreurs{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:0;border:0;background:none;color:var(--ink-2);font:650 13.5px/1 var(--font);cursor:pointer}
+/* Les pages de Mezzo : « Mezzo peut se tromper » et « Qui est Mezzo », à la manière d'Alan */
+.page-m{position:absolute;inset:0;z-index:12;display:flex;flex-direction:column;background:var(--bg);animation:page-entre .42s var(--courbe-douce) both}
+.page-m.fixe{animation:none}
+@keyframes page-entre{from{transform:translateX(100%)}}
+.pm-tete{position:relative;z-index:2;padding:4px 10px 0}
+.pm-corps{position:relative;flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding:8px 20px 40px}
+.pm-corps::-webkit-scrollbar{display:none}
+.pm-titre{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:6px}
+.pm-sous{font-size:19px;font-weight:800;letter-spacing:-.015em;margin-top:24px}
+.pm-corps p{margin-top:10px;color:var(--ink-2);font-size:15.5px;line-height:1.45}
+.pm-puces{margin:12px 0 0;padding:0 0 0 18px;display:grid;gap:10px;font-size:15.5px;line-height:1.45}
+.pm-corps mark{background:var(--accent-soft);color:inherit;padding:0 3px;border-radius:4px}
+.pm-corps .proposition{margin-top:4px}
+.pm-corps .titre-discret{margin-top:22px}
+.pm-doute{margin-top:26px;display:grid;justify-items:center;gap:10px;text-align:center}
+.pm-doute p{margin:0}
+.pm-hero{position:relative;margin:-8px -20px 0;padding:6px 20px 0;height:440px;overflow:hidden;text-align:center}
+.pm-hero .ac-degrade{z-index:0}
+.pm-hero > *:not(.ac-degrade){position:relative;z-index:1}
+.pm-hero h2{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.pm-tag{display:inline-block;margin-top:10px;padding:6px 14px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:16px;transform:rotate(-3deg)}
+.pm-hero .ch-mezzo{width:280px;margin:2px auto 0}
+.pm-hero::after{content:"";position:absolute;z-index:1;left:-25%;right:-25%;bottom:-130px;height:180px;border-radius:50%;background:var(--bg)}
+.pm-faq-icone{width:52px;height:52px;border-radius:16px;margin-top:6px}
+.pm-faq-icone + .pm-titre{margin-top:14px;font-size:25px}
+.pm-corps p.pm-reponse{margin-top:14px;color:var(--ink);font-size:16.5px;line-height:1.5}
+.pm-corps p.pm-reponse:first-of-type{font-weight:650}
+.pm-accroche{text-align:center;color:var(--ink-2);font-size:16px;margin-top:2px}
+.pm-atouts{display:grid;gap:22px;margin-top:24px;text-align:center}
+.pm-atout .carre{margin:0 auto 8px;width:52px;height:52px;border-radius:16px}
+.pm-atout b{display:block;font-size:17px;font-weight:800}
+.pm-atout span{display:block;margin-top:4px;color:var(--ink-2);font-size:15px;line-height:1.4}
+.pm-actions{display:grid;justify-items:center;gap:10px;margin-top:26px}
+.pl-poses{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:18px;max-width:900px}
+.pl-poses figure{margin:0;border-radius:18px;overflow:hidden;background:#1a0b1c;color:#ecdcd2}
+.pl-poses img{width:100%;height:auto;display:block}
+.pl-poses figcaption{padding:8px 10px 10px;font-size:13px;font-weight:700}
+@media (max-width:640px){.pl-poses{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Mezzo vivant : l'image penche, les yeux suivent et clignent */
+.vivant{position:absolute;inset:0;will-change:transform;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 80%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 80%,transparent 100%)}
+.vivant img{position:absolute;display:block;pointer-events:none;-webkit-user-drag:none}
+.vivant .corps{inset:0;width:100%;height:100%}
+.oeil-pos{position:absolute;will-change:transform}
+.oeil-pos img{position:static!important;width:100%;height:100%;transform-origin:50% 55%;animation:cligne 6.4s infinite}
+@keyframes cligne{0%,93%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.12)}}
+.lueur{position:absolute;width:17%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,214,140,.75),rgba(240,180,94,.25) 45%,transparent 70%);mix-blend-mode:screen;animation:vacille 2.6s ease-in-out infinite;pointer-events:none}
+@keyframes vacille{0%,100%{opacity:.9;scale:1}40%{opacity:.7;scale:.94}70%{opacity:1;scale:1.05}}
+@media (prefers-reduced-motion:reduce){.oeil-pos img,.lueur,.ch-cherche{animation:none}.ecran{transition:none}}
+@media (max-width:420px){.tel{zoom:.78}}
+
+
+
+/* ======== La page d'accueil du site ======== */
+.site{--gouttiere:max(20px,env(safe-area-inset-left))}
+.site main{overflow-x:clip}
+.site *{box-sizing:border-box}
+.s-barre{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:14px var(--gouttiere);transition:background-color .26s var(--courbe-douce),box-shadow .26s var(--courbe-douce)}
+.s-barre.colle{background:var(--bg);box-shadow:0 1px 0 var(--line)}
+.s-marque{font-weight:800;letter-spacing:-.045em;font-size:26px;color:var(--ink);text-decoration:none}
+.s-lien{display:inline-flex;align-items:center;gap:8px;padding:10px 4px;border:0;background:none;font:700 16px/1 var(--font);color:var(--ink);cursor:pointer}
+.s-lien i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:color-mix(in srgb,var(--surface) 80%,transparent);box-shadow:var(--ombre-douce)}
+.s-lien:focus-visible,.s-ecran:focus-visible,.s-entrer:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:12px}
+
+/* En tête : un message, un bouton, et le haut du téléphone qui invite à descendre */
+.s-tete{position:relative;padding:128px var(--gouttiere) 0;text-align:center}
+.s-tete > .ac-degrade{height:100%;z-index:0}
+.s-tete > *:not(.ac-degrade):not(.s-intro):not(.s-mezzo){position:relative;z-index:1}
+/* Mezzo dans l'en-tête : caché derrière le téléphone, il passe la tête, la lanterne près de la joue ; ses yeux suivent le curseur */
+.s-scene-tete{position:relative;width:fit-content;margin:0 auto;padding-top:34px}
+.s-scene-tete .s-apercu{position:relative;z-index:1}
+.s-mezzo{position:absolute;z-index:0;top:-6px;left:calc(100% - 56px);width:204px;aspect-ratio:818/978;pointer-events:none;transition:opacity .5s var(--courbe-douce) .35s,transform .9s cubic-bezier(.2,1.2,.4,1) .35s}
+.s-mezzo .vivant{-webkit-mask-image:none;mask-image:none;transform:none!important}
+/* caché derrière le téléphone, il ne se penche pas : seuls ses yeux suivent le curseur, sinon son bord coupé se décolle */
+.s-mezzo.nuit .corps{filter:brightness(.8) saturate(.95)}
+.s-mezzo.nuit .lueur{scale:1.8;opacity:1}
+.s-tete.intro .s-mezzo{opacity:0;transform:translateX(-70px) rotate(-6deg)}
+/* L'ouverture : « 24 semaines », mille choses à préparer, puis tout se range dans le téléphone (d'après l'ouverture du film) */
+.s-intro{position:absolute;inset:0 0 auto 0;height:100svh;z-index:3;pointer-events:none;overflow:hidden}
+.s-intro[hidden]{display:none}
+.s-intro__nombre{position:absolute;left:50%;top:44%;width:max-content;max-width:92vw;text-align:center;opacity:0;transform:translate(-50%,-50%) scale(.96);transition:opacity .42s var(--courbe-douce),transform .6s var(--courbe-douce)}
+.s-intro.t1 .s-intro__nombre{opacity:1;transform:translate(-50%,-50%)}
+.s-intro.t4 .s-intro__nombre{opacity:0;transform:translate(-50%,-62%)}
+.s-intro__nombre b{display:block;font-size:clamp(84px,13vw,160px);font-weight:800;letter-spacing:-.05em;line-height:.9}
+.s-intro__nombre small{margin-left:.12em;font-size:.3em;letter-spacing:-.02em}
+.s-intro__nombre span{display:grid;margin-top:12px;font-size:clamp(17px,1.8vw,22px);font-weight:550;color:var(--ink-2)}
+.s-intro__nombre em{grid-area:1/1;font-style:normal;transition:opacity .42s var(--courbe-douce)}
+.s-intro__nombre em.b{opacity:0;color:var(--ink);font-weight:700}
+.s-intro.t3 .s-intro__nombre em.a{opacity:0}
+.s-intro.t3 .s-intro__nombre em.b{opacity:1}
+.s-mot{position:absolute;left:var(--x);top:var(--y);padding:9px 16px;border-radius:999px;background:var(--fond);box-shadow:var(--ombre-douce);font:650 clamp(13px,1.2vw,16px)/1 var(--font);color:var(--ink);white-space:nowrap;opacity:0;transform:translate(-50%,-50%) rotate(var(--r)) scale(.6);transition:opacity .26s var(--courbe-douce) var(--d),transform .42s cubic-bezier(.2,1.4,.4,1) var(--d)}
+.s-intro.t2 .s-mot{opacity:1;transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}
+.s-intro{--pas:172px}
+.s-intro.t3 .s-mot{left:var(--lx);top:var(--ly);opacity:0;transform:translate(-50%,-50%) scale(.2);transition:left .7s var(--courbe-douce) var(--d2),top .7s var(--courbe-douce) var(--d2),transform .7s var(--courbe-douce) var(--d2),opacity .4s ease calc(var(--d2) + .32s)}
+.s-intro.t3 .s-mot.reste{left:calc(50% + var(--rx) * var(--pas));top:calc(44% + clamp(108px,11vw,142px));opacity:1;transform:translate(-50%,-50%) scale(1.06);transition:left .6s var(--courbe-douce),top .6s var(--courbe-douce),transform .6s var(--courbe-douce)}
+.s-intro.t4 .s-mot.reste{opacity:0;transition:opacity .4s ease}
+.s-intro__mezzo{position:absolute;bottom:4vh;left:calc(50% + min(27vw,380px));height:min(44vh,400px);aspect-ratio:774/909;translate:-50% 0;opacity:0;transform:translateY(70px);transition:opacity .45s var(--courbe-douce),transform .7s cubic-bezier(.2,1.25,.4,1)}
+.s-intro__mezzo img{position:absolute;bottom:0;left:50%;height:100%;width:auto;translate:-50% 0;opacity:0;transition:opacity .22s ease,transform .5s cubic-bezier(.2,1.4,.4,1)}
+.s-intro.m1 .s-intro__mezzo{opacity:1;transform:none}
+.s-intro.m1 .s-intro__mezzo .p1,.s-intro.m2 .s-intro__mezzo .p2,.s-intro.m3 .s-intro__mezzo .p3{opacity:1}
+.s-intro.m2 .s-intro__mezzo .p1,.s-intro.m3 .s-intro__mezzo .p1,.s-intro.m3 .s-intro__mezzo .p2{opacity:0}
+.s-intro.m2 .s-intro__mezzo .p2{transform:scale(1.05)}
+.s-intro.m4 .s-intro__mezzo{opacity:0;transform:translate(calc(-1 * min(14vw,190px)),20px) scale(.55);transition:opacity .45s ease .1s,transform .6s var(--courbe-douce)}
+.s-intro__lueur{position:absolute;width:150px;height:150px;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,220,150,.9),rgba(240,180,94,.35) 40%,transparent 70%);mix-blend-mode:screen;opacity:0;scale:.4;transition:opacity .4s ease,scale .6s var(--courbe-douce)}
+.s-intro.m2 .s-intro__lueur{opacity:1;scale:2.2}
+.s-intro.m3 .s-intro__lueur{opacity:0;scale:1}
+.s-intro__mezzo video{position:absolute;left:50%;bottom:-14%;height:120%;width:auto;aspect-ratio:1;translate:-50% 0;opacity:0;pointer-events:none}
+.s-intro.video .s-intro__mezzo img,.s-intro.video .s-intro__lueur{display:none}
+.s-intro.video .s-intro__mezzo video{opacity:1}
+@media (max-width:900px){.s-intro__mezzo{left:50%;height:min(30vh,280px);bottom:9vh}}
+.s-tete > h1,.s-tete > .s-phrase,.s-tete > .s-actions,.s-tete .s-apercu{transition:opacity .6s var(--courbe-douce),transform .7s var(--courbe-douce)}
+.s-tete > .s-phrase{transition-delay:.08s}
+.s-tete > .s-actions{transition-delay:.16s}
+.s-tete .s-apercu{transition-delay:.1s}
+.s-tete.intro > h1,.s-tete.intro > .s-phrase,.s-tete.intro > .s-actions{opacity:0;transform:translateY(24px)}
+.s-tete.intro .s-apercu{opacity:0;transform:translateY(120px)}
+@media (max-width:900px){.s-mot.loin:not(.reste){display:none}.s-intro{--pas:120px}.s-mot{padding:7px 11px;font-size:12px}.s-intro.t3 .s-mot.reste{transform:translate(-50%,-50%)}}
+/* les trois étiquettes qui restent ne sont jamais masquées : sur téléphone, plus petites, sur une ligne */
+.s-tete.immediat > *{transition:none!important}
+.s-tete h1{max-width:13ch;margin:0 auto;font-size:clamp(46px,7vw,86px);font-weight:800;letter-spacing:-.045em;line-height:.98}
+.s-phrase{text-wrap:balance;max-width:36ch;margin:22px auto 0;font-size:clamp(17px,1.7vw,20px);font-weight:550;line-height:1.4;color:var(--ink-2)}
+.s-actions{display:flex;flex-wrap:wrap;gap:12px 22px;justify-content:center;align-items:center;margin-top:30px}
+.s-actions .bouton{min-width:0;padding:0 28px}
+.s-stores{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.s-store{display:inline-flex;align-items:center;gap:9px;height:54px;padding:0 16px 0 13px;border-radius:10px;background:#000;color:#fff;text-decoration:none;box-shadow:inset 0 0 0 1px #a6a6a6;font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;transition:transform .16s var(--courbe-douce)}
+.s-store:active{transform:scale(.97)}
+.s-store:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.s-store svg{flex:none;width:30px;height:30px}
+.s-store span{display:grid;text-align:left;line-height:1}
+.s-store small{font-size:12px;font-weight:500;letter-spacing:.01em}
+.s-store small.capitales{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.s-store b{margin-top:2px;font-size:23px;font-weight:500;letter-spacing:-.02em}
+/* de l'air de chaque côté : le contour noir du téléphone est une ombre portée, que le cadre coupait */
+.s-apercu{display:flex;justify-content:center;margin-top:0;padding:14px 14px 0;height:min(48vh,446px);overflow:hidden;-webkit-mask-image:linear-gradient(#000 78%,transparent);mask-image:linear-gradient(#000 78%,transparent)}
+.s-apercu .s-ecran{opacity:1;transform:none}
+.s-apercu .tel{zoom:.88}
+
+/* Les chapitres : le texte défile, le téléphone reste et change d'écran */
+.s-chapitres{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;max-width:1160px;margin:0 auto;padding:18vh var(--gouttiere) 0}
+.s-chap{min-height:88vh;display:flex;flex-direction:column;justify-content:center;max-width:480px;justify-self:end}
+.s-num{font-size:16px;font-weight:800;color:var(--accent)}
+.s-chap h2{margin-top:10px;font-size:clamp(34px,4vw,48px);font-weight:800;letter-spacing:-.035em;line-height:1.04}
+.s-chap > p{margin-top:16px;font-size:20px;line-height:1.45;color:var(--ink-2)}
+.s-points{display:grid;gap:12px;margin:22px 0 0;padding:0;list-style:none}
+.s-points li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:16px;line-height:1.45}
+.s-points i{display:grid;place-items:center;width:24px;height:24px;margin-top:-1px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-style:normal}
+.s-entrer{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;margin-top:26px;padding:10px 0;border:0;background:none;font:700 16px/1 var(--font);color:var(--ink);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:5px;cursor:pointer}
+.s-scene{position:relative}
+.s-ecrin{position:sticky;top:max(72px,calc(50vh - 340px));height:min(690px,calc(100vh - 90px));display:grid;place-items:center}
+.s-ecrin > .s-ecran{grid-area:1/1;opacity:0;transform:translateY(18px) scale(.98);pointer-events:none;transition:opacity .42s var(--courbe-douce),transform .42s var(--courbe-douce)}
+.s-ecrin > .s-ecran.actif{opacity:1;transform:none;pointer-events:auto}
+.s-ecran{position:relative;display:flex;justify-content:center;cursor:pointer;border-radius:46px}
+.s-ecran .tel{zoom:.8}
+.s-ecran:not(.dedans) .tel{pointer-events:none}
+.s-ecran.deux{gap:0}
+.s-ecrin .s-ecran .tel,.s-ecrin .tel-image{zoom:var(--zt,.8)}
+.s-ecrin .s-ecran.deux .tel{zoom:calc(var(--zt,.8) * .82)}
+.s-ecran.deux .tel{zoom:.66}
+.s-ecran.deux .tel + .tel{margin:60px 0 0 -40px}
+.tel-image{position:relative;width:375px;height:812px;border-radius:46px;overflow:hidden;background:var(--bg);box-shadow:0 0 0 9px #17100c,0 0 0 10px #3a2c24,0 30px 60px -20px rgba(42,26,20,.45);zoom:.8;flex:none}
+.tel-image img{display:block;width:100%;height:100%}
+.s-indice{position:absolute;left:50%;bottom:-6px;translate:-50% 0;display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;background:var(--surface);box-shadow:var(--ombre-levee);font:700 14px/1 var(--font);color:var(--ink);white-space:nowrap;opacity:0;transition:opacity .26s var(--courbe-douce)}
+.s-ecran:hover .s-indice,.s-ecran:focus-visible .s-indice{opacity:1}
+.s-tel-mobile{display:none}
+
+/* La fin */
+.s-fin{position:relative;margin-top:40px;padding:150px var(--gouttiere) 170px;text-align:center;overflow:hidden}
+.s-fin > .ac-degrade{top:auto;bottom:0;height:100%;transform:scaleY(-1);z-index:0}
+.s-fin > *:not(.ac-degrade){position:relative;z-index:1}
+.s-fin h2{max-width:13ch;margin:0 auto;font-size:clamp(40px,6vw,72px);font-weight:800;letter-spacing:-.045em;line-height:1}
+.s-fin p{text-wrap:balance;max-width:36ch;margin:18px auto 0;font-size:20px;color:var(--ink-2)}
+.s-fin .s-actions{margin-top:28px}
+
+/* Entrer dans un aperçu : le panneau, sur place */
+.s-panneau{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:20px;background:color-mix(in srgb,var(--bg) 93%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);animation:s-entre .26s var(--courbe-douce) both}
+.s-panneau[hidden]{display:none}
+@keyframes s-entre{from{opacity:0}}
+.s-panneau__boite{display:grid;grid-template-columns:auto minmax(0,400px);gap:56px;align-items:center;max-width:1000px;animation:s-monte .42s var(--courbe-douce) both}
+@keyframes s-monte{from{transform:translateY(24px) scale(.97);opacity:0}}
+.s-panneau__fermer{position:fixed;top:18px;right:18px;z-index:2;display:grid;place-items:center;width:48px;height:48px;border:0;border-radius:50%;background:var(--surface);color:var(--ink);box-shadow:var(--ombre-levee);cursor:pointer}
+.s-panneau__fermer:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.s-panneau__tel .s-ecran{cursor:default}
+.s-panneau__texte h2{font-size:clamp(28px,3vw,38px);font-weight:800;letter-spacing:-.03em;line-height:1.08}
+.s-panneau__texte > p{margin-top:14px;font-size:18px;line-height:1.45;color:var(--ink-2)}
+.s-essai{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:10px 14px;border-radius:14px;background:var(--accent-soft);font-size:15px;font-weight:650}
+.s-film{width:min(92vw,1100px);max-height:86vh;border-radius:22px;background:#000;box-shadow:var(--ombre-levee);display:block}
+.s-film.vertical{width:auto;height:min(86vh,900px)}
+body.fige{overflow:hidden}
+
+/* Outil de planche : voir le site à une autre heure */
+.s-heure{position:fixed;left:16px;bottom:16px;z-index:50;display:flex;align-items:center;gap:4px;padding:5px;border-radius:999px;background:var(--surface);box-shadow:var(--ombre-levee),0 0 0 1.5px var(--accent) inset;font:700 13px/1 var(--font);color:var(--ink-2)}
+.s-heure span{padding:0 8px}
+.s-heure,.s-heure button{white-space:nowrap}
+@media (max-width:520px){.s-heure span{display:none}.s-heure button{padding:8px 9px}}
+.s-heure button{border:0;background:none;padding:8px 11px;border-radius:999px;font:700 13px/1 var(--font);color:var(--ink);cursor:pointer}
+.s-heure button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.s-heure button.rejouer{background:var(--accent-soft);margin-left:4px}
+
+@media (max-width:900px){
+  .s-chapitres{grid-template-columns:1fr;gap:0}
+  .s-scene{display:none}
+  .s-chap{min-height:0;padding:64px 0 8px;justify-self:stretch;max-width:none}
+  .s-tel-mobile{display:flex;justify-content:center;margin-top:30px}
+  .s-tel-mobile .s-ecran .tel,.s-tel-mobile .tel-image{zoom:.72}
+  .s-tel-mobile .s-ecran.deux .tel{zoom:.48}
+  .s-tel-mobile .s-ecran.deux .tel + .tel{margin:44px 0 0 -46px}
+  .s-tete h1{font-size:clamp(40px,11vw,56px)}
+  .s-chap > p{font-size:18px}
+  .s-indice{opacity:1}
+  .s-panneau{padding:0}
+  .s-panneau__boite{grid-template-columns:1fr;justify-items:center;gap:0}
+  .s-panneau__texte{display:none}
+}
+@media (prefers-reduced-motion:reduce){.s-ecrin > .s-ecran,.s-panneau,.s-panneau__boite{transition:none;animation:none}.s-intro{display:none}}
+@media (max-width:900px){.s-scene-tete{translate:-20px 0}.s-scene-tete .s-apercu .tel{zoom:.78}.s-scene-tete .s-mezzo{width:76px;top:14px;left:calc(100% - 30px)}}
+
+
+/* ===== Ajouts du site à la LP (24/11/2026) ===== */
+/* La navigation du site dans la barre de la LP : à droite, avec le film et la liste d'attente. */
+.s-barre{gap:var(--e-6)}
+.accueil-nav{margin-left:auto;margin-right:0}
+.accueil-barre-droite{display:flex;align-items:center;gap:var(--e-4)}
+.accueil-barre-bouton{min-width:0;height:44px;padding:0 20px;font-size:15px}
+@media (max-width:899px){.accueil-nav{display:none}.accueil-barre-droite{margin-left:auto}.accueil-barre-bouton{height:40px;padding:0 14px;font-size:14px}}
+@media (max-width:420px){.s-barre .s-lien[data-film]{display:none}}
+/* La section des guides, entre les chapitres et la fin. */
+.accueil-guides{background:transparent}
+.accueil-guides__tete{max-width:1220px;margin:0 auto var(--e-6)}
+.accueil-guides__tete .st-intertitre{margin:0}
+.accueil-guides .st-cartes{max-width:1220px;margin:0 auto}
+/* Les questions de l'accueil, sous les guides. */
+.accueil-questions{padding-top:0}
+.st-rubrique-corps.accueil-questions h2.st-intertitre,.accueil-questions .st-faq{max-width:var(--st-colonne);margin-left:auto;margin-right:auto}
+.st-rubrique-corps.accueil-questions h2.st-intertitre{margin-bottom:var(--e-6)}

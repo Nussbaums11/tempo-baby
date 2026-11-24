@@ -1,0 +1,86 @@
+/* Tempo : valeurs de base. « Soir le jour, Veilleuse la nuit » (11/11/2026).
+   Une seule source pour le référentiel et le prototype. Le mode se choisit par l'attribut data-mode="jour" ou "nuit"
+   sur n'importe quel conteneur : tout ce qui est dedans suit. */
+
+/* ---------- Jour : la lumière du soir ---------- */
+:root,[data-mode="jour"]{
+  /* Couleurs de base */
+  --creme:#f8f1ea;--creme-clair:#fffaf5;--lin:#efe4d8;--sable:#eadfd3;
+  --brun:#2a1a14;--brun-doux:#75645a;
+  --caramel:#d39a55;--vieux-rose:#b06a63;--prune:#7d4153;
+  --lait-caramel:#f6e3cc;--rose-the:#f3dde0;--lilas-pale:#ece4f3;--sauge-pale:#e1efe9;
+
+  /* Rôles */
+  --bg:var(--creme);--surface:var(--creme-clair);--surface-2:var(--lin);
+  --ink:var(--brun);--ink-2:var(--brun-doux);--line:var(--sable);
+  --accent:#c98a45;--accent-ink:#2a1a14;--accent-soft:#fbecd9;
+  --hero:linear-gradient(150deg,#d39a55 0%,#b06a63 55%,#7d4153 100%);
+  --hero-veil:linear-gradient(180deg,rgba(40,18,12,0) 40%,rgba(40,18,12,.34));
+  --hero-ink:#ffffff;
+  --ring:conic-gradient(from 90deg,#d39a55,#b06a63,#7d4153,#e8b57a,#d39a55);
+  /* Les quatre couleurs du contour lumineux, et son halo */
+  --r1:#d39a55;--r2:#b06a63;--r3:#7d4153;--r4:#e8b57a;--halo:rgba(176,106,99,.45);
+  --btn:var(--brun);--btn-ink:var(--creme-clair);
+  --line-fort:#d9c9b9;--repos:#a8988c;
+  --scrim:rgba(42,26,20,.42);
+
+  /* Natures : une couleur, un sens, partout */
+  --rdv:#7d3348;--rdv-bg:#f3dde0;
+  --choix:#7a4818;--choix-bg:#f6e3cc;
+  --tache:#5e4a3c;--tache-bg:#efe4d8;
+  --sante:#2f6b5a;--sante-bg:#e1efe9;
+  --sommeil:#5b4590;--sommeil-bg:#ece4f3;
+  --repas:#8a5a10;--repas-bg:#fbe8cf;
+  --alerte:#9b3b2e;--alerte-bg:#f8e1dc;
+
+  /* Illustrations bichromes */
+  --ill-a:#f0c48f;--ill-b:#b06a63;--ill-c:#7d4153;--ill-d:#fff3e4;
+
+  --ombre-douce:0 1px 2px rgba(42,26,20,.06),0 8px 24px -12px rgba(42,26,20,.22);
+  --ombre-levee:0 2px 4px rgba(42,26,20,.08),0 18px 40px -18px rgba(42,26,20,.38);
+  color-scheme:light;
+}
+
+/* ---------- Nuit : la veilleuse ---------- */
+[data-mode="nuit"]{
+  --bg:#1b1220;--surface:#271b2d;--surface-2:#33232f;
+  --ink:#f6ece2;--ink-2:#b9a7a6;--line:rgba(246,236,226,.10);
+  --accent:#f0b45e;--accent-ink:#1b1220;--accent-soft:#3a2a30;
+  --hero:radial-gradient(120% 120% at 85% 0%,#f0b45e 0%,#c0645e 36%,#5a2d52 72%,#2b1830 100%);
+  --hero-veil:none;--hero-ink:#fff7ec;
+  --ring:conic-gradient(from 90deg,#f0b45e,#e07a6a,#a35b8e,#f0b45e);
+  --r1:#f0b45e;--r2:#e07a6a;--r3:#a35b8e;--r4:#f0b45e;--halo:rgba(240,180,94,.3);
+  --btn:#f0b45e;--btn-ink:#1b1220;
+  --line-fort:rgba(246,236,226,.22);--repos:#8a7880;
+  --scrim:rgba(8,4,10,.6);
+  --rdv:#e9a3b6;--rdv-bg:#3a2433;
+  --choix:#f3c47a;--choix-bg:#3a2a22;
+  --tache:#d8c3b3;--tache-bg:#30242a;
+  --sante:#9fd1bd;--sante-bg:#22302b;
+  --sommeil:#c9b6e0;--sommeil-bg:#2f2440;
+  --repas:#f3c47a;--repas-bg:#3a2a22;
+  --alerte:#f2a593;--alerte-bg:#3d2422;
+  --ill-a:#a8724a;--ill-b:#e07a6a;--ill-c:#f0b45e;--ill-d:#3a2a30;
+  --ombre-douce:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.6);
+  --ombre-levee:0 2px 4px rgba(0,0,0,.35),0 18px 40px -18px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+
+/* ---------- Typographie, formes, espace, mouvement : communs au jour et à la nuit ---------- */
+:root{
+  --font:"Figtree",system-ui,-apple-system,sans-serif;
+  /* Deux niveaux de titre au plus, un texte, un petit texte ; les chiffres ont leurs tailles */
+  --fs-titre-1:30px;--fs-titre-2:20px;--fs-texte:16px;--fs-petit:13px;
+  --fs-chiffre:34px;--fs-chiffre-2:22px;
+  --fw-titre:700;--fw-ligne:650;--fw-texte:500;--fw-chiffre:800;
+  --interligne-titre:1.1;--interligne-texte:1.4;
+
+  --r-s:10px;--r-m:14px;--r-l:20px;--r-xl:24px;--r-feuille:28px;--r-pilule:999px;
+
+  --e-1:4px;--e-2:8px;--e-3:12px;--e-4:16px;--e-5:20px;--e-6:24px;--e-8:32px;--e-10:40px;
+
+  --cible:44px;--bouton:54px;--icone:20px;--trait-icone:1.85;
+
+  --duree-rapide:160ms;--duree-moyenne:260ms;--duree-lente:420ms;
+  --courbe-douce:cubic-bezier(.2,.8,.2,1);
+}

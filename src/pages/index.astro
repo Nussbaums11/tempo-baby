@@ -1,123 +1,166 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import EmailCapture from '../components/EmailCapture.astro';
+// Page d'accueil, refonte du 24/11/2026 : la LP de Hugo (« Tempo, la page
+// d'accueil », 17/11/2026) reprise telle quelle (arbitrage de Sandra), avec :
+// - les boutons des stores remplacés par la liste d'attente (l'app n'est pas en ligne) ;
+// - la navigation du site dans la barre du haut ;
+// - une section « Nos guides » avant la fin, seul lien de l'accueil vers les articles ;
+// - le pied de page et la fenêtre d'inscription du site ;
+// - sans la barre « Planche, à 8 h / 19 h 30 / 2 h », outil de présentation de Hugo.
+// Styles : src/styles/accueil.css ; script : public/accueil/accueil.js (ceux de la LP).
 import { getCollection } from 'astro:content';
+import Analytics from '../components/Analytics.astro';
+import Pied from '../components/site/Pied.astro';
+import Fenetre from '../components/site/Fenetre.astro';
+import { organizationJsonLd } from '../data/organization';
 import { cocons } from '../data/cocons';
+import { rubrique } from '../data/rubriques';
+import { icone, illustration } from '../lib/tempo';
+import tempoJs from '../styles/tempo/composants.js?url';
+import '../styles/tempo/valeurs.css';
+import '../styles/tempo/composants.css';
+import '../styles/site.css';
+import '../styles/accueil.css';
 
-const orgSchema = {
+const orgSchema = organizationJsonLd(Astro.site);
+const tous = await getCollection('articles', ({ data }) => !data.draft);
+const compte = (c: string) => tous.filter((a) => a.data.cocon === c).length;
+const guides = [
+  { href: '/ressources/sommeil/', cocon: 'sommeil', ill: 'cododo', titre: 'Le sommeil de bébé', texte: cocons.find((c) => c.slug === 'sommeil')?.description ?? '', n: compte('sommeil') },
+  { href: '/ressources/futurs-parents/', cocon: 'futurs-parents', ill: 'poussette', titre: 'Futurs parents', texte: 'Garde, valise, liste de naissance : tout ce qui compte avant l’arrivée de bébé.', n: compte('futurs-parents') },
+  { href: '/calendrier-grossesse/', cocon: 'futurs-parents', ill: 'livre', titre: 'Calendrier de grossesse', texte: 'Vos rendez-vous et démarches, semaine par semaine, à partir de votre date de terme.', n: 0 },
+];
+// Questions de l'accueil (arbitrages de Sandra du 24/11/2026) : gratuit pendant la bêta,
+// iPhone puis Android sans date, données sans mention d'hébergeur tant que Hugo ne l'a pas confirmé.
+const questions = [
+  { q: 'Combien coûte Tempo ?', r: 'Tempo est gratuite pendant la bêta. Inscrivez-vous à la liste d’attente pour en faire partie.' },
+  { q: 'Quand sort l’app, et sur quels téléphones ?', r: 'Bientôt sur iPhone, puis sur Android. Inscrivez-vous : vous serez prévenus en premier.' },
+  { q: 'Que deviennent mes données ?', r: 'Tempo ne garde que ce qui sert à vous accompagner : votre date de terme, ce que vous avez fait, vos questions. Rien n’est vendu, rien n’est partagé à des fins publicitaires. Vous pouvez télécharger ou supprimer toutes vos données à tout moment, depuis votre profil ou en écrivant à l’équipe de Tempo : ce sont vos droits, au titre du règlement européen sur les données (RGPD).' },
+];
+const faqSchema = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Tempo',
-  description: 'Application de parentalité qui évolue avec votre bébé, fondée sur la recherche scientifique.',
-  url: 'https://tempo-baby.com/',
+  '@type': 'FAQPage',
+  mainEntity: questions.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.r } })),
 };
-
-const allArticles = await getCollection('articles', ({ data }) => !data.draft);
-
-const pillars = cocons.filter((c) => !c.horsAccueil).map((c) => {
-  const live = allArticles.some((a) => a.data.cocon === c.slug);
-  return {
-    icon: c.icon,
-    title: c.title,
-    href: live ? `/ressources/${c.slug}/` : '#',
-    text: c.description,
-    live,
-    signature: c.signature,
-  };
-});
+const PLAY = '<i aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg></i>';
 ---
-
-<BaseLayout
-  title="L'app qui suit le rythme de votre bébé — Tempo"
-  description="Des conseils qui évoluent avec votre bébé, fondés sur la recherche scientifique — pas sur des templates génériques."
-  path="/"
->
+<html lang="fr" data-mode="jour">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <Analytics />
+  <title>L'app qui suit le rythme de votre bébé — Tempo</title>
+  <meta name="description" content="Des conseils qui évoluent avec votre bébé, fondés sur la recherche scientifique — pas sur des templates génériques." />
+  <link rel="canonical" href={new URL('/', Astro.site)} />
+  <meta property="og:title" content="Tempo : devenir parents, au bon tempo" />
+  <meta property="og:description" content="Tempo vous accompagne de la conception aux 1 000 premiers jours de votre enfant." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
   <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</head>
+<body>
+<header class="s-barre" id="barre">
+  <a class="s-marque" href="/">tempo</a>
+  <nav class="st-nav accueil-nav" aria-label="Navigation principale">
+    <a href="/ressources/">Ressources</a><a href="#tempo">L'app</a><a href="/qui-sommes-nous/">Qui sommes-nous</a>
+  </nav>
+  <div class="accueil-barre-droite">
+    <button type="button" class="s-lien" data-film><Fragment set:html={PLAY} />Le film</button>
+    <a class="bouton secondaire accueil-barre-bouton" href="#liste-attente" data-ouvrir-inscription>Liste d'attente</a>
+  </div>
+</header>
 
-  <section class="bg-gradient-to-b from-ink from-55% to-cream to-55% pt-16">
-    <div class="max-w-4xl mx-auto px-6">
-      <EmailCapture />
+<main>
+<section class="s-tete intro" id="haut">
+  <div class="ac-degrade s-ciel matin"></div>
+  <div class="s-intro" id="intro" aria-hidden="true" hidden><div class="s-intro__mezzo"><video class="pv" src="/accueil/rendus/mezzo-geste.webm" muted playsinline preload="auto"></video><img class="p1" src="/accueil/rendus/pied.webp" alt=""><img class="p2" src="/accueil/rendus/geste.webp" alt=""><img class="p3" src="/accueil/rendus/content.webp" alt=""></div><span class="s-intro__lueur"></span><div class="s-intro__nombre"><b>24<small>e semaine</small></b><span><em class="a">Et mille choses à préparer.</em><em class="b">Trois, cette semaine.</em></span></div></div>
+  <h1>Devenir parents,<br> au bon tempo.</h1>
+  <p class="s-phrase">Tempo vous accompagne de la conception aux 1 000 premiers jours de votre enfant.</p>
+  <div class="s-actions">
+    <a class="bouton" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
+    <button type="button" class="s-lien" data-film><Fragment set:html={PLAY} />Voir le film · 1 min</button>
+  </div>
+  <div class="s-scene-tete"><div class="s-apercu" id="apercu"></div><div class="s-mezzo" id="mezzo-tete" aria-hidden="true"></div></div>
+</section>
+
+<section class="s-chapitres" id="tempo" aria-label="Ce que fait Tempo">
+  <div class="s-textes" id="textes"></div>
+  <div class="s-scene" aria-hidden="true"><div class="s-ecrin" id="ecrin"></div></div>
+</section>
+
+<div class="st-page"><div class="st-site accueil-guides">
+  <section class="st-rubrique-corps">
+    <div class="st-suite__tete accueil-guides__tete">
+      <h2 class="st-intertitre">Nos guides, clairs et sourcés</h2>
+      <a href="/ressources/">Tous les guides</a>
+    </div>
+    <div class="st-cartes">
+      {guides.map((g) => {
+        const r = rubrique(g.cocon);
+        return (
+          <a class="st-carte" href={g.href}>
+            <span class="st-carte__visuel" style={`--cf:var(${r.fond})`} set:html={illustration(g.ill, 96)} />
+            <span class="st-carte__corps">
+              <span><span class={`pastille petite ${r.nature}`}>{r.nom}</span></span>
+              <h3>{g.titre}</h3>
+              <p>{g.texte}</p>
+              {g.n > 0 && <small><Fragment set:html={icone('livre', 14, 2)} /> {g.n} guides</small>}
+            </span>
+          </a>
+        );
+      })}
     </div>
   </section>
-
-  <section class="pt-12">
-    <div class="max-w-5xl mx-auto px-6">
-      <a
-        href="/calendrier-grossesse/"
-        class="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-terracotta bg-terracotta/10 p-6 no-underline transition hover:-translate-y-0.5 hover:shadow-lg"
-      >
-        <div class="text-3xl">🤰</div>
-        <div class="flex-1">
-          <h2 class="text-lg md:text-xl text-ink m-0">Vous attendez un bébé ?</h2>
-          <p class="text-sm text-ink/60 m-0">
-            Calculez votre calendrier de grossesse : où vous en êtes, votre terme, et chaque étape à sa place.
-          </p>
-        </div>
-        <span class="text-terracotta font-semibold whitespace-nowrap">Mon calendrier de grossesse →</span>
-      </a>
+  <section class="st-rubrique-corps accueil-questions">
+    <h2 class="st-intertitre">Vos questions</h2>
+    <div class="st-faq">
+      {questions.map((f, k) => <details open={k === 0}><summary>{f.q}<i set:html={icone('plus', 16, 2.4)} /></summary><p>{f.r}</p></details>)}
     </div>
   </section>
+</div></div>
 
-  <section class="py-16">
-    <div class="max-w-5xl mx-auto px-6">
-      <h2 class="text-center text-2xl md:text-3xl mb-3">Toutes les facettes de la vie de bébé, réunies au même endroit</h2>
-      <p class="text-center text-ink/60 max-w-xl mx-auto mb-10">
-        Aujourd'hui, les parents jonglent entre 5 à 6 sources pour trouver une info fiable. Tempo regroupe tout au
-        même endroit.
-      </p>
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {pillars.map((p) => {
-          const cardClass = `block rounded-xl border p-6 transition ${
-            p.signature ? 'border-terracotta bg-terracotta/10' : 'border-border bg-white'
-          } ${p.live ? 'no-underline hover:-translate-y-0.5 hover:shadow-lg' : 'opacity-60 cursor-default'}`;
-          const content = (
-            <>
-              <div class="text-2xl">{p.icon}</div>
-              <h3 class="mt-2 text-lg text-ink">{p.title}</h3>
-              <p class="text-sm text-ink/60">{p.text}</p>
-            </>
-          );
-          // Pas de lien mort : les cocons sans article publié ("bientôt en
-          // ligne") sont affichés en simple carte non cliquable plutôt qu'un
-          // <a href="#"> qui remonterait la page sans rien ouvrir.
-          return p.live ? (
-            <a href={p.href} class={cardClass}>{content}</a>
-          ) : (
-            <div class={cardClass} aria-disabled="true">{content}</div>
-          );
-        })}
-      </div>
-    </div>
-  </section>
+<section class="s-fin" id="fin">
+  <div class="ac-degrade s-ciel matin"></div>
+  <h2>Devenir parents,<br> au bon tempo.</h2>
+  <p>Bientôt sur iPhone, puis sur Android.</p>
+  <div class="s-actions"><a class="bouton" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a></div>
+</section>
+</main>
 
-  <section class="bg-ink text-white/90 py-16">
-    <div class="max-w-4xl mx-auto px-6">
-      <h2 class="text-2xl md:text-3xl text-white mb-4">Le problème qu'on résout</h2>
-      <p class="text-white/70">
-        Un conseil "à 6 mois, bébé fait ceci" ne sert à rien si votre bébé est en avance ou en retard sur cet âge.
-        Tempo part de la recherche scientifique, et de votre bébé réel — pas d'un modèle générique.
-      </p>
-      <div class="grid sm:grid-cols-2 gap-6 mt-6">
-        <div class="bg-white/5 rounded-xl p-6">
-          <h3 class="text-white mt-0 mb-3">Ce qu'on ne fait pas</h3>
-          <ul class="pl-5 space-y-2 text-sm text-white/75">
-            <li>Des templates génériques, identiques pour tous les bébés</li>
-            <li>Des conseils invérifiables, recopiés sans source</li>
-            <li>Un silo par sujet : sommeil ici, repas ailleurs, développement encore ailleurs</li>
-          </ul>
-        </div>
-        <div class="bg-white/5 border border-terracotta rounded-xl p-6">
-          <h3 class="text-white mt-0 mb-3">Ce qu'on fait</h3>
-          <ul class="pl-5 space-y-2 text-sm text-white/75">
-            <li>Des conseils qui s'adaptent à l'âge, au poids, au développement réel de votre enfant</li>
-            <li>Des sources vérifiables, pas des on-dit</li>
-            <li>Un seul endroit pour toutes les facettes de la vie de bébé</li>
-          </ul>
-        </div>
-      </div>
-      <p class="mt-6">
-        <a href="/qui-sommes-nous/" class="text-terracotta hover:underline">Lire notre méthode et nos critères de sélection →</a>
-      </p>
-    </div>
-  </section>
-</BaseLayout>
+<div class="st-page"><div class="st-site">
+  <Pied />
+  <Fenetre />
+</div></div>
+
+<div class="s-panneau" id="panneau" role="dialog" aria-modal="true" aria-label="Aperçu de Tempo" hidden>
+  <button type="button" class="s-panneau__fermer" aria-label="Fermer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+  <div class="s-panneau__contenu"></div>
+</div>
+
+<script is:inline src={tempoJs}></script>
+<script is:inline src="/accueil/accueil.js"></script>
+<script is:inline>
+  (function () {
+    var voile = document.querySelector('[data-voile]');
+    function ouvrir() { voile.hidden = false; var i = voile.querySelector('input'); if (i) i.focus({ preventScroll: true }); }
+    function fermer() { voile.hidden = true; }
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-ouvrir-inscription]')) { e.preventDefault(); ouvrir(); }
+      else if (e.target === voile || e.target.closest('[data-fermer]')) fermer();
+    });
+    addEventListener('keydown', function (e) { if (e.key === 'Escape') fermer(); });
+    var form = voile.querySelector('[data-inscription]');
+    form.addEventListener('submit', function (e) {
+      if (form.dataset.actif === 'oui') return;
+      e.preventDefault();
+      form.insertAdjacentHTML('afterend', '<p class="st-mention">La liste d’attente ouvre dans quelques jours. Revenez bientôt, merci de votre patience.</p>');
+      form.querySelector('button').disabled = true;
+    });
+  })();
+</script>
+</body>
+</html>

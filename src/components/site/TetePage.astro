@@ -1,0 +1,18 @@
+---
+// Tête d'une page simple : fil d'Ariane, pastille facultative, titre, chapeau.
+// Classes de la tête d'article du catalogue (section 23 : st-tete-article, st-ariane).
+import { icone } from '../../lib/tempo';
+interface Props { titre: string; chapeau?: string; ariane?: string; pastille?: { texte: string; nature: string } }
+const { titre, chapeau, ariane, pastille } = Astro.props;
+---
+<div class="st-tete-article">
+  {ariane && (
+    <ol class="st-ariane" aria-label="Fil d'Ariane">
+      <li><a href="/">Accueil</a></li><li set:html={icone('chevron', 14, 2.2)} /><li>{ariane}</li>
+    </ol>
+  )}
+  {pastille && <span class={`pastille ${pastille.nature}`}>{pastille.texte}</span>}
+  <h1>{titre}</h1>
+  {chapeau && <p class="st-chapeau">{chapeau}</p>}
+  <slot />
+</div>

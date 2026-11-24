@@ -11,7 +11,10 @@
 // et de cible du `sameAs`. Les articles listés incluent ceux qui n'ont pas de
 // champ `author` explicite mais retombent sur l'auteur par défaut.
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import TetePage from '../../components/site/TetePage.astro';
+import { rubrique, illustrationPour } from '../../data/rubriques';
+import { icone, illustration } from '../../lib/tempo';
 import { authors, DEFAULT_AUTHOR_SLUG } from '../../data/authors';
 
 export async function getStaticPaths() {
@@ -42,7 +45,7 @@ const personSchema = {
 };
 ---
 
-<BaseLayout
+<SiteLayout
   title={`${author.name} — Tempo`}
   description={author.bio}
   path={`/auteurs/${author.slug}/`}
@@ -50,62 +53,37 @@ const personSchema = {
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
   </Fragment>
-
-  <div class="bg-ink text-white pt-12 pb-10">
-    <div class="max-w-3xl mx-auto px-6">
-      <div class="text-sm text-white/60 mb-3">
-        <a href="/" class="hover:text-terracotta">Accueil</a> / {author.name}
-      </div>
-      <div class="flex gap-4 items-center">
-        <div
-          class="w-14 h-14 rounded-full bg-terracotta text-white flex items-center justify-center font-display font-semibold shrink-0"
-          aria-hidden="true"
-        >
-          {author.initials}
-        </div>
+  <div class="page-simple">
+    <TetePage titre={author.name} ariane={author.name}>
+      <div class="st-meta"><div class="st-signature"><span class="st-avatar">{author.initials}</span><div><b>{author.name}</b><small>{author.role}</small></div></div></div>
+    </TetePage>
+    <div class="st-texte">
+      <p>{author.bio}</p>
+      <aside class="st-encadre retenir">
+        <span class="st-encadre__icone" set:html={icone('etoile', 20, 2)} />
         <div>
-          <h1 class="text-3xl md:text-4xl text-white m-0">{author.name}</h1>
-          <p class="text-white/60 text-sm mt-1 mb-0">{author.role}</p>
+          <p class="st-encadre__titre">Notre méthode</p>
+          <p>Chaque affirmation médicale publiée sur Tempo est rattachée à une source officielle, citée dans l'article. Nous ne sommes pas des professionnels de santé : nous lisons, vérifions et rendons lisible ce que disent les autorités sanitaires et la recherche, et nous disons explicitement quand une pratique n'est pas prouvée. Nos contenus ne remplacent jamais l'avis d'un professionnel qui connaît votre enfant. <a href="/qui-sommes-nous/">En savoir plus sur notre approche</a>.</p>
         </div>
-      </div>
-      <p class="text-white/70 mt-4 mb-0">{author.bio}</p>
+      </aside>
+      {articles.length > 0 && <h2>{articles.length === 1 ? 'Son article' : `Ses ${articles.length} articles`}</h2>}
     </div>
+    {articles.length > 0 && (
+      <div class="st-cartes">
+        {articles.map((a) => {
+          const r = rubrique(a.data.cocon);
+          return (
+            <a class="st-carte" href={`/${a.id}/`}>
+              <span class="st-carte__visuel" style={`--cf:var(${r.fond})`} set:html={illustration(illustrationPour(a.id, a.data.cocon), 96)} />
+              <span class="st-carte__corps">
+                <span><span class={`pastille petite ${r.nature}`}>{r.nom}</span></span>
+                <h3>{a.data.title}</h3>
+                <p>{a.data.description}</p>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    )}
   </div>
-
-  <section class="py-14">
-    <div class="max-w-3xl mx-auto px-6">
-      <div class="bg-cream rounded-xl px-5 py-5 mb-10">
-        <p class="text-sm text-ink/80 m-0">
-          <strong class="text-ink">Notre méthode.</strong> Chaque affirmation médicale publiée sur Tempo est
-          rattachée à une source officielle, citée dans l'article. Nous ne sommes pas des professionnels de santé :
-          nous lisons, vérifions et rendons lisible ce que disent les autorités sanitaires et la recherche, et nous
-          disons explicitement quand une pratique n'est pas prouvée. Nos contenus ne remplacent jamais l'avis d'un
-          professionnel qui connaît votre enfant.
-          <a href="/qui-sommes-nous/" class="text-terracotta hover:underline">En savoir plus sur notre approche</a>.
-        </p>
-      </div>
-
-      {articles.length > 0 && (
-        <>
-          <h2 class="text-2xl text-ink mb-5">
-            {articles.length === 1 ? 'Son article' : `Ses ${articles.length} articles`}
-          </h2>
-          <div class="grid gap-4">
-            {articles.map((a) => (
-              <a
-                href={`/${a.id}/`}
-                class="block bg-white border border-border rounded-xl px-5 py-4 no-underline hover:border-terracotta hover:shadow-lg transition"
-              >
-                <span class="font-semibold text-ink">
-                  {a.data.pilier ? '📍 ' : ''}
-                  {a.data.title}
-                </span>
-                <p class="text-sm text-ink/60 mt-1">{a.data.description}</p>
-              </a>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  </section>
-</BaseLayout>
+</SiteLayout>

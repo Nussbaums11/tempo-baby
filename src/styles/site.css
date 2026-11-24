@@ -1,0 +1,20 @@
+/* Adaptations du site au design system, sans retoucher la copie du catalogue.
+   Uniquement ce que la planche annonce comme différent en production
+   (« sur le site, … sera en position: fixed »). Aucune valeur de couleur ici. */
+html{scroll-padding-top:var(--st-haut-fixe)}
+body{margin:0}
+.st-voile{position:fixed}
+/* Le champ de st-recherche : la planche le dessine en simple libellé ; sur le site
+   c'est un vrai champ, qui hérite de la pilule sans style propre. */
+.st-recherche input{flex:1;min-width:0;height:100%;border:0;background:none;color:var(--ink);font:inherit;outline:none}
+.st-carte[hidden]{display:none}
+/* Pages simples (qui sommes-nous, tarifs, application, auteur, 404) : la tête et
+   le corps d'article du catalogue, dans une seule colonne centrée. Pas de
+   composant « page simple » au catalogue : à proposer à Hugo. */
+.page-simple{max-width:calc(var(--st-colonne) + 2 * var(--st-gouttiere));margin:0 auto;padding:var(--e-8) var(--st-gouttiere) var(--e-10)}
+.page-simple .st-cartes{margin:var(--e-6) 0}
+.page-simple .centre{text-align:center}
+.page-simple .st-actions{display:flex;flex-wrap:wrap;gap:var(--e-3);margin:var(--e-6) 0}
+.page-simple .centre .st-actions{justify-content:center}
+.page-simple .st-appel.tarif{position:static;max-width:420px;margin:var(--e-6) auto var(--e-4)}
+.page-simple.centre .st-tete-article,.page-simple.centre .st-chapeau{text-align:center;margin-left:auto;margin-right:auto}

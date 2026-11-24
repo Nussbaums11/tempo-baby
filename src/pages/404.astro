@@ -3,44 +3,29 @@
 // /404.html à la racine du build (convention reconnue par Cloudflare Pages
 // et la plupart des hébergeurs statiques) : elle s'affiche pour toute URL
 // qui ne correspond à aucune route existante.
-import BaseLayout from '../layouts/BaseLayout.astro';
-
+// Refonte du 24/11/2026 : gabarit du design system, illustration du catalogue à la place de l'emoji.
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { illustration } from '../lib/tempo';
 const suggestions = [
   { href: '/ressources/', label: 'Voir toutes les ressources' },
-  { href: '/application/', label: "Découvrir l'application" },
+  { href: '/#tempo', label: "Découvrir l'app" },
   { href: '/qui-sommes-nous/', label: 'Qui sommes-nous' },
 ];
 ---
-
-<BaseLayout
+<SiteLayout
   title="Page introuvable — Tempo"
   description="Cette page n'existe pas ou plus. Retrouvez nos guides et notre application depuis la page d'accueil Tempo."
   path="/404/"
 >
-  <section class="py-20">
-    <div class="max-w-xl mx-auto px-6 text-center">
-      <p class="text-6xl mb-4">🍼</p>
-      <h1 class="text-3xl md:text-4xl mb-4">Cette page s'est perdue en route</h1>
-      <p class="text-ink/60 mb-8">
-        La page que vous cherchez n'existe pas, ou a changé d'adresse. Rien de grave : voici où retrouver ce qui
-        vous intéresse probablement.
-      </p>
-      <a
-        href="/"
-        class="inline-block bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-3 rounded-lg mb-8"
-      >
-        Retour à l'accueil
-      </a>
-      <div class="grid gap-3 sm:grid-cols-3">
-        {suggestions.map((s) => (
-          <a
-            href={s.href}
-            class="block bg-white border border-border rounded-xl px-4 py-3 no-underline text-sm font-semibold text-ink hover:border-terracotta hover:text-terracotta"
-          >
-            {s.label}
-          </a>
-        ))}
-      </div>
+  <div class="page-simple centre">
+    <div class="st-tete-article">
+      <div set:html={illustration('poussette', 120)} />
+      <h1>Cette page s'est perdue en route</h1>
+      <p class="st-chapeau">La page que vous cherchez n'existe pas, ou a changé d'adresse. Rien de grave : voici où retrouver ce qui vous intéresse probablement.</p>
     </div>
-  </section>
-</BaseLayout>
+    <div class="st-actions">
+      <a class="bouton secondaire" href="/">Retour à l'accueil</a>
+      {suggestions.map((s) => <a class="bouton secondaire" href={s.href}>{s.label}</a>)}
+    </div>
+  </div>
+</SiteLayout>

@@ -1,15 +1,17 @@
 ---
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import RelatedArticles from '../components/RelatedArticles.astro';
-import FaqSection from '../components/FaqSection.astro';
-import AuthorBox from '../components/AuthorBox.astro';
-import TableOfContents from '../components/TableOfContents.astro';
+import Entete from '../components/site/Entete.astro';
+import Pied from '../components/site/Pied.astro';
+import Suite from '../components/site/Suite.astro';
+import Fenetre from '../components/site/Fenetre.astro';
+import { rubrique, illustrationPour } from '../data/rubriques';
+import { icone, illustration } from '../lib/tempo';
 import Analytics from '../components/Analytics.astro';
 import { cocons } from '../data/cocons';
 import { getAuthor } from '../data/authors';
 import { organizationSchema } from '../data/organization';
-import '../styles/global.css';
+import '../styles/tempo/valeurs.css';
+import '../styles/tempo/composants.css';
+import '../styles/site.css';
 
 interface Faq {
   question: string;
@@ -24,6 +26,8 @@ interface Heading {
 
 interface Props {
   title: string;
+  /** H1 affiché ; absent = title. */
+  h1?: string;
   description: string;
   slug: string;
   cocon: string;
@@ -36,7 +40,7 @@ interface Props {
   headings?: Heading[];
 }
 
-const { title, description, slug, cocon, updated, published, readingTime, author, faq = [], headings = [] } = Astro.props;
+const { title, h1, description, slug, cocon, updated, published, readingTime, author, faq = [], headings = [] } = Astro.props;
 
 // Auteur résolu une fois, réutilisé par le JSON-LD et par l'encart de signature.
 const articleAuthor = getAuthor(author);
@@ -95,80 +99,202 @@ const breadcrumbSchema = {
 };
 
 const formattedDate = updated.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+// Refonte du 24/11/2026 : gabarit du design system de Tempo (section 23, st-).
+const r = rubrique(cocon);
+const parties = headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, texte: h.text }));
+if (faq.length > 0) parties.push({ id: 'questions-frequentes', texte: 'Questions fréquentes' });
+const ETOILE4 = (t: number) => `<svg width="${t}" height="${t}" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2c.6 5 2.4 7.4 10 10-7.6 2.6-9.4 5-10 10-.6-5-2.4-7.4-10-10 7.6-2.6 9.4-5 10-10z"/></svg>`;
+const FLECHE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>';
+const tailles = [170, 112];
+// Lien en une ligne en haut d'article (st-lien-ressource) : le calendrier pour les
+// futurs parents (arbitrage du 24/11), le tableau des siestes pour le sommeil.
+const lienHaut =
+  cocon === 'futurs-parents' && slug !== 'calendrier-grossesse'
+    ? { href: '/calendrier-grossesse/', texte: 'Calendrier de grossesse : ce qui vous attend, semaine par semaine' }
+    : cocon === 'sommeil'
+      ? { href: '/pdf/tableau-siestes-bebe-tempo.pdf', texte: 'Ressource gratuite : le tableau des siestes par âge, à imprimer' }
+      : null;
+const coches = ["Votre semaine, en un coup d'œil", 'Vos rendez-vous et démarches, à temps', 'Vos questions, des réponses sourcées'];
 ---
 
-<html lang="fr">
+<html lang="fr" data-mode="jour">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <Analytics />
-    <title>{title} — Tempo</title>
+    {/* Sans suffixe « — Tempo » depuis le 24/11/2026 (arbitrage de Sandra) : avec lui, les
+        83 articles dépassaient 60 caractères. Google affiche déjà le nom du site. */}
+    <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(`/${slug}/`, Astro.site)} />
-    <meta property="og:title" content={`${title} — Tempo`} />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="article" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Source+Sans+3:wght@400;600&family=Space+Grotesk:wght@600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
     <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
     {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
   </head>
   <body>
-    <Header />
+    <div class="st-page"><div class="st-site">
+      <Entete actif="ressources" progression />
 
-    <main>
-      <div class="bg-ink text-white pt-12 pb-10">
-        <div class="max-w-3xl mx-auto px-6">
-          <div class="text-sm text-white/60 mb-3">
-            <a href="/" class="hover:text-terracotta">Accueil</a> / <a href={`/ressources/${cocon}/`} class="hover:text-terracotta">{coconTitle}</a> / {title}
+      <div class="st-grille">
+        <nav class="st-sommaire" aria-label="Sommaire"><div class="st-sommaire__fixe">
+          <p class="st-sommaire__titre">Dans cet article</p>
+          <ol>{parties.map((p, k) => <li><a href={`#${p.id}`} data-ancre={p.id} class={k === 0 ? 'actif' : undefined}>{p.texte}</a></li>)}</ol>
+          <button class="st-sommaire__haut" type="button" data-haut><Fragment set:html={icone('haut', 15, 2.2)} /> Haut de page</button>
+        </div></nav>
+
+        <article class="st-article">
+          <div class="st-tete-article">
+            <ol class="st-ariane" aria-label="Fil d'Ariane">
+              <li><a href="/">Accueil</a></li><li set:html={icone('chevron', 14, 2.2)} />
+              <li><a href="/ressources/">Ressources</a></li><li set:html={icone('chevron', 14, 2.2)} />
+              <li><a href={`/ressources/${cocon}/`}>{r.nom}</a></li>
+            </ol>
+            <span class={`pastille ${r.nature}`}><Fragment set:html={icone(r.icone, 13, 2.2)} /> {r.nom}</span>
+            <h1>{h1 ?? title}</h1>
+            <p class="st-chapeau">{description}</p>
+            <div class="st-meta">
+              <div class="st-signature"><span class="st-avatar">{articleAuthor.initials}</span><div><b>{articleAuthor.name}</b><small>Cofondatrice de Tempo</small></div></div>
+              <span class="st-date"><Fragment set:html={icone('horloge', 16, 2)} /> Mis à jour le {formattedDate}{readingTime && ` · ${readingTime}`}</span>
+            </div>
+            <div class="st-visuel" aria-hidden="true">
+              {r.nuit && (
+                <Fragment>
+                  <span class="st-visuel__etoile" style="left:12%;top:18%" set:html={ETOILE4(26)} />
+                  <span class="st-visuel__etoile" style="left:22%;top:52%" set:html={ETOILE4(14)} />
+                  <span class="st-visuel__etoile" style="right:16%;top:22%" set:html={ETOILE4(20)} />
+                  <span class="st-visuel__etoile" style="right:28%;top:60%" set:html={ETOILE4(12)} />
+                  <span class="st-visuel__etoile" style="right:9%;top:12%;opacity:.8" set:html={icone('lune', 46, 1.8)} />
+                </Fragment>
+              )}
+              <div class="st-visuel__scene" set:html={[...new Set([illustrationPour(slug, cocon), ...r.scene])].slice(0, 2).map((n, k) => illustration(n, tailles[k] ?? 112)).join('')} />
+            </div>
           </div>
-          <h1 class="text-3xl md:text-4xl text-white">{title}</h1>
-          <div class="flex gap-3 text-sm text-white/60 mt-3">
-            <span>Mis à jour le {formattedDate}</span>
-            {readingTime && (
-              <>
-                <span>·</span>
-                <span>{readingTime}</span>
-              </>
+
+          <div class="st-texte" data-texte>
+            {lienHaut && <p class="st-lien-ressource" data-placer="apres-intro"><a href={lienHaut.href}><Fragment set:html={FLECHE} /><span>{lienHaut.texte}</span></a></p>}
+            <slot />
+            <aside class="st-encart-app" data-placer="apres-partie-1">
+              <div class="st-encart-app__texte">
+                <span class="pastille"><Fragment set:html={icone('etoile', 13, 2.2)} /> L'app Tempo</span>
+                <h3>Chaque semaine, ce qui compte pour vous et votre bébé.</h3>
+                <p>Tempo vous accompagne de la conception aux 1 000 premiers jours : votre semaine, vos rendez-vous, vos questions. Elle ouvre bientôt.</p>
+                <a class="bouton secondaire" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
+              </div>
+              <div class="st-encart-app__tel"><img src="/images/app/calendrier.jpg" alt="L'écran Calendrier de l'app Tempo" loading="lazy" /></div>
+            </aside>
+            {faq.length > 0 && (
+              <Fragment>
+                <h2 id="questions-frequentes">Questions fréquentes</h2>
+                <div class="st-faq">
+                  {faq.map((f, k) => (
+                    <details open={k === 0}><summary>{f.question}<i set:html={icone('plus', 16, 2.4)} /></summary><p>{f.answer}</p></details>
+                  ))}
+                </div>
+              </Fragment>
             )}
+            <section class="st-auteur"><span class="st-avatar">{articleAuthor.initials}</span><div>
+              <b>Rédigé par <a href={`/auteurs/${articleAuthor.slug}/`}>{articleAuthor.name}</a></b><small>Cofondatrice de Tempo</small>
+              <p>Elle conçoit les contenus du site, cherche et vérifie les sources, et confronte chaque affirmation médicale à la littérature officielle avant publication. Parent, comme les lecteurs de ces pages.</p>
+            </div></section>
           </div>
-        </div>
+        </article>
+
+        <aside class="st-colonne-appel"><div class="st-appel">
+          <div class="st-appel__tete"><span class="st-icone-app" aria-hidden="true">t</span><div><b>Tempo</b><small>Devenir parents, au bon tempo.</small></div></div>
+          <ul class="st-coches">{coches.map((c) => <li><i set:html={icone('coche', 13, 3)} /><span>{c}</span></li>)}</ul>
+          <a class="bouton secondaire" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
+        </div></aside>
       </div>
 
-      <div class="bg-white pt-10 pb-4">
-        <div class="max-w-3xl mx-auto px-6 prose-tempo">
-          <TableOfContents headings={headings} />
-          <slot />
-          <FaqSection faq={faq} />
-          <AuthorBox author={author} />
-        </div>
+      <Suite cocon={cocon} currentSlug={slug} />
+      <Pied />
+
+      <div class="st-barre-appel cache">
+        <span class="st-icone-app petite" aria-hidden="true">t</span>
+        <div><b>Tempo</b><small>Devenir parents, au bon tempo.</small></div>
+        <a class="bouton" href="#liste-attente" data-ouvrir-inscription>M'inscrire</a>
       </div>
-      {/*
-        Sommaire placé APRÈS l'intro (avant le premier H2), pas tout en haut :
-        Astro ne permet pas de découper le <slot/>, on déplace donc le nœud #toc
-        côté client juste avant le premier h2. Script exécuté dès la fin du bloc
-        contenu (le prose est déjà parsé) pour éviter tout saut visible.
-      */}
-      <script is:inline>
-        (function () {
-          var prose = document.querySelector('.prose-tempo');
-          if (!prose) return;
-          var toc = prose.querySelector('#toc');
-          var firstH2 = prose.querySelector('h2');
-          if (toc && firstH2) prose.insertBefore(toc, firstH2);
-        })();
-      </script>
-    </main>
+      <Fenetre />
+    </div></div>
 
-    <RelatedArticles cocon={cocon} currentSlug={slug} />
+    <script is:inline>
+      (function () {
+        var texte = document.querySelector('[data-texte]');
+        // Placer les encarts sans toucher au contenu : lien après le 1er paragraphe,
+        // encart de l'app juste avant le 2e intertitre (après la 1re partie).
+        var lien = texte.querySelector('[data-placer="apres-intro"]');
+        var p1 = texte.querySelector(':scope > p:not(.st-lien-ressource)');
+        if (lien && p1) p1.after(lien);
+        var encart = texte.querySelector('[data-placer="apres-partie-1"]');
+        var h2 = texte.querySelectorAll(':scope > h2');
+        if (encart && h2[1]) h2[1].before(encart);
 
-    <Footer />
+        var barre = document.querySelector('.st-progression');
+        var article = document.querySelector('.st-article');
+        var titres = Array.prototype.slice.call(texte.querySelectorAll(':scope > h2[id]'));
+        var liens = Array.prototype.slice.call(document.querySelectorAll('.st-sommaire a'));
+        var appelBas = document.querySelector('.st-barre-appel');
+        var voile = document.querySelector('[data-voile]');
+        var ordi = matchMedia('(min-width: 900px)');
+        var dernier = 0, fenetreVue = false;
+        try { fenetreVue = sessionStorage.getItem('tempo-fenetre') === 'vue'; } catch (e) {}
+
+        function ouvrir() { voile.hidden = false; var i = voile.querySelector('input'); if (i) i.focus({ preventScroll: true }); }
+        function fermer() { voile.hidden = true; }
+
+        function surDefilement() {
+          var y = scrollY, h = innerHeight;
+          if (article && barre) {
+            var r = article.getBoundingClientRect();
+            var debut = r.top + y;
+            var p = Math.min(1, Math.max(0, (y - debut + h * 0.25) / (r.height - h * 0.5)));
+            barre.style.setProperty('--p', (p * 100).toFixed(1) + '%');
+            if (ordi.matches && !fenetreVue && p >= 0.62) {
+              fenetreVue = true;
+              try { sessionStorage.setItem('tempo-fenetre', 'vue'); } catch (e) {}
+              ouvrir();
+            }
+          }
+          if (liens.length && titres.length) {
+            var actif = titres[0];
+            titres.forEach(function (t) { if (t.getBoundingClientRect().top < h * 0.4) actif = t; });
+            liens.forEach(function (a) { a.classList.toggle('actif', a.dataset.ancre === actif.id); });
+          }
+          if (appelBas) {
+            if (y < 140) appelBas.classList.add('cache');
+            else if (y - dernier > 4) appelBas.classList.remove('cache');
+            else if (dernier - y > 4) appelBas.classList.add('cache');
+          }
+          dernier = y;
+        }
+        addEventListener('scroll', surDefilement, { passive: true });
+        surDefilement();
+
+        document.addEventListener('click', function (e) {
+          if (e.target.closest('[data-ouvrir-inscription]')) { e.preventDefault(); ouvrir(); }
+          else if (e.target.closest('[data-haut]')) scrollTo({ top: 0, behavior: 'smooth' });
+          else if (e.target === voile || e.target.closest('[data-fermer]')) fermer();
+        });
+        addEventListener('keydown', function (e) { if (e.key === 'Escape') fermer(); });
+
+        // Liste d'attente pas encore branchée (Brevo à créer) : on le dit plutôt que de perdre l'adresse.
+        var form = voile.querySelector('[data-inscription]');
+        form.addEventListener('submit', function (e) {
+          if (form.dataset.actif === 'oui') return;
+          e.preventDefault();
+          form.insertAdjacentHTML('afterend', '<p class="st-mention">La liste d’attente ouvre dans quelques jours. Revenez bientôt, merci de votre patience.</p>');
+          form.querySelector('button').disabled = true;
+        });
+      })();
+    </script>
   </body>
 </html>

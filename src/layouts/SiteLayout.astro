@@ -1,0 +1,63 @@
+---
+// Gabarit des pages « site » refondues (design system de Tempo, section 23).
+// Même <head> et même JSON-LD Organization que BaseLayout.astro ; seul l'habillage change.
+import Entete from '../components/site/Entete.astro';
+import Pied from '../components/site/Pied.astro';
+import Fenetre from '../components/site/Fenetre.astro';
+import Analytics from '../components/Analytics.astro';
+import { organizationJsonLd } from '../data/organization';
+import '../styles/tempo/valeurs.css';
+import '../styles/tempo/composants.css';
+import '../styles/site.css';
+
+interface Props { title: string; description: string; path: string; actif?: 'ressources' | 'app' | 'qui' }
+const { title, description, path, actif } = Astro.props;
+const orgSchema = organizationJsonLd(Astro.site);
+---
+<html lang="fr" data-mode="jour">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <Analytics />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
+    <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="st-page"><div class="st-site">
+      <Entete actif={actif} />
+      <main><slot /></main>
+      <Pied />
+      <Fenetre />
+    </div></div>
+    <script is:inline>
+      (function () {
+        var voile = document.querySelector('[data-voile]');
+        function ouvrir() { voile.hidden = false; var i = voile.querySelector('input'); if (i) i.focus({ preventScroll: true }); }
+        function fermer() { voile.hidden = true; }
+        document.addEventListener('click', function (e) {
+          if (e.target.closest('[data-ouvrir-inscription]')) { e.preventDefault(); ouvrir(); }
+          else if (e.target === voile || e.target.closest('[data-fermer]')) fermer();
+        });
+        addEventListener('keydown', function (e) { if (e.key === 'Escape') fermer(); });
+        var form = voile.querySelector('[data-inscription]');
+        form.addEventListener('submit', function (e) {
+          if (form.dataset.actif === 'oui') return;
+          e.preventDefault();
+          form.insertAdjacentHTML('afterend', '<p class="st-mention">La liste d’attente ouvre dans quelques jours. Revenez bientôt, merci de votre patience.</p>');
+          form.querySelector('button').disabled = true;
+        });
+      })();
+    </script>
+  </body>
+</html>

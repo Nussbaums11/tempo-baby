@@ -1,0 +1,1391 @@
+/* Tempo : les composants du socle. « Soir le jour, Veilleuse la nuit ».
+   Lot 1, validé par Hugo le 12/11/2026 : pastille, barre de question, carte de la semaine, tuile à chiffre, ligne du plan.
+   Lot 2, validé par Hugo le 12/11/2026 : onglets, liste de choix, bouton principal, feuille du bas, bandeau.
+   Écran de question, validé par Hugo le 12/11/2026 : barre ouverte, titre discret, proposition « Aller à », question proposée, réponse sourcée.
+   Accueil, validé par Hugo le 12/11/2026 (approche A, « La semaine d'abord ») : tête de l'accueil, « Ça peut attendre », « Rien d'urgent », story de la semaine.
+   Préparatifs, validé par Hugo le 12/11/2026 (option C, « La mosaïque ») : tête de l'écran, pictogramme de dossier, « Clore », groupes repliés, mosaïque et tuile de dossier.
+   Garde, validée par Hugo le 12/11/2026 (approche B, « Quatre rubriques ») : retour, carte du dossier, frise du calendrier, « Autour de chez nous », images de la story d'un dossier.
+   Grossesse, validée par Hugo le 13/11/2026 : portes, ligne et fiche de lecture, tête de sous-page, frises à glisser, cartes douces, lignes de temps, bulles, silhouette, jauge du col, choix, nuits.
+   Calendrier, validé par Hugo le 13/11/2026 : tête sans titre, carte du prochain rendez-vous, vue du mois, date d'une ligne et point de source, repère du terme, fiche de rendez-vous et période, compte rendu, question notée, rappel, champ de saisie, enregistreur (simulé).
+   Liste de naissance et Matériel, validés par Hugo le 13/11/2026 : points d'avancement, vignette, vitrine, page des proches, états, jauge à plusieurs ; ligne d'un objet, six façons de l'obtenir, « installé », poussette démontée, piste.
+   Carte de la semaine, variante « bébé », retenue par Hugo le 17/11/2026 (à la manière d'Amma) : section 3.
+   Recherche du prototype idéal, validée par Hugo le 17/11/2026 : barre fermée, recherche ouverte, ligne « Poser la question » avec la tête de Mezzo : section 22.
+   Toutes les valeurs viennent de valeurs.css ; ce fichier n'en invente aucune. Les fonctions vivent dans composants.js.
+   Règle pour qui construit un écran : n'utiliser que ces classes ; s'il manque un composant, le proposer, ne pas l'inventer en douce. */
+
+/* =========================================================
+   0. TITRES : deux niveaux au plus, le titre de l'écran et le titre de groupe.
+   ========================================================= */
+.titre-ecran{font:800 30px/1.1 var(--font);letter-spacing:-.03em;color:var(--ink)}
+.groupe{display:flex;align-items:center;gap:8px;margin:26px 0 4px}
+.groupe h2{margin:0;font:750 20px/1.2 var(--font);letter-spacing:-.015em;color:var(--ink)}
+.groupe > :last-child:not(h2):not(.pastille){margin-left:auto;display:flex;align-items:center;gap:2px;font:700 14px/1 var(--font);color:var(--ink-2);text-decoration:none}
+
+/* =========================================================
+   1. PASTILLE : un mot qui qualifie (délai, état, source).
+   ========================================================= */
+.pastille{--pf:var(--tache-bg);--pt:var(--tache);display:inline-flex;align-items:center;gap:5px;flex:none;height:24px;padding:0 10px;border:0;border-radius:var(--r-pilule);background:var(--pf);color:var(--pt);font:750 12px/1 var(--font);letter-spacing:.005em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pastille svg{flex:none}
+.pastille.petite{height:20px;padding:0 8px;gap:4px;font-size:11px}
+/* Natures : réservées aux étiquettes d'une fiche ou d'un filtre. Dans une ligne, la nature se voit à gauche. */
+.pastille.rdv{--pf:var(--rdv-bg);--pt:var(--rdv)}
+.pastille.choix{--pf:var(--choix-bg);--pt:var(--choix)}
+.pastille.sante{--pf:var(--sante-bg);--pt:var(--sante)}
+.pastille.sommeil{--pf:var(--sommeil-bg);--pt:var(--sommeil)}
+.pastille.repas{--pf:var(--repas-bg);--pt:var(--repas)}
+/* Délais et états */
+.pastille.aujourdhui{--pf:var(--accent);--pt:var(--accent-ink)}
+.pastille.retard{--pf:var(--alerte-bg);--pt:var(--alerte)}
+.pastille.retard::before,.pastille.point::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pastille.faite{--pf:var(--tache-bg);--pt:var(--tache)}
+.pastille.compteur{min-width:24px;justify-content:center;padding:0 7px}
+/* Sur une photo ou un dégradé : le verre */
+.pastille.verre{--pf:rgba(255,255,255,.2);--pt:var(--hero-ink);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.26)}
+/* Suggestion : une pastille qu'on touche, sous la barre de question */
+.pastille.suggestion{--pf:var(--surface);--pt:var(--ink);height:36px;padding:0 14px;font-size:14px;font-weight:650;box-shadow:inset 0 0 0 1px var(--line-fort);cursor:pointer;transition:transform var(--duree-rapide) var(--courbe-douce)}
+.pastille.suggestion:active{transform:scale(.96)}
+
+/* =========================================================
+   2. BARRE DE QUESTION : la seule magie de l'app.
+   ========================================================= */
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+.question{position:relative;isolation:isolate;display:flex;align-items:center;gap:10px;width:100%;height:56px;padding:0 8px 0 16px;border:0;border-radius:28px;background:var(--surface);color:var(--ink-2);font:500 16px/1 var(--font);text-align:left;cursor:text;box-shadow:0 14px 30px -18px var(--halo)}
+.question::before,.question::after{content:"";position:absolute;inset:-1.5px;z-index:-1;padding:1.5px;border-radius:30px;background:conic-gradient(from var(--angle),var(--r1),var(--r2),var(--r3),var(--r4),var(--r1));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.question::after{inset:-5px;padding:5px;border-radius:33px;filter:blur(12px);opacity:.42}
+[data-mode="nuit"] .question::after{opacity:.3}
+.question.ouverte::before{inset:-2px;padding:2px}
+.question.ouverte::after{opacity:.6}
+@media (prefers-reduced-motion:no-preference){
+  .question::before,.question::after{animation:question-tour 9s linear infinite}
+  .question.cherche::before,.question.cherche::after{animation-duration:1.4s}
+  .question__curseur{animation:question-clignote 1.1s steps(1) infinite}
+  .question.cherche .question__texte{animation:question-reflet 1.8s linear infinite}
+}
+@keyframes question-tour{to{--angle:360deg}}
+@keyframes question-clignote{50%{opacity:0}}
+@keyframes question-reflet{to{background-position:-200% 0}}
+.question__etincelle{flex:none;width:22px;height:22px;background:linear-gradient(135deg,var(--r1),var(--r2) 55%,var(--r3));-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M11 3c.7 4.9 3.1 7.3 8 8-4.9.7-7.3 3.1-8 8-.7-4.9-3.1-7.3-8-8 4.9-.7 7.3-3.1 8-8z'/%3E%3Cpath d='M19 15.5c.3 1.9 1.1 2.7 3 3-1.9.3-2.7 1.1-3 3-.3-1.9-1.1-2.7-3-3 1.9-.3 2.7-1.1 3-3z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M11 3c.7 4.9 3.1 7.3 8 8-4.9.7-7.3 3.1-8 8-.7-4.9-3.1-7.3-8-8 4.9-.7 7.3-3.1 8-8z'/%3E%3Cpath d='M19 15.5c.3 1.9 1.1 2.7 3 3-1.9.3-2.7 1.1-3 3-.3-1.9-1.1-2.7-3-3 1.9-.3 2.7-1.1 3-3z'/%3E%3C/svg%3E") center/contain no-repeat}
+.question__texte{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:1.3}
+.question.saisie .question__texte{color:var(--ink)}
+.question.cherche .question__texte{color:transparent;background:linear-gradient(90deg,var(--ink-2) 0 35%,var(--ink) 50%,var(--ink-2) 65% 100%) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text}
+.question__curseur{display:inline-block;width:1.5px;height:18px;margin-left:1px;background:var(--ink);vertical-align:-3px}
+.question__bouton{position:relative;display:grid;place-items:center;flex:none;width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--ink-2);cursor:pointer}
+.question__bouton.envoyer{background:var(--btn);color:var(--btn-ink);transition:transform var(--duree-moyenne) var(--courbe-douce)}
+.question__bouton.envoyer:active{transform:scale(.9)}
+.question__bouton::after{content:"";position:absolute;inset:-4px}
+.suggestions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* =========================================================
+   3. CARTE DE LA SEMAINE : la seule carte de lumière de l'accueil.
+   ========================================================= */
+.semaine{position:relative;isolation:isolate;display:grid;grid-template-columns:1fr auto;align-items:end;gap:10px;width:100%;min-height:208px;padding:16px 16px 16px 18px;border:0;border-radius:var(--r-xl);overflow:hidden;background:var(--hero);color:var(--hero-ink);font-family:var(--font);text-align:left;cursor:pointer;transition:transform var(--duree-moyenne) var(--courbe-douce)}
+.semaine:active{transform:scale(.985)}
+.semaine__photo{position:absolute;inset:0;z-index:-2;background:#c9a68a center 42%/cover no-repeat}
+.semaine::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(28,16,8,.18) 0%,rgba(28,16,8,0) 26%,rgba(28,16,8,0) 40%,rgba(28,16,8,.7) 100%)}
+.semaine.sans-photo::before,[data-mode="nuit"] .semaine::before{background:none}
+[data-mode="nuit"] .semaine__photo{display:none}
+.semaine__haut{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center}
+.semaine__texte{min-width:0;text-shadow:0 1px 14px rgba(28,16,8,.3)}
+.semaine__nombre{display:block;font-size:52px;font-weight:800;line-height:.95;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+.semaine__nombre small{margin-left:6px;font-size:19px;font-weight:750;letter-spacing:-.01em}
+.semaine__nombre.nom{font-size:40px}
+.semaine__detail{display:block;margin-top:7px;font-size:14px;font-weight:600;line-height:1.35;opacity:.95}
+.semaine__lire{display:inline-flex;align-items:center;gap:4px;height:36px;margin-top:12px;padding:0 10px 0 15px;border-radius:var(--r-pilule);background:rgba(255,255,255,.2);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);font-size:14px;font-weight:700;text-shadow:none}
+/* Variante « bébé » (Hugo, 17/11/2026, à la manière d'Amma) : le bébé de la semaine au centre de la carte, le salut en haut,
+   la semaine et sa pastille « lire » en bas, comme la carte à photo. Fond clair le jour, prune la nuit ; pas d'anneau.
+   Balises : .semaine.bebe > img.semaine__bebe + .semaine__haut > .semaine__salut + .semaine__texte (nombre, puis .semaine__lire). */
+.semaine.bebe{grid-template-columns:1fr;min-height:300px;background:#fce9d6;color:#5e4a41}
+.semaine.bebe::before{background:linear-gradient(180deg,rgba(252,233,214,0) 58%,rgba(252,233,214,.6) 100%)}
+.semaine__bebe{position:absolute;left:4%;top:-30px;z-index:-2;width:100%;height:auto;max-width:none;pointer-events:none}
+.semaine.bebe .semaine__texte{text-shadow:none}
+.semaine.bebe .semaine__lire{background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px rgba(255,255,255,.9);color:var(--ink)}
+.semaine__salut{font-size:16px;font-weight:600;line-height:1.2}
+.semaine__salut b{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em}
+[data-mode="nuit"] .semaine.bebe{background:#120614;color:#ecdcd2}
+[data-mode="nuit"] .semaine.bebe::before{background:linear-gradient(180deg,rgba(18,6,20,0) 58%,rgba(18,6,20,.6) 100%)}
+[data-mode="nuit"] .semaine.bebe .semaine__lire{background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);color:#f6ece2}
+/* L'anneau du terme : trois arcs, un par trimestre ; le fruit de la semaine au centre */
+.anneau-terme{position:relative;display:block;flex:none;color:var(--hero-ink)}
+.anneau-terme svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.anneau-terme .piste{stroke:currentColor;stroke-opacity:.26}
+.anneau-terme .plein{stroke:currentColor;stroke-dasharray:1;stroke-dashoffset:1;animation:anneau-trace .7s var(--courbe-douce) forwards}
+.anneau-terme .plein.s2{animation-delay:.55s}.anneau-terme .plein.s3{animation-delay:1.1s}
+.anneau-terme .repere{fill:currentColor;filter:drop-shadow(0 0 6px rgba(255,255,255,.7));opacity:0;animation:anneau-paraitre .3s 1.1s forwards}
+.anneau-terme__centre{position:absolute;inset:15px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+@keyframes anneau-trace{to{stroke-dashoffset:0}}
+@keyframes anneau-paraitre{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.anneau-terme .plein{animation:none;stroke-dashoffset:0}.anneau-terme .repere{animation:none;opacity:1}}
+
+/* =========================================================
+   4. TUILE À CHIFFRE : un chiffre ou une heure en grand, par deux.
+   ========================================================= */
+.tuiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tuile{--tf:var(--tache-bg);--tt:var(--tache);position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-width:0;min-height:128px;padding:14px;border:0;border-radius:var(--r-l);background:var(--tf);color:var(--tt);font-family:var(--font);text-align:left;cursor:pointer;transition:transform var(--duree-rapide) var(--courbe-douce)}
+.tuile:active{transform:scale(.97)}
+.tuile.rdv{--tf:var(--rdv-bg);--tt:var(--rdv)}
+.tuile.choix{--tf:var(--choix-bg);--tt:var(--choix)}
+.tuile.sante{--tf:var(--sante-bg);--tt:var(--sante)}
+.tuile.sommeil{--tf:var(--sommeil-bg);--tt:var(--sommeil)}
+.tuile.repas{--tf:var(--repas-bg);--tt:var(--repas)}
+.tuile__tete{display:flex;align-items:center;gap:6px;min-height:20px;font-size:13px;font-weight:700;line-height:1.2}
+.tuile__tete .pastille{margin-left:auto}
+.tuile__valeur{display:flex;align-items:baseline;gap:2px;font-size:30px;font-weight:800;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.tuile__unite{margin:0 2px;font-size:17px;font-weight:750;letter-spacing:-.01em;opacity:.6}
+.tuile__contexte{display:block;margin-top:6px;font-size:12.5px;font-weight:600;line-height:1.3;opacity:.86;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tuile .pastille{--pf:color-mix(in srgb,currentColor 14%,transparent);--pt:currentColor}
+/* La jauge en segments : un segment par objet, comme des verres d'eau */
+.segments{display:grid;grid-template-columns:repeat(var(--n,10),1fr);gap:2px;height:8px;margin-top:10px}
+.segments i{border-radius:2px;background:currentColor;opacity:.18}
+.segments i.plein{opacity:1}
+/* États */
+.tuile.aujourdhui{box-shadow:inset 0 0 0 2px var(--tt)}
+.tuile.faite .tuile__valeur{opacity:.5}
+.tuile__coin{position:absolute;top:12px;right:12px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink)}
+.tuile.vide{--tf:transparent;--tt:var(--ink-2);border:1.5px dashed var(--line-fort)}
+.tuile.vide .tuile__valeur{gap:8px;font-size:17px;letter-spacing:0;color:var(--ink)}
+.tuile.vide .plus{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--btn);color:var(--btn-ink)}
+
+/* =========================================================
+   5. LIGNE DU PLAN : la nature à gauche, le délai en pastille, qui s'en occupe à droite.
+   ========================================================= */
+.lignes{display:block}
+.ligne{position:relative;display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:14px;width:100%;min-height:68px;padding:11px 0;color:var(--ink);font-family:var(--font);text-align:left;cursor:pointer;background:var(--bg)}
+.ligne + .ligne::before{content:"";position:absolute;top:0;left:54px;right:0;height:1px;background:var(--line)}
+.ligne__tete{display:grid;place-items:center;width:40px;height:40px}
+.ligne__titre{display:block;font-size:16px;font-weight:650;line-height:1.3;transition:color var(--duree-moyenne)}
+.ligne__meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;transition:opacity var(--duree-moyenne)}
+.ligne__fin{display:flex;align-items:center;gap:6px;color:var(--ink-2)}
+/* La case d'une tâche : on la touche, elle se remplit et se coche */
+.cocher{position:relative;display:grid;place-items:center;width:26px;height:26px;padding:0;border:0;border-radius:50%;background:none;box-shadow:inset 0 0 0 2px var(--repos);color:var(--accent-ink);cursor:pointer;transition:background var(--duree-moyenne),box-shadow var(--duree-moyenne),transform var(--duree-moyenne) var(--courbe-douce)}
+.cocher::after{content:"";position:absolute;inset:-9px}
+.cocher svg path{stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset var(--duree-moyenne) 80ms}
+.cocher:active{transform:scale(.86)}
+.cocher.en-cours{box-shadow:inset 0 0 0 2px var(--accent)}
+.cocher.en-cours::before{content:"";position:absolute;inset:5px;border-radius:50%;background:conic-gradient(var(--accent) 0 50%,transparent 0)}
+.ligne.faite .cocher{background:var(--accent);box-shadow:none}
+.ligne.faite .cocher::before{display:none}
+.ligne.faite .cocher svg path{stroke-dashoffset:0}
+.ligne.faite .ligne__titre{color:var(--ink-2);text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,var(--ink-2) 55%,transparent)}
+.ligne.faite .ligne__meta{opacity:.55}
+/* Un rendez-vous : sa date en petit calendrier */
+.date-mini{display:flex;flex-direction:column;align-items:center;justify-content:center;width:40px;height:44px;border-radius:12px;background:var(--rdv-bg);color:var(--rdv);line-height:1}
+.date-mini span{margin-bottom:3px;font-size:9.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.date-mini b{font-size:18px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.date-mini.aujourdhui{background:var(--accent);color:var(--accent-ink)}
+/* Un choix : le panneau, en caramel */
+.icone-nature{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--choix-bg);color:var(--choix)}
+/* Nouvelle : un point miel après le titre, le temps d'être vue */
+.ligne.nouvelle .ligne__titre::after{content:"";display:inline-block;width:7px;height:7px;margin-left:7px;border-radius:50%;background:var(--accent);vertical-align:2px}
+/* Qui s'en occupe */
+.avatar{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;font:800 12.5px/1 var(--font);box-shadow:0 0 0 2px var(--bg)}
+.avatar.c{background:var(--rdv-bg);color:var(--rdv)}
+.avatar.l{background:var(--choix-bg);color:var(--choix)}
+.avatars{display:flex}
+.avatars .avatar + .avatar{margin-left:-9px}
+/* Glissée vers la gauche : deux gestes, « Plus tard » et « Fait » */
+.glisse{position:relative;overflow:hidden}
+.glisse .ligne{transform:translateX(-148px)}
+.glisse__actions{position:absolute;top:0;right:0;bottom:0;display:flex}
+.glisse__actions span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:74px;font:700 12px/1 var(--font)}
+.glisse__actions .tard{background:var(--surface-2);color:var(--ink)}
+.glisse__actions .fait{background:var(--accent);color:var(--accent-ink)}
+
+
+/* =========================================================
+   LOT 2
+   6. ONGLETS : les rubriques d'un écran, la bascule d'une vue, la barre du bas.
+   ========================================================= */
+/* Rubriques : du texte souligné d'un trait qui glisse */
+.onglets{display:flex;gap:24px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+.onglets::-webkit-scrollbar{display:none}
+.onglets button{position:relative;flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:0;padding:0 0 10px;border:0;background:none;color:var(--ink-2);font:700 16px/1 var(--font);cursor:pointer;transition:color var(--duree-moyenne)}
+.onglets button[aria-selected="true"]{color:var(--ink)}
+.onglets button::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--ink);transform:scaleX(0);transition:transform var(--duree-moyenne) var(--courbe-douce)}
+.onglets button[aria-selected="true"]::after{transform:none}
+/* Bascule : deux ou trois vues des mêmes choses ; le curseur glisse */
+.bascule{--n:3;--i:0;position:relative;isolation:isolate;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;height:44px;padding:3px;border-radius:var(--r-pilule);background:var(--surface-2)}
+.bascule button{position:relative;z-index:1;margin:0;padding:0 12px;border:0;border-radius:var(--r-pilule);background:none;color:var(--ink-2);font:700 14px/1 var(--font);cursor:pointer;transition:color var(--duree-moyenne)}
+.bascule button[aria-pressed="true"]{color:var(--ink)}
+.bascule__curseur{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc((100% - 6px) / var(--n));border-radius:var(--r-pilule);background:var(--surface);box-shadow:var(--ombre-douce);transform:translateX(calc(100% * var(--i)));transition:transform var(--duree-moyenne) var(--courbe-douce)}
+[data-mode="nuit"] .bascule__curseur{background:color-mix(in srgb,var(--ink) 14%,var(--surface-2))}
+/* Barre d'onglets : cinq entrées au plus, en bas de l'app */
+.barre-onglets{display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(8px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+.barre-onglets button{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;margin:0;padding:6px 0 0;border:0;background:none;color:var(--ink-2);font:600 11px/1 var(--font);cursor:pointer}
+.barre-onglets button[aria-current="page"]{color:var(--ink);font-weight:750}
+.barre-onglets button svg{transition:transform var(--duree-moyenne) var(--courbe-douce)}
+.barre-onglets button:active svg{transform:scale(.86)}
+.barre-onglets .point{position:absolute;top:4px;left:calc(50% + 8px);width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--bg)}
+
+/* =========================================================
+   7. LISTE DE CHOIX : des lignes arrondies, la case à droite ; le choix se marque en miel.
+   Règle de Hugo (13/11) : dans un enchaînement de questions, un choix unique n'a pas de bouton « Suivante » ;
+   toucher la réponse la marque, puis passe à la question suivante. Le bouton reste pour un choix multiple ou une saisie.
+   ========================================================= */
+.options{display:grid;gap:8px}
+.option{position:relative;display:grid;grid-template-columns:48px 1fr 26px;align-items:center;gap:12px;width:100%;min-height:68px;margin:0;padding:10px 14px 10px 10px;border:0;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort);color:var(--ink);font-family:var(--font);text-align:left;cursor:pointer;transition:background var(--duree-moyenne),box-shadow var(--duree-moyenne),transform var(--duree-rapide) var(--courbe-douce)}
+.option:active,.option.appuyee{transform:scale(.985);background:var(--surface-2)}
+.option.sans-image{grid-template-columns:1fr 26px;min-height:56px;padding-left:16px}
+.option__image{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--surface-2);transition:background var(--duree-moyenne)}
+.option__titre{display:block;font-size:16px;font-weight:650;line-height:1.25}
+.option__meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.option__case{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--repos);color:var(--accent-ink);transition:background var(--duree-moyenne),box-shadow var(--duree-moyenne)}
+.option__case svg{opacity:0;transform:scale(.5);transition:opacity var(--duree-rapide),transform var(--duree-moyenne) var(--courbe-douce)}
+.options.plusieurs .option__case{border-radius:8px}
+.option[aria-checked="true"]{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.option[aria-checked="true"] .option__image{background:var(--surface)}
+.option[aria-checked="true"] .option__case{background:var(--accent);box-shadow:none}
+.option[aria-checked="true"] .option__case svg{opacity:1;transform:none}
+.option[aria-disabled="true"]{cursor:default;transform:none;background:var(--surface);opacity:.5}
+.option[aria-disabled="true"] .option__case{visibility:hidden}
+/* Choix unique : pas de rond, l'élément entier se touche ; la sélection se lit au fond et au contour (Hugo, 13/11) */
+.option[role="radio"]{grid-template-columns:48px 1fr}
+.option.sans-image[role="radio"]{grid-template-columns:1fr;padding-right:16px}
+.option[role="radio"] .option__case{display:none}
+
+/* =========================================================
+   8. BOUTON PRINCIPAL : un seul plein par écran ; le reste en contour ou en lien.
+   ========================================================= */
+.bouton{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:180px;height:var(--bouton);margin:0;padding:0 24px;border:0;border-radius:var(--r-pilule);background:var(--btn);color:var(--btn-ink);font:700 16px/1 var(--font);letter-spacing:-.005em;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform var(--duree-rapide) var(--courbe-douce),filter var(--duree-rapide),opacity var(--duree-moyenne)}
+.bouton:active,.bouton.appuye{transform:scale(.97);filter:brightness(.8)}
+[data-mode="nuit"] .bouton:active,[data-mode="nuit"] .bouton.appuye{filter:brightness(.88)}
+.bouton.pleine{width:100%}
+.bouton[aria-disabled="true"]{opacity:.32;pointer-events:none}
+.bouton.secondaire{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink) 30%,transparent)}
+.bouton.lien{min-width:0;height:44px;padding:0 4px;background:none;color:var(--ink);font-size:15px;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.bouton.lien.danger{color:var(--alerte)}
+.bouton.lien:active{filter:none;opacity:.6}
+.bouton__attente{width:18px;height:18px;border-radius:50%;border:2.5px solid color-mix(in srgb,currentColor 28%,transparent);border-top-color:currentColor;animation:bouton-tourne .8s linear infinite}
+.bouton.reussi svg path{stroke-dasharray:20;stroke-dashoffset:20;animation:bouton-coche var(--duree-moyenne) var(--courbe-douce) forwards}
+@keyframes bouton-tourne{to{transform:rotate(360deg)}}
+@keyframes bouton-coche{to{stroke-dashoffset:0}}
+/* La barre d'action : ancrée en bas, sous un fondu ; un bouton plein, un lien au plus */
+.barre-action{position:relative;display:grid;justify-items:center;gap:2px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.barre-action::before{content:"";position:absolute;left:0;right:0;top:-28px;height:28px;background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 0%,transparent),var(--bg));pointer-events:none}
+.barre-action .bouton:not(.lien){width:100%}
+
+/* =========================================================
+   9. FEUILLE DU BAS : noter, choisir ou confirmer sans quitter l'écran.
+   Elle se place dans un conteneur en position relative (l'écran) ; dans l'app, ce conteneur est fixe.
+   ========================================================= */
+.voile{position:absolute;inset:0;z-index:20;background:var(--scrim);animation:voile-entre var(--duree-moyenne) ease both}
+.voile.leger{opacity:.45}
+.feuille{position:absolute;left:0;right:0;bottom:0;z-index:21;display:flex;flex-direction:column;max-height:92%;border-radius:var(--r-feuille) var(--r-feuille) 0 0;background:var(--bg);box-shadow:var(--ombre-levee);color:var(--ink);animation:feuille-monte var(--duree-lente) var(--courbe-douce) both}
+.feuille.glissee{transform:translateY(32%);animation:none}
+.feuille__poignee{flex:none;width:38px;height:5px;margin:8px auto 2px;border-radius:3px;background:var(--line-fort)}
+.feuille__tete{display:grid;grid-template-columns:1fr 32px;gap:12px;align-items:start;padding:10px 16px 6px 20px}
+.feuille__titre{margin:0;font:750 22px/1.15 var(--font);letter-spacing:-.015em}
+.feuille__sous-titre{margin:5px 0 0;font:500 14px/1.35 var(--font);color:var(--ink-2)}
+.feuille__fermer{display:grid;place-items:center;width:32px;height:32px;margin:0;padding:0;border:0;border-radius:50%;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.feuille__corps{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 20px 16px}
+.feuille__corps > p{margin:0;font-size:15px;line-height:1.45;color:var(--ink-2)}
+.feuille .barre-action{border-radius:0}
+@keyframes feuille-monte{from{transform:translateY(100%)}}
+@keyframes voile-entre{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.voile,.feuille{animation:none}}
+
+/* =========================================================
+   10. BANDEAU : ce qui compte maintenant, et son geste.
+   ========================================================= */
+.bandeau{--bf:var(--tache-bg);--bt:var(--tache);display:grid;grid-template-columns:36px 1fr;grid-auto-flow:column;grid-auto-columns:auto;align-items:center;gap:12px;width:100%;min-height:60px;padding:10px 8px 10px 12px;border-radius:var(--r-l);background:var(--bf);color:var(--bt);font-family:var(--font);overflow:hidden;transition:opacity var(--duree-moyenne),max-height var(--duree-lente) var(--courbe-douce),min-height var(--duree-lente),padding var(--duree-lente),margin var(--duree-lente);max-height:200px}
+.bandeau.info{--bf:var(--choix-bg);--bt:var(--choix)}
+.bandeau.urgence{--bf:var(--alerte-bg);--bt:var(--alerte)}
+.bandeau.reussite{--bf:var(--sante-bg);--bt:var(--sante)}
+.bandeau.conseil{--bf:var(--sommeil-bg);--bt:var(--sommeil)}
+.bandeau__icone{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:color-mix(in srgb,currentColor 14%,transparent)}
+.bandeau__texte{margin:0;font-size:14px;font-weight:600;line-height:1.35}
+.bandeau__texte b{font-weight:800}
+.bandeau__action{display:inline-flex;align-items:center;gap:1px;min-height:44px;margin:0;padding:0 6px;border:0;background:none;color:inherit;font:800 14px/1 var(--font);white-space:nowrap;cursor:pointer}
+.bandeau__fermer{display:grid;place-items:center;width:36px;height:36px;margin:0;padding:0;border:0;border-radius:50%;background:none;color:inherit;opacity:.72;cursor:pointer}
+.bandeau.compact{grid-template-columns:auto 1fr;min-height:44px;padding:8px 14px;border-radius:var(--r-m)}
+.bandeau.compact .bandeau__icone{width:auto;height:auto;background:none}
+.bandeau.compact .bandeau__texte{font-size:13.5px}
+.bandeau.ferme{opacity:0;max-height:0;min-height:0;padding-top:0;padding-bottom:0;margin-top:0!important;margin-bottom:0!important}
+
+/* =========================================================
+   11. ÉCRAN DE QUESTION, validé par Hugo le 12/11/2026 : la barre ouverte en plein écran, le titre de groupe discret,
+   la proposition « Aller à », la question proposée, la réponse sourcée. L'écran se place dans un conteneur en position relative.
+   ========================================================= */
+.eq{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;background:var(--bg)}
+.eq.entre{animation:eq-entre var(--duree-moyenne) var(--courbe-douce) both}
+@keyframes eq-entre{from{opacity:0;transform:translateY(18px)}}
+/* La barre ouverte en plein écran, avec « Annuler » */
+.eq__tete{display:flex;align-items:center;gap:12px;padding:4px 16px 8px}
+.eq__tete .question{flex:1;min-width:0;height:52px;padding-right:12px}
+.eq__saisie{flex:1;min-width:0;height:100%;margin:0;padding:0;border:0;background:none;outline:none;font:500 16px/1.3 var(--font);color:var(--ink)}
+.eq__saisie::placeholder{color:var(--ink-2)}
+.eq__effacer{flex:none;display:grid;place-items:center;width:24px;height:24px;margin:0;padding:0;border:0;border-radius:50%;background:var(--surface-2);color:var(--ink-2);cursor:pointer}
+.eq__annuler{flex:none;margin:0;padding:0;border:0;background:none;font:700 15px/1 var(--font);color:var(--ink);cursor:pointer}
+.eq__corps{flex:1;min-height:0;overflow-y:auto;padding:0 16px 32px}
+.eq__corps .suggestions{margin-top:6px}
+/* Titre de groupe discret */
+.titre-discret{margin:22px 0 2px;font:750 14px/1.2 var(--font);color:var(--ink-2)}
+/* Proposition « Aller à » */
+.proposition{position:relative;display:grid;grid-template-columns:40px 1fr 16px;gap:12px;align-items:center;width:100%;min-height:62px;margin:0;padding:9px 0;border:0;background:none;color:var(--ink);text-align:left;font-family:var(--font);cursor:pointer}
+.proposition + .proposition::before{content:"";position:absolute;top:0;left:52px;right:0;height:1px;background:var(--line)}
+.proposition__titre{display:block;font-size:16px;font-weight:600;line-height:1.25}
+.proposition__titre b,.completion b{font-weight:800}
+.proposition__lieu{display:block;margin-top:3px;font-size:13px;font-weight:500;line-height:1.3;color:var(--ink-2)}
+.proposition > svg{color:var(--ink-2)}
+.carre{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2);color:var(--ink)}
+.carre.repas{background:var(--repas-bg);color:var(--repas)}
+/* Question proposée pendant la frappe */
+.completion{position:relative;display:grid;grid-template-columns:20px 1fr 20px;gap:12px;align-items:center;width:100%;min-height:50px;margin:0;padding:6px 0;border:0;background:none;color:var(--ink);text-align:left;font:500 16px/1.3 var(--font);cursor:pointer}
+.completion + .completion::before{content:"";position:absolute;top:0;left:32px;right:0;height:1px;background:var(--line)}
+.completion > svg{color:var(--ink-2)}
+.completion .question__etincelle{width:17px;height:17px}
+/* Réponse sourcée */
+.reponse{margin-top:4px;padding:18px;border-radius:var(--r-xl);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.reponse.oui{--ton:var(--sante);--ton-bg:var(--sante-bg)}
+.reponse.non{--ton:var(--alerte);--ton-bg:var(--alerte-bg)}
+.reponse.nuance{--ton:var(--choix);--ton-bg:var(--choix-bg)}
+.reponse__verdict{display:flex;align-items:center;gap:10px;font:800 26px/1.1 var(--font);letter-spacing:-.02em;color:var(--ton)}
+.reponse__signe{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--ton-bg);color:var(--ton)}
+.reponse__condition{margin-top:10px;font-size:16px;font-weight:650;line-height:1.4;color:var(--ink)}
+.reponse__pourquoi{margin-top:8px;font-size:15px;line-height:1.45;color:var(--ink-2)}
+.reponse__source{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;font-weight:600;line-height:1.3;color:var(--ink-2)}
+.exemple{margin:8px 2px 0;font-size:12px;color:var(--ink-2)}
+/* Urgence : le bandeau, puis l'appel */
+.urgence-bloc{display:grid;gap:10px;margin-top:6px}
+.urgence-bloc .bouton.lien{justify-self:center}
+.eq__toast{position:absolute;left:16px;right:16px;bottom:24px;z-index:45}
+
+/* =========================================================
+   12. ACCUEIL, validé par Hugo le 12/11/2026 (approche A, « La semaine d'abord ») : la tête de l'accueil,
+   « Ça peut attendre », « Rien d'urgent », la story de la semaine ; et la ligne qui part ou arrive.
+   Ordre de l'écran : tête, carte de la semaine, titre discret « À faire maintenant » et trois lignes au plus,
+   « Ça peut attendre », titre discret « Prochain rendez-vous » et sa ligne. Tout tient sans faire défiler.
+   ========================================================= */
+/* La tête de l'accueil : la barre de question, le profil à droite */
+.accueil-tete{display:flex;align-items:center;gap:10px}
+.accueil-tete .question{flex:1;min-width:0}
+.accueil-tete__profil{flex:none;display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:50%;background:none;cursor:pointer}
+.accueil-tete__profil .avatar{width:38px;height:38px;font-size:14px;box-shadow:none}
+/* « Ça peut attendre » : une ligne discrète, sous les choses à faire */
+.attendre{display:flex;align-items:center;gap:4px;width:100%;min-height:40px;margin:0;padding:0 0 0 54px;border:0;background:none;color:var(--ink-2);font:600 14px/1.3 var(--font);text-align:left;cursor:pointer}
+.attendre span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.attendre b{font-weight:750}
+.attendre svg{flex:none}
+/* Rien d'urgent cette semaine */
+.calme{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center;min-height:68px;padding:11px 0}
+.calme__icone{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--sante-bg);color:var(--sante)}
+.calme__titre{display:block;font-size:16px;font-weight:650;line-height:1.3}
+.calme__texte{display:block;margin-top:3px;font-size:13.5px;font-weight:500;line-height:1.35;color:var(--ink-2)}
+/* La story de la semaine : plein écran, quatre images, on avance en touchant */
+.story{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;background:var(--hero);color:var(--hero-ink);font-family:var(--font)}
+.story.entre{animation:eq-entre var(--duree-moyenne) var(--courbe-douce) both}
+.story__segments{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px 14px 0}
+.story__segments i{position:relative;height:3px;border-radius:2px;background:rgba(255,255,255,.32);overflow:hidden}
+.story__segments i.vu::after,.story__segments i.en-cours::after{content:"";position:absolute;inset:0;background:var(--hero-ink);transform-origin:left}
+@media (prefers-reduced-motion:no-preference){.story:not(.fixe) .story__segments i.en-cours::after{animation:story-avance 7s linear both}}
+@keyframes story-avance{from{transform:scaleX(0)}}
+.story__tete{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 0 20px;font:750 15px/1 var(--font)}
+.story__fermer{position:relative;z-index:2;display:grid;place-items:center;width:36px;height:36px;margin:0;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:inherit;cursor:pointer}
+.story__image{display:grid;place-items:center;width:184px;height:184px;margin:52px auto 0;border-radius:50%;background:rgba(255,255,255,.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.story__corps{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 26px 44px;pointer-events:none}
+.story__corps .bouton{pointer-events:auto}
+.story__titre{font:800 32px/1.06 var(--font);letter-spacing:-.03em}
+.story__texte{margin-top:12px;font:500 18px/1.45 var(--font);opacity:.96}
+.story__note{margin-top:18px;font:600 12px/1.3 var(--font);opacity:.7}
+.story .bouton{width:100%;margin-top:24px;background:var(--hero-ink);color:var(--brun)}
+.story .bouton.lien{margin-top:2px;background:none;color:var(--hero-ink)}
+.story__zones{position:absolute;inset:100px 0 0;z-index:0;display:grid;grid-template-columns:1fr 2fr}
+.story__zones button{margin:0;padding:0;border:0;background:none;cursor:pointer}
+/* Une ligne faite ou remise à plus tard quitte l'accueil ; la suivante arrive */
+.ligne.part,.glisse.part{animation:ligne-part .42s var(--courbe-douce) forwards}
+@keyframes ligne-part{to{opacity:0;transform:translateX(28px)}}
+.ligne.arrive{animation:eq-entre .42s var(--courbe-douce) both}
+.glisse + .ligne::before,.ligne + .glisse::before{content:"";position:absolute;top:0;left:54px;right:0;height:1px;background:var(--line);z-index:2}
+
+/* =========================================================
+   13. PRÉPARATIFS, validé par Hugo le 12/11/2026 (option C, « La mosaïque ») : les huit dossiers toujours à la même place,
+   deux par rang ; « Ce qui presse » (un bandeau .info .compact) en tête ; les retirés, repliés en bas.
+   Une tuile : en cours (prochaine étape et échéance, étapes en segments, qui s'en occupe), tout est fait (« Clore »),
+   pas encore (le mois où il deviendra utile), clos. Toucher une tuile ouvre son dossier, qui a sa propre fiche.
+   ========================================================= */
+/* La tête de l'écran : le titre, le profil à droite */
+.dos-tete{display:flex;justify-content:space-between;align-items:center;min-height:56px}
+.dos-tete .avatar{width:38px;height:38px;font-size:14px;box-shadow:none}
+/* Le pictogramme d'un dossier */
+.dos-ic{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:var(--surface-2);color:var(--ink)}
+/* « Clore » : proposé quand tout est fait */
+.dos-clore{display:inline-flex;align-items:center;gap:5px;flex:none;height:32px;margin:0;padding:0 12px 0 10px;border:0;border-radius:var(--r-pilule);background:var(--accent);color:var(--accent-ink);font:750 14px/1 var(--font);cursor:pointer}
+.dos-clore:active{transform:scale(.95)}
+/* Les groupes repliés : Clos, Retirés */
+.dos-groupe{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;margin:6px 0 0;padding:0;border:0;border-top:1px solid var(--line);background:none;color:var(--ink-2);font:700 15px/1 var(--font);text-align:left;cursor:pointer}
+.dos-groupe svg{margin-left:auto;transition:transform var(--duree-moyenne) var(--courbe-douce)}
+.dos-groupe[aria-expanded="true"] svg{transform:rotate(90deg)}
+.dos-replie{display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:center;min-height:48px;color:var(--ink-2)}
+.dos-replie .dos-ic{width:32px;height:32px;border-radius:10px;opacity:.6}
+.dos-replie b{display:block;font-size:15px;font-weight:650;color:var(--ink-2);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--ink-2) 50%,transparent)}
+.dos-replie.retire b{text-decoration:none}
+.dos-replie small{display:block;margin-top:2px;font-size:12.5px}
+.dos-replie button{margin:0;padding:0 2px;border:0;background:none;color:var(--ink);font:700 14px/1 var(--font);text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:40px}
+.dos-etapes{font:600 12px/1 var(--font);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.dos-mosaique{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dos-tuile{position:relative;display:flex;flex-direction:column;gap:6px;min-height:104px;padding:10px 12px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort);cursor:pointer;transition:transform var(--duree-rapide) var(--courbe-douce)}
+.dos-tuile:active{transform:scale(.97)}
+.dos-tuile__haut{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.dos-tuile .dos-ic{width:32px;height:32px;border-radius:10px}
+.dos-tuile .avatars .avatar{width:24px;height:24px;font-size:10.5px;box-shadow:0 0 0 2px var(--surface)}
+.dos-tuile__nom{font-size:15px;font-weight:750;line-height:1.2}
+.dos-tuile__suite{font-size:12.5px;font-weight:600;line-height:1.3;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dos-tuile .segments{margin-top:auto;color:var(--accent);height:6px}
+.dos-tuile.pasencore{background:none;box-shadow:inset 0 0 0 1.5px var(--line)}
+.dos-tuile.pasencore .dos-ic{opacity:.6}
+.dos-tuile.pasencore .dos-tuile__nom{color:var(--ink-2)}
+.dos-tuile.clos{background:var(--accent-soft);box-shadow:none}
+.dos-tuile.clos .dos-tuile__nom{color:var(--ink-2)}
+.dos-tuile__coche{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink)}
+.dos-tuile .dos-clore{margin-top:auto;align-self:flex-start;height:30px}
+
+/* =========================================================
+   14. UN DOSSIER, validé par Hugo le 12/11/2026 avec la garde (approche B, « Quatre rubriques ») : le modèle des huit dossiers.
+   En haut : « Préparatifs » pour revenir ; la carte du dossier, seule lumière de l'écran (où on en est, la frise, la prochaine action,
+   « Revoir la présentation ») ; puis les rubriques (.onglets) du dossier, la rubrique du moment ouverte d'elle-même.
+   La première visite ouvre la story du dossier : la story de la semaine (section 12), avec ses images à elle.
+   ========================================================= */
+/* Retour au conteneur : « Préparatifs » */
+.retour{display:inline-flex;align-items:center;gap:2px;min-height:44px;margin:0;padding:0 8px 0 0;border:0;background:none;color:var(--ink);font:650 16px/1 var(--font);cursor:pointer}
+.retour svg{transform:scaleX(-1)}
+/* La tête d'un dossier : la seule carte de lumière ; où on en est, la frise, la prochaine action */
+.dossier-tete{position:relative;isolation:isolate;display:block;margin-top:4px;padding:16px 16px 16px 18px;border-radius:var(--r-xl);background:var(--hero);color:var(--hero-ink);overflow:hidden}
+.dossier-tete__sur{display:flex;align-items:center;gap:8px;font:750 13px/1 var(--font);opacity:.92}
+.dossier-tete__titre{margin-top:6px;font:800 30px/1.05 var(--font);letter-spacing:-.03em}
+.dossier-tete__etat{margin-top:10px;font:650 16px/1.35 var(--font)}
+.dossier-tete .bouton{width:100%;margin-top:14px;background:var(--hero-ink);color:var(--brun)}
+.dossier-tete .bouton.lien{margin-top:0;background:none;color:var(--hero-ink);height:40px}
+/* La frise du calendrier : d'aujourd'hui à l'entrée */
+.frise{position:relative;display:grid;grid-template-columns:repeat(var(--n,4),1fr);margin-top:16px;padding-top:2px}
+.frise::before{content:"";position:absolute;top:10px;left:calc(50% / var(--n,4));right:calc(50% / var(--n,4));height:2px;border-radius:2px;background:rgba(255,255,255,.32)}
+.frise__pas{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0}
+.frise__point{position:relative;z-index:1;width:18px;height:18px;border-radius:50%;background:var(--hero-ink);box-shadow:0 0 0 3px rgba(255,255,255,.22)}
+.frise__pas.a-venir .frise__point{background:transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,.7)}
+.frise__pas.ici .frise__point{box-shadow:0 0 0 6px rgba(255,255,255,.28)}
+@media (prefers-reduced-motion:no-preference){.frise__pas.ici .frise__point{animation:frise-pouls 2.4s ease-in-out infinite}}
+@keyframes frise-pouls{50%{box-shadow:0 0 0 10px rgba(255,255,255,.12)}}
+.frise__pas.non .frise__point{background:transparent;box-shadow:inset 0 0 0 2px var(--hero-ink)}
+.frise__pas.non .frise__point::after{content:"";position:absolute;inset:4px;background:linear-gradient(45deg,transparent 42%,var(--hero-ink) 42% 58%,transparent 58%)}
+.frise__quand{font:800 12px/1 var(--font);letter-spacing:.02em;text-transform:uppercase;opacity:.9}
+.frise__quoi{font:600 12.5px/1.25 var(--font);opacity:.95}
+/* Une demande : la structure, son état, depuis quand */
+.demande-etat{display:inline-flex}
+/* Autour de chez nous : une carte, la maison au centre, les solutions à pied */
+.autour{position:relative;height:168px;border-radius:var(--r-l);overflow:hidden;background:var(--surface-2)}
+.autour svg{position:absolute;inset:0;width:100%;height:100%}
+.autour .rue{stroke:var(--surface);stroke-width:10;stroke-linecap:round;fill:none}
+.autour .rue.petite{stroke-width:5}
+.autour .parc{fill:var(--sante-bg)}
+.autour .rayon{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 5;opacity:.8}
+.autour__lieu{position:absolute;display:grid;place-items:center;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--surface);box-shadow:var(--ombre-douce)}
+.autour__lieu.maison{width:34px;height:34px;margin:-17px 0 0 -17px;background:var(--btn);color:var(--btn-ink)}
+.autour__min{position:absolute;margin:16px 0 0 -10px;padding:2px 6px;border-radius:var(--r-pilule);background:var(--surface);font:800 10.5px/1.2 var(--font);color:var(--ink);box-shadow:var(--ombre-douce);white-space:nowrap}
+/* La story d'un dossier : celle de la semaine, avec ses images à elle */
+.story__image.rang{width:auto;height:auto;padding:18px 20px;border-radius:var(--r-xl);display:flex;gap:6px}
+.story__image.frise-img{width:auto;height:auto;margin-left:26px;margin-right:26px;padding:22px 14px 16px;border-radius:var(--r-xl)}
+.story__image.frise-img .frise{margin-top:0}
+
+/* =========================================================
+   15. GROSSESSE, validée par Hugo le 13/11/2026 : la page en quatre portes, « Pour ta semaine » au-dessus ; chaque sous-page a sa forme
+   (Bébé : carnet de croissance et bulles ; Mon corps : la question, puis la silhouette ; L'accouchement : le film en six scènes, puis
+   les choix ; L'après : la première semaine, puis le plan à deux). Une sous-page commence toujours par le retour, son nom, son
+   objectif en une phrase (.sp-objectif) et ses repères (.sp-repere). Les fiches se lisent avec .lecture.
+   ========================================================= */
+/* La ligne d'une fiche : son sujet, sa durée de lecture, « du moment » */
+.fiche-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2);color:var(--ink)}
+.fiche-ic.bebe{background:var(--rose-the);color:var(--rdv)}
+.fiche-ic.corps{background:var(--sante-bg);color:var(--sante)}
+.fiche-ic.acc{background:var(--lilas-pale);color:var(--sommeil)}
+.fiche-ic.apres{background:var(--lait-caramel);color:var(--choix)}
+[data-mode="nuit"] .fiche-ic.bebe{background:var(--rdv-bg)}[data-mode="nuit"] .fiche-ic.acc{background:var(--sommeil-bg)}[data-mode="nuit"] .fiche-ic.apres{background:var(--choix-bg)}
+/* B · La porte d'une partie : une illustration, un nom, ce qu'on y trouve */
+.portes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.porte{display:flex;flex-direction:column;gap:8px;min-height:150px;padding:14px;border-radius:var(--r-l);text-align:left;cursor:pointer;transition:transform var(--duree-rapide) var(--courbe-douce)}
+.porte:active{transform:scale(.97)}
+.porte__ic{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:color-mix(in srgb,currentColor 14%,transparent)}
+.porte__nom{margin-top:auto;font:750 17px/1.15 var(--font);letter-spacing:-.01em;color:var(--ink)}
+.porte__quoi{font:600 12.5px/1.3 var(--font);color:var(--ink-2)}
+.porte.bebe{background:var(--rose-the);color:var(--rdv)}.porte.corps{background:var(--sante-bg);color:var(--sante)}.porte.acc{background:var(--lilas-pale);color:var(--sommeil)}.porte.apres{background:var(--lait-caramel);color:var(--choix)}
+[data-mode="nuit"] .porte.bebe{background:var(--rdv-bg)}[data-mode="nuit"] .porte.acc{background:var(--sommeil-bg)}[data-mode="nuit"] .porte.apres{background:var(--choix-bg)}
+/* La fiche de lecture : l'essentiel, les parties, « Quand appeler », la source */
+.lecture__sur{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.lecture__titre{margin-top:12px;font:800 28px/1.08 var(--font);letter-spacing:-.03em}
+.lecture__essentiel{margin-top:14px;font:650 18px/1.42 var(--font)}
+.lecture__partie{margin-top:22px;font:750 17px/1.2 var(--font)}
+.lecture p.texte{margin-top:6px;font:500 16px/1.5 var(--font);color:var(--ink-2)}
+.lecture .bandeau{margin-top:20px}
+.lecture__source{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:20px;padding-top:12px;border-top:1px solid var(--line);font:600 12.5px/1.3 var(--font);color:var(--ink-2)}
+.lecture__gestes{display:flex;gap:4px;margin-top:8px}
+
+/* La tête d'une sous-page : retour, nom, objectif, repère de position */
+.sp-objectif{margin-top:6px;font:600 15px/1.35 var(--font);color:var(--ink-2)}
+.sp-repere{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+/* Une frise qu'on fait glisser : semaines, scènes, jours */
+.rail{display:flex;gap:8px;margin:14px -16px 0;padding:2px 16px 6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
+.rail::-webkit-scrollbar{display:none}
+.rail button{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:52px;height:60px;margin:0;padding:0 8px;border:0;border-radius:16px;background:var(--surface-2);color:var(--ink-2);font:800 18px/1 var(--font);scroll-snap-align:center;cursor:pointer;font-variant-numeric:tabular-nums}
+.rail button small{font-size:10.5px;font-weight:750;letter-spacing:.02em}
+.rail button[aria-current="true"]{background:var(--btn);color:var(--btn-ink)}
+.rail button.verrou{opacity:.55}
+/* Une carte de contenu illustrée, douce, dans la couleur de la partie */
+.carte-doux{position:relative;margin-top:12px;padding:16px;border-radius:var(--r-xl);background:var(--cf,var(--surface-2));color:var(--ink);overflow:hidden}
+.carte-doux.bebe{--cf:var(--rose-the)}.carte-doux.corps{--cf:var(--sauge-pale)}.carte-doux.acc{--cf:var(--lilas-pale)}.carte-doux.apres{--cf:var(--lait-caramel)}
+[data-mode="nuit"] .carte-doux.bebe{--cf:var(--rdv-bg)}[data-mode="nuit"] .carte-doux.corps{--cf:var(--sante-bg)}[data-mode="nuit"] .carte-doux.acc{--cf:var(--sommeil-bg)}[data-mode="nuit"] .carte-doux.apres{--cf:var(--choix-bg)}
+.carte-doux__grand{font:800 24px/1.1 var(--font);letter-spacing:-.025em}
+.carte-doux__texte{margin-top:6px;font:500 15px/1.45 var(--font);color:var(--ink-2)}
+.carte-doux__ill{display:grid;place-items:center;height:132px}
+/* Trois repères en ligne */
+.trois{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.trois span{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:14px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);font:700 13px/1.25 var(--font)}
+.trois span i{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:var(--surface-2);color:var(--ink)}
+/* Une ligne de temps verticale : fait, prochain, à venir */
+.ldt{position:relative;margin-top:8px;padding-left:26px}
+.ldt::before{content:"";position:absolute;left:8px;top:8px;bottom:8px;width:2px;background:var(--line-fort)}
+.ldt__pas{position:relative;padding:8px 0}
+.ldt__pas::before{content:"";position:absolute;left:-24px;top:12px;width:14px;height:14px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 2px var(--line-fort)}
+.ldt__pas.fait::before{background:var(--accent);box-shadow:none}
+.ldt__pas.prochain::before{box-shadow:inset 0 0 0 3px var(--accent)}
+.ldt__pas b{display:block;font:700 15px/1.25 var(--font)}
+.ldt__pas small{display:block;margin-top:2px;font:600 13px/1.3 var(--font);color:var(--ink-2)}
+/* Les bulles de stories */
+.bulles{display:flex;gap:12px;margin:14px -16px 0;padding:2px 16px 4px;overflow-x:auto;scrollbar-width:none}
+.bulles::-webkit-scrollbar{display:none}
+.bulle{flex:none;display:flex;flex-direction:column;align-items:center;gap:5px;margin:0;padding:0;border:0;background:none;cursor:pointer;font:700 12px/1 var(--font);color:var(--ink-2)}
+.bulle span{display:grid;place-items:center;width:62px;height:62px;border-radius:50%;padding:3px;background:var(--line-fort)}
+.bulle span i{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:var(--surface);font:800 18px/1 var(--font);color:var(--ink);font-style:normal}
+.bulle.neuve span{background:conic-gradient(var(--r1),var(--r2),var(--r3),var(--r4),var(--r1))}
+.bulle.verrou{opacity:.5}
+/* La silhouette et ses zones */
+.silhouette{position:relative;height:300px;margin-top:12px;border-radius:var(--r-xl);background:var(--sauge-pale);overflow:hidden}
+[data-mode="nuit"] .silhouette{background:var(--sante-bg)}
+.silhouette svg{position:absolute;left:50%;top:14px;height:286px;transform:translateX(-50%)}
+.silhouette .peau{fill:var(--ill-a)}.silhouette .habit{fill:var(--ill-b)}.silhouette .cheveux{fill:var(--ill-c)}
+.zone{position:absolute;display:flex;align-items:center;gap:6px;margin:0;padding:0 10px 0 4px;height:30px;border:0;border-radius:var(--r-pilule);background:var(--surface);box-shadow:var(--ombre-douce);font:750 12.5px/1 var(--font);color:var(--ink);cursor:pointer;transform:translate(-50%,-50%)}
+.zone::before{content:"";width:22px;height:22px;border-radius:50%;background:var(--sante-bg);box-shadow:inset 0 0 0 2px var(--sante)}
+.zone[aria-pressed="true"]{background:var(--sante);color:#fff}
+.zone[aria-pressed="true"]::before{background:#fff;box-shadow:none}
+/* La jauge du col */
+.jauge-col{display:grid;place-items:center;height:150px}
+.jauge-col svg{width:220px;height:130px}
+.jauge-col .piste{stroke:color-mix(in srgb,var(--sommeil) 20%,transparent)}
+.jauge-col .plein{stroke:var(--sommeil)}
+.jauge-col text{fill:var(--ink);font:800 26px var(--font)}
+.jauge-col text.petit{font:700 11px var(--font);fill:var(--ink-2)}
+/* Une carte de choix */
+.choix-c{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;margin-top:8px;padding:12px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort);cursor:pointer}
+.choix-c.fait{background:var(--accent-soft);box-shadow:none}
+.choix-c b{display:block;font:700 15.5px/1.2 var(--font)}
+.choix-c small{display:block;margin-top:3px;font:600 13px/1.3 var(--font);color:var(--ink-2)}
+/* Les nuits à deux */
+.nuits{display:grid;grid-template-columns:62px 1fr 1fr;gap:6px;margin-top:10px;align-items:center}
+.nuits > span{font:700 12.5px/1 var(--font);color:var(--ink-2)}
+.nuits button{height:44px;margin:0;border:0;border-radius:12px;background:var(--surface-2);color:var(--ink-2);font:750 13px/1 var(--font);cursor:pointer}
+.nuits button[aria-pressed="true"].c{background:var(--rdv-bg);color:var(--rdv)}
+.nuits button[aria-pressed="true"].l{background:var(--choix-bg);color:var(--choix)}
+
+/* =========================================================
+   16. CALENDRIER, validé par Hugo le 13/11/2026 (troisième version) : pas de titre en tête, la bascule Liste ou Mois et le profil ;
+   la carte du prochain rendez-vous, seule lumière de l'écran ; la vue du mois ; la date d'une ligne (« vers le … », « avant le … », « fin »)
+   et le point de la source (rose : le suivi ; caramel : les dossiers) ; la ligne repère du terme ; la fiche de rendez-vous (la période,
+   le lien Doctolib, quand et où) ; le compte rendu en trois rubriques ; la question notée ; l'aperçu d'un rappel et l'écran verrouillé ;
+   le champ de saisie ; l'enregistreur du rendez-vous et la transcription (simulés dans le prototype, hors V1).
+   ========================================================= */
+/* La tête du Calendrier, sans titre (la barre du bas dit où l'on est) : la bascule Liste ou Mois, le profil */
+.cal-tete{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px}
+.cal-tete .bascule{width:196px}
+/* La vue du mois : une grille, les jours qui ont une date marqués ; on touche un jour pour voir ce qu'il porte */
+.mois__tete{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.mois__tete b{font:750 20px/1.2 var(--font);letter-spacing:-.015em}
+.mois__fleche{display:grid;place-items:center;width:40px;height:40px;margin:0;padding:0;border:0;border-radius:50%;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.mois__fleche.prec svg{transform:scaleX(-1)}
+.mois__semaine{display:grid;grid-template-columns:repeat(7,1fr);margin-top:12px;font:700 12px/1 var(--font);color:var(--ink-2);text-align:center}
+.mois__grille{display:grid;grid-template-columns:repeat(7,1fr);gap:2px 0;margin-top:6px}
+.mois__jour{display:flex;flex-direction:column;align-items:center;gap:3px;height:46px;margin:0;padding:3px 0 0;border:0;background:none;color:var(--ink);font:650 15px/1 var(--font);cursor:pointer}
+.mois__jour b{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;font-weight:650;font-variant-numeric:tabular-nums;transition:background var(--duree-rapide)}
+.mois__jour.avant{color:var(--ink-2)}
+.mois__jour.auj b{box-shadow:inset 0 0 0 2px var(--accent)}
+.mois__jour.rdv b{background:var(--rdv-bg);color:var(--rdv);font-weight:800}
+.mois__jour.vers b{border:1.5px dashed var(--rdv);color:var(--rdv)}
+.mois__jour.terme b{background:var(--hero);color:var(--hero-ink);font-weight:800}
+.mois__jour.choisi b{background:var(--btn);color:var(--btn-ink);border-color:transparent;box-shadow:none}
+.mois__points{display:flex;gap:3px;height:5px}
+.mois__points i{width:5px;height:5px;border-radius:50%;background:var(--rdv)}
+.mois__points i.dossier{background:var(--choix)}
+.mois__points i.passe{background:var(--repos)}
+.mois__legende{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.mois__legende .vers::before{width:9px;height:9px;background:none;border:1.5px dashed var(--rdv)}
+.cal-etat b{font-weight:800}
+.cal-etat .suite{color:var(--ink-2);font-weight:600}
+/* La carte du prochain rendez-vous : la seule lumière de l'écran */
+.prochain-rdv{position:relative;isolation:isolate;display:block;width:100%;margin-top:12px;padding:15px 16px 14px;border-radius:var(--r-xl);background:var(--hero);color:var(--hero-ink);text-align:left;cursor:pointer;overflow:hidden;transition:transform var(--duree-moyenne) var(--courbe-douce)}
+.prochain-rdv:active{transform:scale(.985)}
+.prochain-rdv__sur{display:flex;align-items:center;gap:7px;font:750 13px/1 var(--font);opacity:.92}
+.prochain-rdv__corps{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;margin-top:12px}
+.prochain-rdv__date{display:flex;flex-direction:column;align-items:center;justify-content:center;height:76px;border-radius:16px;background:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.26);line-height:1}
+.prochain-rdv__date span{font:800 11px/1 var(--font);letter-spacing:.07em;text-transform:uppercase;opacity:.92}
+.prochain-rdv__date b{margin:4px 0 3px;font:800 32px/1 var(--font);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.prochain-rdv__titre{display:block;font:800 21px/1.12 var(--font);letter-spacing:-.02em}
+.prochain-rdv__detail{display:block;margin-top:6px;font:600 14px/1.38 var(--font);opacity:.95}
+.prochain-rdv__detail svg{vertical-align:-3px;margin-right:4px}
+.prochain-rdv__pied{display:flex;align-items:center;gap:8px;margin-top:13px}
+.prochain-rdv__pied .avatar{box-shadow:0 0 0 2px rgba(255,255,255,.4)}
+.prochain-rdv__qui{font:700 13px/1 var(--font)}
+.prochain-rdv__noter{display:inline-flex;align-items:center;gap:5px;height:36px;margin:0 0 0 auto;padding:0 14px 0 11px;border:0;border-radius:var(--r-pilule);background:rgba(255,255,255,.2);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);color:inherit;font:700 14px/1 var(--font);cursor:pointer;white-space:nowrap}
+.prochain-rdv__noter:active{transform:scale(.95)}
+.prochain-rdv.a-prendre .prochain-rdv__date{background:none;box-shadow:none;border:1.5px dashed rgba(255,255,255,.75)}
+.prochain-rdv.a-prendre .prochain-rdv__date i{font:800 10px/1 var(--font);font-style:normal;letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+.prochain-rdv.a-prendre .prochain-rdv__date b{font-size:28px}
+/* La date d'une ligne : « vers le … », « avant le … », la fin d'une période ; et la couleur de la source */
+.date-mini i{font-style:normal}
+.date-mini.long{height:48px}
+.date-mini.long i{margin-bottom:2px;font-size:8.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.date-mini.long b{font-size:16px}
+.date-mini.long span{margin:2px 0 0;font-size:8.5px}
+.date-mini.vers{background:transparent;border:1.5px dashed currentColor}
+.date-mini.dossier{background:var(--choix-bg);color:var(--choix)}
+.date-mini.passe{background:var(--surface-2);color:var(--ink-2)}
+.date-mini.fin{background:var(--accent-soft);color:var(--ink)}
+/* Le point de couleur de la source, et son nom */
+.source{display:inline-flex;align-items:center;gap:5px;font:600 12.5px/1.25 var(--font);color:var(--ink-2)}
+.source::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--src,var(--ink-2))}
+.source.suivi{--src:var(--rdv)}
+.source.dossier{--src:var(--choix)}
+/* La ligne repère du terme */
+.terme{position:relative;display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center;min-height:66px;padding:11px 0}
+.terme::before{content:"";position:absolute;top:0;left:54px;right:0;border-top:1.5px dashed var(--line-fort)}
+.terme__ic{display:grid;place-items:center;width:40px;height:44px;border-radius:12px;background:var(--hero);color:var(--hero-ink)}
+.terme__titre{display:block;font-size:16px;font-weight:750;line-height:1.3}
+.terme__date{display:block;margin-top:3px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.cal-vide{margin:8px 0 0 54px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.cal-ajouter{display:flex;justify-content:center;margin-top:10px}
+/* La fiche de rendez-vous */
+.fiche-rdv__etiquettes{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:8px}
+.fiche-rdv__titre{margin-top:8px}
+.fiche-rdv__date{margin-top:8px;font:650 15px/1.35 var(--font);color:var(--ink-2)}
+.fiche-rdv__phrase{margin-top:8px;font:650 16px/1.4 var(--font)}
+.fiche-rdv__texte{margin-top:6px;font:500 15px/1.45 var(--font);color:var(--ink-2)}
+.fiche-rdv .bandeau{margin-top:14px}
+.fiche-liens{display:grid;justify-items:start;margin-top:18px}
+.puces{margin:6px 0 0;padding:0;list-style:none}
+.puces li{position:relative;padding:9px 0 9px 22px;font:550 15px/1.4 var(--font);border-top:1px solid var(--line)}
+.puces li:first-child{border-top:0}
+.puces li::before{content:"";position:absolute;left:3px;top:16px;width:7px;height:7px;border-radius:50%;background:var(--repos)}
+/* Quand, où, avec qui : le bloc d'un rendez-vous confirmé */
+.rdv-quand{display:grid;grid-template-columns:62px 1fr;gap:14px;align-items:center;margin-top:16px;padding:14px;border-radius:var(--r-l);background:var(--rdv-bg)}
+.rdv-quand__date{display:flex;flex-direction:column;align-items:center;justify-content:center;height:70px;border-radius:14px;background:var(--surface);color:var(--rdv);line-height:1}
+.rdv-quand__date span{font:800 10.5px/1 var(--font);letter-spacing:.07em;text-transform:uppercase}
+.rdv-quand__date b{margin:4px 0 3px;font:800 28px/1 var(--font);letter-spacing:-.03em}
+.rdv-quand__quand{display:block;font:800 17px/1.2 var(--font);color:var(--ink)}
+.rdv-quand__ligne{display:block;margin-top:4px;font:600 14px/1.35 var(--font);color:var(--ink);opacity:.82}
+.fiche-rdv .options{margin-top:10px}
+/* La période d'un rendez-vous à prendre */
+.periode{margin-top:16px;padding:14px 16px 16px;border-radius:var(--r-l);background:var(--rdv-bg);color:var(--rdv)}
+.periode__titre{font:800 17px/1.25 var(--font);color:var(--ink)}
+.periode__piste{position:relative;height:28px;margin:30px 0 28px}
+.periode__piste::before{content:"";position:absolute;left:0;right:0;top:13px;height:2px;border-radius:2px;background:color-mix(in srgb,currentColor 30%,transparent)}
+.periode__plage{position:absolute;top:0;bottom:0;display:grid;place-items:center;border-radius:var(--r-pilule);background:var(--rdv);color:var(--rdv-bg);font:800 12px/1 var(--font);white-space:nowrap;overflow:hidden}
+.periode__auj{position:absolute;top:8px;left:0;width:12px;height:12px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 3px var(--rdv-bg)}
+.periode__res{position:absolute;top:3px;bottom:3px;width:2px;margin-left:-1px;border-radius:2px;background:var(--ink)}
+.periode__etiq{position:absolute;font:700 11.5px/1 var(--font);color:var(--ink-2);white-space:nowrap}
+.periode__etiq.haut{top:-19px;transform:translateX(-50%);color:var(--ink)}
+.periode__etiq.bas{bottom:-19px}
+.periode__etiq.droite{transform:translateX(-100%)}
+.periode__quand{font:650 14px/1.4 var(--font);color:var(--ink)}
+/* Le compte rendu, en trois rubriques */
+.compte-rendu{display:grid;gap:10px;margin-top:12px}
+.cr-rubrique{padding:14px 14px 8px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.cr-rubrique__tete{display:flex;align-items:center;gap:8px;font:750 15px/1 var(--font)}
+.cr-rubrique__tete span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--surface-2)}
+.cr-rubrique > p{margin-top:8px;font:500 15px/1.45 var(--font);padding-bottom:6px}
+.cr-rubrique .ligne{background:none;min-height:60px}
+.cr-suspens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 0 6px}
+.cr-suspens p{font:500 15px/1.45 var(--font)}
+.cr-auteur{margin-top:6px;font:600 13px/1.35 var(--font);color:var(--ink-2)}
+.surligne{animation:surligne 2.6s var(--courbe-douce)}
+@keyframes surligne{0%,45%{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-soft)}}
+/* La question notée, avec l'initiale de qui l'a notée */
+.question-notee{position:relative;display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;padding:12px 0}
+.question-notee + .question-notee::before{content:"";position:absolute;top:0;left:40px;right:0;height:1px;background:var(--line)}
+.question-notee .avatar{width:28px;height:28px;font-size:12px;box-shadow:none}
+.question-notee__texte{display:block;font:600 15.5px/1.35 var(--font)}
+.question-notee__meta{display:block;margin-top:4px;font:600 12.5px/1.3 var(--font);color:var(--ink-2)}
+.question-notee.nouvelle .question-notee__texte::after{content:"";display:inline-block;width:7px;height:7px;margin-left:7px;border-radius:50%;background:var(--accent);vertical-align:2px}
+.question-notee .pastille.suggestion{height:32px;font-size:13px;padding:0 12px}
+/* L'aperçu d'un rappel, tel qu'il arrive sur le téléphone */
+.rappel{display:grid;grid-template-columns:38px 1fr;gap:11px;align-items:start;width:100%;margin:0;padding:12px 14px;border:0;border-radius:22px;background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:var(--ombre-levee);color:var(--ink);font-family:var(--font);text-align:left;cursor:pointer}
+.rappel__app{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--hero);color:var(--hero-ink);font:800 17px/1 var(--font);letter-spacing:-.04em}
+.rappel__haut{display:flex;justify-content:space-between;font:700 12px/1 var(--font);color:var(--ink-2)}
+.rappel__titre{display:block;margin-top:5px;font:750 15px/1.3 var(--font)}
+.rappel__texte{display:block;margin-top:2px;font:500 14px/1.35 var(--font);color:var(--ink-2)}
+.ecran-verrou{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--hero);color:var(--hero-ink)}
+.ecran-verrou__date{margin-top:22px;text-align:center;font:650 18px/1.2 var(--font);opacity:.95}
+.ecran-verrou__heure{margin-top:4px;text-align:center;font:700 86px/1 var(--font);letter-spacing:-.045em}
+.ecran-verrou__notifs{display:grid;gap:8px;padding:34px 10px 0}
+/* Le champ de saisie d'une feuille du bas */
+.champ{display:block;margin-top:12px}
+.champ__nom{display:block;margin-bottom:6px;font:700 13px/1 var(--font);color:var(--ink-2)}
+.champ input,.champ textarea{display:block;width:100%;height:50px;margin:0;padding:0 14px;border:0;border-radius:var(--r-m);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort);color:var(--ink);font:600 16px/1.3 var(--font);outline:none;-webkit-appearance:none;appearance:none}
+.champ textarea{height:auto;min-height:92px;padding:12px 14px;resize:none}
+.champ input:focus,.champ textarea:focus{box-shadow:inset 0 0 0 2px var(--accent)}
+.champ input::placeholder,.champ textarea::placeholder{color:var(--ink-2);font-weight:500}
+.champs-deux{display:grid;grid-template-columns:1.3fr 1fr;gap:10px}
+.champ__note{display:block;margin-top:6px;font:500 12.5px/1.3 var(--font);color:var(--ink-2)}
+.fiche-doctolib{margin-top:12px}
+/* L'enregistreur du rendez-vous : plein écran, le temps, l'onde, l'avis au soignant, les questions à cocher une fois posées */
+.enregistreur{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;background:var(--hero);color:var(--hero-ink);font-family:var(--font)}
+.enregistreur__corps{flex:1;min-height:0;display:flex;flex-direction:column;padding:8px 22px 0;overflow-y:auto;scrollbar-width:none}
+.enregistreur__sur{display:flex;align-items:center;gap:8px;font:750 14px/1.2 var(--font);opacity:.92}
+.enregistreur__point{width:9px;height:9px;border-radius:50%;background:var(--hero-ink)}
+.enregistreur__titre{margin-top:6px;font:800 26px/1.1 var(--font);letter-spacing:-.025em}
+.enregistreur__temps{margin-top:22px;text-align:center;font:800 64px/1 var(--font);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.onde{display:flex;align-items:center;justify-content:center;gap:3px;height:56px;margin-top:14px}
+.onde i{width:4px;height:var(--h);border-radius:2px;background:var(--hero-ink);opacity:.85}
+@media (prefers-reduced-motion:no-preference){.onde i{animation:onde 1.1s ease-in-out infinite alternate;animation-delay:var(--d)}.enregistreur__point{animation:point-rec 1.6s ease-in-out infinite}}
+@keyframes onde{to{transform:scaleY(.3)}}
+@keyframes point-rec{50%{opacity:.25}}
+.enregistreur.en-pause .onde i,.enregistreur.en-pause .enregistreur__point{animation-play-state:paused;opacity:.4}
+.enregistreur__avis{align-self:center;margin-top:16px}
+.enregistreur__questions{margin-top:20px;padding:12px 14px 6px;border-radius:var(--r-l);background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.enregistreur__questions > p{margin-bottom:4px;font:750 13px/1.2 var(--font);opacity:.9}
+.enreg-q{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:center;width:100%;min-height:44px;margin:0;padding:6px 0;border:0;background:none;color:inherit;font:600 15px/1.3 var(--font);text-align:left;cursor:pointer}
+.enreg-q__case{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.7);color:transparent}
+.enreg-q[aria-checked="true"] .enreg-q__case{background:var(--hero-ink);box-shadow:none;color:var(--brun)}
+[data-mode="nuit"] .enreg-q[aria-checked="true"] .enreg-q__case{color:#2b1830}
+.enreg-q[aria-checked="true"] > span:last-child{text-decoration:line-through;opacity:.7}
+.enregistreur__gestes{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;padding:14px 22px 40px}
+.enregistreur__gestes .bouton{min-width:0;width:100%;background:rgba(255,255,255,.2);color:var(--hero-ink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.enregistreur__gestes .bouton.fin{background:var(--hero-ink);color:var(--brun);box-shadow:none}
+[data-mode="nuit"] .enregistreur__gestes .bouton.fin{color:#2b1830}
+/* La transcription, repliée sous le compte rendu */
+.transcription p{padding:9px 0;border-top:1px solid var(--line);font:500 14.5px/1.45 var(--font)}
+.transcription p:first-child{border-top:0}
+.transcription b{display:block;margin-bottom:2px;font:750 12.5px/1.2 var(--font);color:var(--ink-2)}
+
+/* =========================================================
+   17. DÉMARCHES ET CONGÉS, validé par Hugo le 13/11/2026 (accueil C, « Vos congés se dessinent » ; dossier 1, « À deux, sur une frise »).
+   À la première entrée, quatre questions à la place de la story : une par écran (.qa-haut, .qa-titre, .qa-pourquoi, liste de choix),
+   la carte de lumière en tête (.qc-hero) porte la frise des congés (.f2), qui se trace à chaque réponse ; la fin « Voici votre plan »
+   se confirme (« Déjà fait ? » : .df). Le dossier : la carte du dossier avec la même frise, « Notre situation » (.situ) et « Modifier »,
+   les rubriques Nos congés, Démarches, Au travail ; une démarche s'ouvre en feuille (.dm-grille), la lettre est prête (.lettre),
+   « Ce qui change » montre ce qui part et ce qui arrive (.ligne.retiree, .signe) avant de confirmer.
+   ========================================================= */
+/* L'écran de question d'accueil : avancée, question, pourquoi, réponses */
+.qa-haut{display:flex;align-items:center;gap:12px;min-height:48px}
+.qa-haut .retour{padding-right:0}
+.qa-pas{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.qa-pas i{height:4px;border-radius:2px;background:var(--line-fort);transition:background var(--duree-moyenne)}
+.qa-pas i.fait{background:var(--accent)}
+.qa-pas i.ici{background:var(--ink)}
+.qa-plustard{flex:none;min-height:44px;margin:0;padding:0 2px;border:0;background:none;color:var(--ink-2);font:700 14px/1 var(--font);cursor:pointer}
+.qa-titre{margin-top:18px;font:800 28px/1.1 var(--font);letter-spacing:-.025em}
+.qa-pourquoi{display:grid;grid-template-columns:20px 1fr;gap:8px;margin-top:12px;color:var(--ink-2);font:500 15px/1.4 var(--font)}
+.qa-pourquoi svg{margin-top:1px;color:var(--accent)}
+.qa-note{margin:16px 2px 8px;font:650 13px/1.2 var(--font);color:var(--ink-2)}
+.qa-jum{margin-top:10px}
+.qa-nsp{display:block;margin:6px auto 0}
+.qa-bas{position:absolute;left:0;right:0;bottom:0;z-index:4;padding-top:10px;background:var(--bg)}
+.qa-bas .barre-action{padding-bottom:36px}
+.qa-ouv__sujets{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px}
+/* C · Vos congés se dessinent : la carte de lumière en tête, la question dessous */
+.qc-hero{margin-top:2px;padding:14px 14px 12px;border-radius:var(--r-xl);background:var(--hero);color:var(--hero-ink)}
+.qc-hero__sur{display:flex;justify-content:space-between;align-items:center;font:750 13px/1 var(--font);opacity:.95}
+.qc-hero__n{display:flex;align-items:baseline;gap:6px;margin-top:10px;font:650 14px/1.2 var(--font)}
+.qc-hero__n b{font:800 26px/1 var(--font);letter-spacing:-.02em}
+.qc .qa-titre{margin-top:16px;font-size:24px}
+.qc .qa-pourquoi{font-size:14px}
+.qc .options{margin-top:12px}
+.qc .option.sans-image{min-height:50px}
+/* La frise des congés : une ligne par parent, les congés en bandes, les démarches en points */
+.f2{display:grid;grid-template-columns:26px 1fr;column-gap:8px;margin-top:12px}
+.f2__qui,.f2__zone{display:grid;grid-template-rows:16px repeat(var(--l,2),30px) 18px;align-items:center}
+.f2__bande.apres{padding:0 8px 0 9px;text-align:right}
+.f2__lib{position:absolute;top:7px;font:800 10.5px/14px var(--font);white-space:nowrap}
+.f2__qui .avatar{width:24px;height:24px;font-size:10.5px;box-shadow:none}
+.f2__zone{position:relative}
+.f2__mois{display:grid;grid-template-columns:repeat(8,1fr);font:800 9.5px/1 var(--font);letter-spacing:.04em;text-transform:uppercase;opacity:.78}
+.f2__piste{position:relative;height:30px;cursor:pointer}
+.f2__piste::before{content:"";position:absolute;left:0;right:0;top:14px;height:2px;border-radius:2px;background:rgba(255,255,255,.26)}
+.f2__bande{position:absolute;top:6px;height:18px;padding:0 6px;border-radius:9px;background:var(--hero-ink);color:var(--brun);font:800 10.5px/18px var(--font);white-space:nowrap;overflow:hidden;transition:left .6s var(--courbe-douce),width .6s var(--courbe-douce)}
+.f2__bande.avant{background:rgba(255,255,255,.6)}
+.f2__bande.flou{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.85);color:var(--hero-ink)}
+.f2__bande.entre{animation:f2-entre .7s var(--courbe-douce) both;transform-origin:left}
+@keyframes f2-entre{from{transform:scaleX(0);opacity:0}}
+.f2__point{position:absolute;top:10px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--hero-ink);box-shadow:0 0 0 2px rgba(42,26,20,.28);z-index:1}
+.f2__point.a-venir{background:var(--prune);box-shadow:inset 0 0 0 2px var(--hero-ink)}
+[data-mode="nuit"] .f2__point.a-venir{background:#5a2d52}
+.f2__vide{padding-left:4px;font:650 11px/28px var(--font);opacity:.75}
+.f2__naiss{position:absolute;top:16px;bottom:0;width:0;border-left:2px solid var(--hero-ink)}
+.f2__naiss span{position:absolute;bottom:0;left:4px;font:800 10px/1 var(--font);white-space:nowrap}
+.f2__auj{position:absolute;top:16px;bottom:18px;width:0;border-left:1.5px dashed rgba(255,255,255,.7)}
+.f2__auj span{position:absolute;bottom:-14px;left:-14px;font:700 9.5px/1 var(--font);opacity:.85;white-space:nowrap}
+.f2.seul{--l:1}
+.f2.seul .f2__bande{height:18px;top:5px;line-height:18px}
+/* Notre situation : les quatre réponses, en une ligne, et « Modifier » */
+.situ{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:14px}
+.situ__t{flex-basis:100%;font:700 13px/1 var(--font);color:var(--ink-2);margin-bottom:2px}
+.situ button.lien{margin:0 0 0 2px;padding:0;min-height:28px;border:0;background:none;color:var(--ink);font:700 13.5px/1 var(--font);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+/* La carte d'une démarche : quand, où, quelles pièces, qui */
+.dm-grille{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;margin:10px 0 0;font-size:14.5px;line-height:1.4}
+.dm-grille dt{font-weight:700;color:var(--ink-2)}
+.dm-grille dd{margin:0;font-weight:600}
+.dm-pourquoi{margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--surface-2);font-size:14px;line-height:1.45;color:var(--ink)}
+.dm-site{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font:700 13px/1 var(--font);color:var(--sante)}
+/* La lettre préremplie */
+.lettre{margin-top:6px;padding:16px;border-radius:14px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);font:500 14px/1.55 var(--font);white-space:pre-line;color:var(--ink)}
+.lettre mark{padding:0 3px;border-radius:4px;background:var(--accent-soft);color:inherit;font-weight:700}
+/* Ce qui change : ce qui part, ce qui arrive, avant de confirmer */
+.ligne.retiree .ligne__titre{color:var(--ink-2);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--ink-2) 55%,transparent)}
+.signe{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--surface-2);color:var(--ink-2);font:800 18px/1 var(--font)}
+.signe.plus{background:var(--accent);color:var(--accent-ink)}
+.modif-g{margin-top:16px}
+.modif-g p{font:700 14px/1.2 var(--font);color:var(--ink-2);margin-bottom:8px}
+.modif-g .pastilles{display:flex;flex-wrap:wrap;gap:6px}
+.modif-g .pastille.suggestion{height:34px;font-size:13.5px}
+.modif-g .pastille.suggestion[aria-pressed="true"]{--pf:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+/* « Déjà fait » : sur la fin du questionnaire */
+.df{flex:none;height:30px;margin:0;padding:0 10px;border:0;border-radius:var(--r-pilule);background:none;box-shadow:inset 0 0 0 1.5px var(--line-fort);color:var(--ink-2);font:700 12.5px/1 var(--font);cursor:pointer}
+.df[aria-pressed="true"]{background:var(--sante-bg);color:var(--sante);box-shadow:none}
+.ligne.ecartee .ligne__titre{color:var(--ink-2)}
+.ligne.ecartee .ligne__meta{opacity:.5}
+/* Le texte d'information d'une rubrique */
+.info-t{margin:2px 0 4px 54px;font-size:14px;line-height:1.45;color:var(--ink-2)}
+
+/* =========================================================
+   18. LISTE DE NAISSANCE, validée par Hugo le 13/11/2026 (parents : A, « La liste » ; proches : B, « La vitrine »).
+   Les points d'avancement (un par souhait ou par objet : vide à offrir ou à trouver, en partie, à moitié pris ou en route,
+   plein arrivé) servent aussi au Matériel. La page des proches est une page web : la barre d'adresse le dit.
+   ========================================================= */
+/* La vignette d'un objet, à gauche d'une ligne */
+.ln-vignette{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2)}
+/* Un proche : l'initiale, en neutre (les couleurs restent aux parents) */
+.avatar.proche{background:var(--surface-2);color:var(--ink)}
+/* Les points d'avancement */
+.ln-points{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.ln-point{--c:currentColor;display:block;flex:none;width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--c)}
+.ln-point.quart{background:conic-gradient(var(--c) 0 25%,transparent 0)}
+.ln-point.moitie{background:linear-gradient(90deg,var(--c) 50%,transparent 50%)}
+.ln-point.plein{background:var(--c)}
+.dossier-tete .ln-point{--c:var(--hero-ink)}
+.ligne__fin .ln-point{--c:var(--accent)}
+@media (prefers-reduced-motion:no-preference){.ln-points.trace .ln-point{animation:ln-point-entre .45s var(--courbe-douce) both}}
+@keyframes ln-point-entre{from{transform:scale(0);opacity:0}}
+.ln-legende{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:9px;font:700 12.5px/1 var(--font);opacity:.94}
+.ln-legende span{display:inline-flex;align-items:center;gap:5px}
+.ln-legende .ln-point{width:10px;height:10px;box-shadow:inset 0 0 0 1.5px var(--c)}
+/* Les portes pour ajouter */
+.ln-portes{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+/* La vitrine : des tuiles illustrées, deux par rang (page des proches) */
+.ln-vitrine{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.ln-tuile{display:flex;flex-direction:column;gap:6px;min-width:0;margin:0;padding:8px 8px 11px;border:0;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort);color:var(--ink);font-family:var(--font);text-align:left;cursor:pointer;transition:transform var(--duree-rapide) var(--courbe-douce)}
+.ln-tuile:active{transform:scale(.97)}
+.ln-tuile__image{position:relative;display:grid;place-items:center;height:96px;border-radius:14px;background:var(--surface-2)}
+.ln-tuile__image .pastille{position:absolute;top:6px;left:6px}
+.ln-tuile__nom{padding:0 4px;font:750 14.5px/1.2 var(--font);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ln-tuile__meta{padding:0 4px;font:600 12px/1.3 var(--font);color:var(--ink-2)}
+/* La page des proches : la barre d'adresse, la tête, le mot des parents, leurs principes */
+.ln-web{display:flex;align-items:center;justify-content:center;gap:6px;height:34px;margin:2px 0 4px;border-radius:var(--r-pilule);background:var(--surface-2);font:650 13px/1 var(--font);color:var(--ink-2)}
+.ln-dessin{display:grid;place-items:center;margin:0 auto;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.16)}
+.ln-pub-hero{text-align:center;padding-top:20px}
+.ln-pub-hero .dossier-tete__titre{font-size:27px;margin-top:12px}
+.ln-qui{margin-top:7px;font:650 14px/1.3 var(--font);color:var(--ink-2)}
+.dossier-tete .ln-qui{color:var(--hero-ink);opacity:.9}
+.ln-mot{margin-top:12px;font:500 15px/1.45 var(--font)}
+.dossier-tete .ln-mot{color:var(--hero-ink)}
+.ln-pastilles{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ln-principes{margin-top:18px;padding:4px 14px 12px;border-radius:var(--r-l);background:var(--surface-2)}
+.ln-principes .titre-discret{margin-top:10px}
+.ln-principe{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:start;padding-top:8px;font:600 14.5px/1.35 var(--font)}
+.ln-principe svg{color:var(--accent);margin-top:1px}
+/* La fiche d'un souhait ou d'un objet : l'image en grand */
+.ln-image-fiche{display:grid;place-items:center;height:140px;margin:6px 0 4px;border-radius:var(--r-l);background:var(--surface-2)}
+/* Les quatre états d'un souhait, jamais confondus : à offrir, réservé, acheté, arrivé */
+.ln-etapes{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin:14px 0 6px}
+.ln-etapes::before{content:"";position:absolute;top:8px;left:12.5%;right:12.5%;height:2px;border-radius:2px;background:var(--line-fort)}
+.ln-etape{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;font:650 12px/1.2 var(--font);color:var(--ink-2);text-align:center}
+.ln-etape i{position:relative;z-index:1;width:18px;height:18px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 2px var(--line-fort)}
+.ln-etape.fait i{background:var(--accent);box-shadow:none}
+.ln-etape.ici i{box-shadow:inset 0 0 0 2px var(--accent),0 0 0 5px var(--accent-soft)}
+.ln-etape.fait,.ln-etape.ici{color:var(--ink)}
+/* À plusieurs : ce qui est annoncé, ce qui manque */
+.ln-jauge{display:block;height:10px;margin-top:12px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.ln-jauge i{display:block;height:100%;border-radius:5px;background:var(--accent);transition:width var(--duree-lente) var(--courbe-douce)}
+.ln-jauge-l{display:flex;justify-content:space-between;gap:10px;margin-top:7px;font:650 13px/1.25 var(--font);color:var(--ink-2)}
+.ln-jauge-l b{color:var(--ink);font-weight:800}
+.ligne .ln-jauge{height:6px;margin-top:8px;width:150px}
+/* Le lien de la liste ; ce que verront les proches avant de mettre en ligne */
+.ln-lien{display:flex;align-items:center;gap:10px;margin-top:16px;padding:8px 8px 8px 14px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort)}
+.ln-lien span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:650 15px/1.2 var(--font)}
+.ln-lien .bouton{min-width:0;height:40px;padding:0 16px;font-size:14px}
+.ln-vu{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;padding:7px 0;font:600 15px/1.35 var(--font)}
+.ln-vu svg{margin-top:1px;color:var(--sante)}
+.ln-vu.non,.ln-vu.non svg{color:var(--ink-2)}
+/* C'est réservé : la confirmation du proche, dans la carte de lumière */
+.ln-merci{text-align:center;padding-top:22px}
+.ln-merci__signe{display:grid;place-items:center;width:64px;height:64px;margin:0 auto;border-radius:50%;background:var(--hero-ink);color:var(--prune)}
+
+/* =========================================================
+   19. MATÉRIEL, validé par Hugo le 13/11/2026, avec la liste de naissance (un seul inventaire).
+   Rubriques Ce qu'il faut (la bascule Par moment ou Par usage), Comprendre, Choisir ; la fiche d'un objet et ses six façons
+   de l'obtenir, dont « Sur la liste » (en prune, la couleur de la liste) ; « installé » pour le siège auto et le couchage ;
+   un gros objet se choisit en trois questions (section 17, sans bouton), puis deux pistes d'exemple.
+   ========================================================= */
+/* L'état d'un objet, à droite de sa ligne : le point, puis qui ou quoi */
+.mt-etat{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font:650 11.5px/1.15 var(--font);color:var(--ink-2);text-align:right;max-width:80px}
+.ligne.retard .mt-etat{color:var(--ink)}
+.ligne.retard .mt-etat .ln-point{box-shadow:inset 0 0 0 2px var(--accent),0 0 0 4px var(--accent-soft)}
+/* Comment on l'obtient : six façons, deux par rang */
+.mt-facons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.mt-facon{display:flex;align-items:center;gap:10px;min-height:52px;margin:0;padding:8px 10px;border:0;border-radius:var(--r-m);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort);color:var(--ink);font:700 14.5px/1.2 var(--font);text-align:left;cursor:pointer;transition:background var(--duree-moyenne),box-shadow var(--duree-moyenne),transform var(--duree-rapide) var(--courbe-douce)}
+.mt-facon:active{transform:scale(.97)}
+.mt-facon span{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:9px;background:var(--surface-2)}
+.mt-facon[aria-checked="true"]{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.mt-facon[aria-checked="true"] span{background:var(--accent);color:var(--accent-ink)}
+.mt-facon.liste[aria-checked="true"] span{background:var(--prune);color:#fff}
+/* Le récit d'un objet : à quoi il sert, quand, ce qu'on confond, le conseil et sa source */
+.mt-recit{margin-top:4px}
+.mt-recit p{margin-top:10px;font:500 15px/1.45 var(--font)}
+.mt-recit b{font-weight:750}
+.mt-source{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font:700 12.5px/1 var(--font);color:var(--sante)}
+.mt-source.parents{color:var(--choix)}
+/* Où il en est, et « installé » */
+.mt-ou{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:12px 14px;border-radius:var(--r-m);background:var(--surface-2)}
+.mt-ou b{display:block;font:750 15px/1.25 var(--font)}
+.mt-ou small{display:block;margin-top:3px;font:600 13px/1.3 var(--font);color:var(--ink-2)}
+.mt-installe{display:inline-flex;align-items:center;gap:6px;flex:none;height:32px;margin:0;padding:0 12px 0 8px;border:0;border-radius:var(--r-pilule);background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line-fort);color:var(--ink);font:700 13px/1 var(--font);cursor:pointer}
+.mt-installe i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--repos);color:var(--accent-ink)}
+.mt-installe[aria-pressed="true"]{background:var(--sante-bg);color:var(--sante);box-shadow:none}
+.mt-installe[aria-pressed="true"] i{background:var(--sante);box-shadow:none;color:var(--sante-bg)}
+/* La poussette démontée */
+.mt-demonte{display:flex;justify-content:center;align-items:flex-end;gap:12px;padding:16px 10px 12px;border-radius:var(--r-l);background:var(--surface-2);margin-top:10px}
+.mt-demonte span{display:flex;flex-direction:column;align-items:center;gap:6px;font:750 12.5px/1 var(--font);color:var(--ink-2)}
+.mt-plus{font:800 18px/1 var(--font);color:var(--ink-2);padding-bottom:26px}
+/* Une piste, pour choisir un gros objet ; la première en miel */
+.mt-piste{padding:14px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort);margin-top:10px}
+.mt-piste.premiere{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-soft)}
+.mt-piste__haut{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center}
+.mt-piste__img{display:grid;place-items:center;width:56px;height:56px;border-radius:14px;background:var(--surface-2)}
+.mt-piste.premiere .mt-piste__img{background:var(--surface)}
+.mt-piste__nom{display:block;font:800 17px/1.2 var(--font)}
+.mt-piste__type{display:block;margin-top:2px;font:600 13px/1.3 var(--font);color:var(--ink-2)}
+.mt-piste .option__meta{margin-top:10px}
+.mt-piste__pourquoi{margin-top:10px;font:500 14px/1.4 var(--font)}
+/* Les scènes de Comprendre */
+.mt-scenes{display:flex;gap:8px;margin-top:14px;overflow-x:auto;scrollbar-width:none}
+.mt-scenes .pastille.suggestion[aria-pressed="true"]{--pf:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+
+/* =========================================================
+   20. NAISSANCE, validée par Hugo le 13/11/2026 (frontière A, « Comprendre là, préparer ici » ; entrée C, « La répétition » ;
+   dossier 1, quatre rubriques Partir, Valise, Projet, Retour). En tête, la carte du dossier porte l'objectif (.objectif)
+   et quatre anneaux qui se remplissent (.prets) ; « Faut-il partir ? » ouvre sur les signes pour partir sans attendre et l'appel ;
+   le compteur montre le compte à côté de la consigne de la maternité, sans verdict ; trois sacs qui se remplissent ;
+   le projet de naissance en page ; le jour J de l'autre parent en trois temps.
+   ========================================================= */
+.dossier-tete .dossier-tete__titre.objectif{font-size:25px;line-height:1.1}
+.prets{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}
+.pret{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.pret svg{width:52px;height:52px}
+.pret .piste{stroke:rgba(255,255,255,.3)}
+.pret .plein{stroke:var(--hero-ink)}
+.pret b{font:800 13px/1 var(--font)}
+.pret small{font:650 11.5px/1.2 var(--font);opacity:.92}
+.pret__ic{position:relative}
+button.pret{margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer}
+.pret__ic span{position:absolute;inset:0;display:grid;place-items:center}
+/* La fiche du jour J, en lecture */
+.fiche-j{display:grid;grid-template-columns:auto 1fr;gap:9px 12px;padding:14px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.fiche-j dt{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:var(--surface-2);color:var(--ink)}
+.fiche-j dd{margin:0;align-self:center;font:650 14.5px/1.3 var(--font)}
+.fiche-j dd small{display:block;font:600 12px/1.2 var(--font);color:var(--ink-2)}
+.fiche-j dd.manque{color:var(--ink-2);font-style:italic}
+/* Les trois sacs qui se remplissent */
+.sacs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sac{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);text-align:center;cursor:pointer;border:0}
+.sac[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-soft)}
+.sac svg{width:58px;height:58px}
+.sac .contour{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round}
+.sac .niveau{fill:var(--accent)}
+.sac .fond{fill:var(--surface-2)}
+.sac b{font:800 13px/1.15 var(--font)}
+.sac small{font:700 12px/1 var(--font);color:var(--ink-2);font-variant-numeric:tabular-nums}
+/* « Faut-il partir ? » */
+.consigne{position:relative;margin-top:8px;padding:14px 16px 14px 18px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.consigne::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;background:var(--accent)}
+.consigne p{font:650 16px/1.4 var(--font)}
+.consigne small{display:block;margin-top:6px;font:600 12px/1.3 var(--font);color:var(--ink-2)}
+.urgence-vitale{display:flex;align-items:center;gap:10px;margin-top:16px;padding:12px 14px;border-radius:var(--r-m);background:var(--surface-2);font:650 13.5px/1.35 var(--font)}
+.urgence-vitale b{font-weight:800}
+.signes{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0 12px}
+.signes span{display:flex;align-items:center;gap:7px;padding:9px 10px;border-radius:12px;background:var(--alerte-bg);color:var(--alerte);font:750 13px/1.2 var(--font)}
+/* Le compteur de contractions */
+.cpt{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:10px}
+.cpt__bouton{display:grid;place-items:center;align-content:center;gap:6px;width:190px;height:190px;border:0;border-radius:50%;background:var(--btn);color:var(--btn-ink);font:800 21px/1.1 var(--font);cursor:pointer;box-shadow:0 0 0 10px color-mix(in srgb,var(--btn) 14%,transparent);transition:transform var(--duree-rapide)}
+.cpt__bouton:active{transform:scale(.96)}
+.cpt__bouton.en-cours{background:var(--accent);color:var(--accent-ink);box-shadow:0 0 0 10px color-mix(in srgb,var(--accent) 22%,transparent)}
+@media (prefers-reduced-motion:no-preference){.cpt__bouton.en-cours{animation:cpt-pouls 1.6s ease-in-out infinite}}
+@keyframes cpt-pouls{50%{box-shadow:0 0 0 18px color-mix(in srgb,var(--accent) 10%,transparent)}}
+.cpt__bouton small{font:700 14px/1 var(--font);opacity:.8;font-variant-numeric:tabular-nums}
+.cpt__face{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:6px}
+.cpt__face div{padding:12px;border-radius:var(--r-l);background:var(--surface-2)}
+.cpt__face div.leur{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.cpt__face b{display:block;font:800 26px/1 var(--font);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.cpt__face small{display:block;margin-top:5px;font:650 12px/1.3 var(--font);color:var(--ink-2)}
+.cpt__liste{width:100%;margin-top:4px}
+.cpt__liste div{display:grid;grid-template-columns:56px 1fr auto;gap:8px;padding:9px 2px;border-top:1px solid var(--line);font:650 14px/1.2 var(--font);font-variant-numeric:tabular-nums}
+.cpt__liste div span:last-child{color:var(--ink-2)}
+.cpt__liste .barre{height:8px;align-self:center;border-radius:4px;background:var(--accent)}
+.cpt__deux{display:flex;align-items:center;gap:8px;font:650 12.5px/1.3 var(--font);color:var(--ink-2)}
+/* Le projet de naissance, en page */
+.page-projet{position:relative;margin-top:8px;padding:20px 18px 16px;border-radius:6px 6px 18px 6px;background:#fffdf9;color:#2a1a14;box-shadow:0 1px 0 var(--line),0 12px 26px -16px rgba(42,26,20,.45);font:500 13px/1.45 var(--font)}
+[data-mode="nuit"] .page-projet{background:#f6efe6}
+.page-projet h4{margin:0 0 8px;font:800 16px/1.2 var(--font)}
+.page-projet p{margin:0 0 7px}
+.page-projet .sgn{margin-top:10px;font-weight:750;font-style:italic}
+.page-projet mark{background:#fbecd9;color:inherit;padding:0 2px;border-radius:3px}
+/* Le jour J de l'autre parent */
+.temps{display:grid;gap:8px;margin-top:8px}
+.temps div{padding:12px 14px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.temps b{display:flex;align-items:center;gap:8px;font:800 15px/1.2 var(--font)}
+.temps b i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--choix-bg);color:var(--choix);font:800 12px/1 var(--font);font-style:normal}
+.temps p{margin-top:6px;font:550 14px/1.4 var(--font);color:var(--ink-2)}
+
+/* La répétition : la nuit du départ jouée pour de faux, à la première entrée (.rep, __heure, __fil, __corps, __rep) ; la fin, ce qui manque (.manque) */
+.rep{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;background:var(--hero);color:var(--hero-ink)}
+.rep__heure{margin:34px auto 0;font:800 64px/1 var(--font);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.rep__heure small{display:block;margin-top:6px;text-align:center;font:700 13px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+.rep__fil{display:grid;grid-template-columns:repeat(5,1fr);margin:26px 18px 0;position:relative}
+.rep__fil::before{content:"";position:absolute;top:8px;left:10%;right:10%;height:2px;background:rgba(255,255,255,.3)}
+.rep__fil span{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;font:750 10.5px/1.15 var(--font);text-align:center;opacity:.85}
+.rep__fil span i{width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.7);background:transparent}
+.rep__fil span.ok i{background:var(--hero-ink);box-shadow:none}
+.rep__fil span.trou i{background:transparent;box-shadow:inset 0 0 0 2px var(--hero-ink)}
+.rep__fil span.trou i::after{content:"!";display:grid;place-items:center;height:100%;font:900 11px/1 var(--font)}
+.rep__fil span.ici i{box-shadow:0 0 0 5px rgba(255,255,255,.3),inset 0 0 0 2px var(--hero-ink)}
+.rep__corps{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 22px 40px}
+.rep__titre{font:800 30px/1.08 var(--font);letter-spacing:-.03em}
+.rep__texte{margin-top:10px;font:500 16.5px/1.45 var(--font);opacity:.96}
+.rep__rep{display:grid;gap:8px;margin-top:20px}
+.rep__rep button{min-height:52px;padding:0 16px;border:0;border-radius:var(--r-l);background:rgba(255,255,255,.16);color:var(--hero-ink);font:700 16px/1.2 var(--font);text-align:left;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
+.rep__rep button:active{background:rgba(255,255,255,.26)}
+.rep .bouton{width:100%;margin-top:20px;background:var(--hero-ink);color:var(--brun)}
+.rep__note{margin-top:14px;font:600 12px/1.3 var(--font);opacity:.7}
+.manque{display:grid;gap:8px;margin-top:16px}
+.manque span{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.14);font:700 15px/1.25 var(--font)}
+.manque span.ok{opacity:.7;font-weight:600}
+.manque span em{margin-left:auto;font:750 12px/1 var(--font);font-style:normal;opacity:.85}
+
+/* =========================================================
+   21. CHOISIR UNE DATE : la roue, à la manière d'Amma (Hugo, 16/11/2026 ; remplace le calendrier façon Flo du 13/11).
+   Trois colonnes, jour, mois, année (mois et année pour un champ de mois) ; la ligne du milieu est la date choisie.
+   Dessous, le jour et ce que la date veut dire (« Lundi · soit 24 semaines de grossesse »). La roue a toujours une valeur.
+   Remplace le champ de date du système, qui reste caché derrière pour le formulaire. Tempo.choixDate(input, options).
+   ========================================================= */
+.roue-date{margin-top:4px}
+.roue{position:relative;display:grid;grid-template-columns:56px 1fr 76px;gap:4px;height:200px;margin-top:6px;padding:0 12px;border-radius:var(--r-l);background:var(--surface);-webkit-mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent)}
+.roue.roue--mois{grid-template-columns:1fr 90px}
+.roue__bande{position:absolute;left:8px;right:8px;top:80px;height:40px;border-radius:12px;background:var(--surface-2);pointer-events:none}
+.roue__col{position:relative;height:200px;overflow-y:auto;padding:80px 0;scroll-snap-type:y mandatory;scrollbar-width:none;outline:none;overscroll-behavior:contain}
+.roue__col::-webkit-scrollbar{display:none}
+.roue__it{display:grid;place-items:center;height:40px;scroll-snap-align:center;font:500 17px/1 var(--font);color:var(--repos);cursor:pointer;transition:color .15s,font-size .15s;font-variant-numeric:tabular-nums}
+.roue__it.on{font-size:20px;font-weight:700;color:var(--ink)}
+.roue__it.off{opacity:.3}
+.roue__col:focus-visible{box-shadow:inset 0 0 0 2px var(--ink);border-radius:12px}
+.roue__sens{margin:14px 0 0;text-align:center;font:650 15px/1.3 var(--font);color:var(--ink-2)}
+.roue__sens:empty{display:none}
+/* Dans un formulaire, la roue prend toute la largeur */
+.row2:has(.roue-date){grid-template-columns:1fr}
+@media (prefers-reduced-motion:reduce){.roue__it{transition:none}}
+
+/* =========================================================
+   22. RECHERCHE DU PROTOTYPE IDÉAL, validée par Hugo le 17/11/2026. Deux entrées : la recherche en tête de l'accueil
+   trouve un endroit de Tempo (dossier, rendez-vous, fiche, réponse déjà rédigée) ; les questions passent par Mezzo.
+   Un champ simple : l'étincelle et le contour animé restent à la barre de question (section 2), qui demeure la seule
+   entrée de la V1, sans IA. Ordre des résultats : l'urgence si un mot d'alerte, « Aller à », « Déjà répondu par Tempo »,
+   puis la ligne « Poser la question » (une .proposition dont la tête est .carre.mezzo), en tête dès qu'on tape une question.
+   ========================================================= */
+.recherche{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border:0;border-radius:24px;background:color-mix(in srgb,var(--surface) 74%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--ink-2);font:600 16px/1 var(--font);text-align:left;box-shadow:var(--ombre-douce);cursor:pointer}
+.recherche-ouverte{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;background:var(--bg);animation:eq-entre var(--duree-moyenne) var(--courbe-douce) both}
+.recherche-ouverte.fixe{animation:none}
+.recherche-ouverte__tete{display:flex;align-items:center;gap:12px;padding:4px 16px 8px}
+.recherche-ouverte__champ{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:48px;padding:0 12px 0 16px;border-radius:24px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--accent);color:var(--ink-2);cursor:text}
+.recherche-ouverte__champ input{flex:1;min-width:0;height:100%;margin:0;padding:0;border:0;background:none;outline:none;font:500 16px/1.3 var(--font);color:var(--ink);-webkit-appearance:none;appearance:none}
+.recherche-ouverte__champ input::placeholder{color:var(--ink-2)}
+.recherche-ouverte__champ input::-webkit-search-cancel-button{display:none}
+.recherche-ouverte__corps{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:0 16px 32px}
+.recherche-ouverte__corps::-webkit-scrollbar{display:none}
+.recherche-ouverte__corps .titre-discret{margin-top:16px}
+.recherche-ouverte__corps .suggestions{margin-top:8px}
+.carre.mezzo{background:var(--surface-2) center 30%/cover no-repeat;border-radius:50%}
+
+/* =========================================================
+   23. SITE PUBLIC, validé par Hugo le 24/11/2026 (planche 19-site-composants).
+   Jour seulement : le site ne suit pas le mode nuit. Préfixe st-. Gabarit d'article sur le modèle de Huckleberry :
+   sommaire fixe à gauche, article au centre, appel à l'action fixe à droite (ordinateur) ; barre d'appel en bas,
+   sans sommaire ni fenêtre surgissante (téléphone). L'appel mène à l'App Store.
+   Le conteneur .st-page porte la requête de conteneur « page » : les largeurs de rupture (1 180, 900, 640 px)
+   se lisent sur la largeur de la page. Sur le site, la barre du bas passe en position: fixed.
+   Échelle de lecture propre au site (jetons --st-*) ; tout le reste vient de valeurs.css.
+   ========================================================= */
+/* ---------- Jetons du site : l'échelle de lecture longue ---------- */
+.st-page{container:page/inline-size;background:var(--bg);color:var(--ink);font-family:var(--font)}
+.st-site{
+  --st-texte:19px;--st-interligne:1.7;--st-colonne:720px;
+  --st-titre-article:46px;--st-titre-partie:30px;--st-titre-sous:22px;--st-chapeau:21px;
+  --st-gouttiere:40px;--st-haut-fixe:92px;
+  position:relative;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased
+}
+@container page (max-width:639px){
+  .st-site{--st-texte:17px;--st-titre-article:34px;--st-titre-partie:25px;--st-titre-sous:20px;--st-chapeau:18px;--st-gouttiere:20px}
+}
+.st-site *{box-sizing:border-box}
+:where(.st-site a:not(.bouton,.st-store)){color:inherit}
+
+/* ---------- 1. En-tête du site et barre de progression ---------- */
+.st-entete{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:var(--e-8);height:72px;padding:0 var(--st-gouttiere);background:var(--bg);box-shadow:0 1px 0 var(--line)}
+.st-marque{font-weight:800;letter-spacing:-.045em;font-size:26px;text-decoration:none}
+.st-nav{display:flex;gap:var(--e-6);margin-right:auto}
+.st-nav a{font:650 16px/1 var(--font);color:var(--ink-2);text-decoration:none;padding:10px 0}
+.st-nav a[aria-current]{color:var(--ink)}
+.st-entete .bouton{min-width:0;height:44px;padding:0 20px;font-size:15px}
+.st-burger{display:none;place-items:center;width:var(--cible);height:var(--cible);margin-left:auto;border:0;border-radius:50%;background:var(--surface-2);color:var(--ink)}
+@container page (max-width:899px){.st-nav,.st-entete .bouton{display:none}.st-burger{display:grid}.st-entete{height:60px}}
+.st-progression{position:absolute;left:0;right:0;bottom:-3px;height:3px;pointer-events:none}
+.st-progression i{display:block;height:100%;background:var(--hero);clip-path:inset(0 calc(100% - var(--p,0%)) 0 0);transition:clip-path .12s linear}
+
+/* ---------- 2. Gabarit : trois colonnes sur ordinateur, deux sur tablette, une sur téléphone ---------- */
+.st-grille{display:grid;grid-template-columns:210px minmax(0,var(--st-colonne)) 290px;gap:52px;justify-content:center;padding:var(--e-8) var(--st-gouttiere) 0}
+@container page (max-width:1179px){.st-grille{grid-template-columns:minmax(0,var(--st-colonne)) 280px;gap:40px}.st-sommaire{display:none}}
+@container page (max-width:899px){.st-grille{grid-template-columns:minmax(0,1fr)}.st-colonne-appel{display:none}}
+@container page (max-width:639px){.st-grille{padding-top:var(--e-4)}}
+
+/* ---------- 3. Fil d'Ariane ---------- */
+.st-ariane{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 var(--e-5);padding:0;list-style:none;font:600 14px/1.3 var(--font);color:var(--ink-2)}
+.st-ariane a{text-decoration:none}
+.st-ariane a:hover{color:var(--ink);text-decoration:underline}
+.st-ariane svg{color:var(--repos)}
+
+/* ---------- 4. Tête d'article ---------- */
+.st-tete-article h1{margin:var(--e-3) 0 0;font-size:var(--st-titre-article);font-weight:800;letter-spacing:-.04em;line-height:1.04;text-wrap:balance}
+.st-chapeau{margin:var(--e-4) 0 0;font-size:var(--st-chapeau);font-weight:550;line-height:1.45;color:var(--ink-2);text-wrap:pretty}
+.st-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--e-3) var(--e-6);margin-top:var(--e-6)}
+.st-signature{display:flex;align-items:center;gap:var(--e-3)}
+.st-avatar{display:grid;place-items:center;flex:none;width:46px;height:46px;border-radius:50%;background:var(--rose-the);color:var(--rdv);font:800 15px/1 var(--font);letter-spacing:-.02em}
+.st-signature b{display:block;font:700 15px/1.25 var(--font)}
+.st-signature small{display:block;font:500 14px/1.3 var(--font);color:var(--ink-2)}
+.st-date{display:flex;align-items:center;gap:6px;font:550 14px/1.3 var(--font);color:var(--ink-2)}
+.st-relu{display:flex;align-items:center;gap:var(--e-3);padding:6px 14px 6px 6px;border-radius:var(--r-pilule);background:var(--sante-bg);color:var(--sante)}
+.st-relu .st-avatar{width:34px;height:34px;font-size:12px;background:var(--surface);color:var(--sante)}
+.st-relu b{font:700 14px/1.2 var(--font)}
+.st-relu small{display:block;font:550 12px/1.2 var(--font);opacity:.85}
+.st-visuel{position:relative;display:grid;place-items:center;margin-top:var(--e-8);aspect-ratio:16/8;border-radius:var(--r-xl);background:linear-gradient(160deg,var(--lilas-pale),var(--rose-the));overflow:hidden}
+.st-visuel__scene{display:flex;align-items:flex-end;gap:var(--e-2)}
+.st-visuel__etoile{position:absolute;color:var(--sommeil);opacity:.55}
+@container page (max-width:639px){.st-visuel{aspect-ratio:4/3;margin-top:var(--e-6)}.st-visuel__scene svg{width:110px;height:110px}.st-visuel__scene svg:last-child{width:76px;height:76px}}
+
+/* ---------- 5. Sommaire fixe (ordinateur seulement) ---------- */
+.st-sommaire__fixe{position:sticky;top:var(--st-haut-fixe)}
+.st-sommaire__titre{margin:0 0 var(--e-3);font:700 13px/1 var(--font);color:var(--ink-2)}
+.st-sommaire ol{margin:0;padding:0;list-style:none}
+.st-sommaire a{position:relative;display:block;padding:9px 0 9px 18px;font:600 15px/1.3 var(--font);color:var(--ink-2);text-decoration:none;transition:color var(--duree-rapide)}
+.st-sommaire a::before{content:"";position:absolute;left:2px;top:16px;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:0;transform:scale(.4);transition:opacity var(--duree-rapide),transform var(--duree-moyenne) var(--courbe-douce)}
+.st-sommaire a:hover{color:var(--ink)}
+.st-sommaire a.actif{color:var(--ink);font-weight:750}
+.st-sommaire a.actif::before{opacity:1;transform:none}
+.st-sommaire__haut{display:inline-flex;align-items:center;gap:6px;margin-top:var(--e-4);padding:6px 0;border:0;background:none;font:650 14px/1 var(--font);color:var(--ink-2);cursor:pointer}
+
+/* ---------- 6. Appel à l'action fixe : colonne de droite (ordinateur) ---------- */
+.st-appel{position:sticky;top:var(--st-haut-fixe);padding:var(--e-6);border-radius:var(--r-xl);background:var(--surface);box-shadow:var(--ombre-douce)}
+.st-appel__tete{display:flex;align-items:center;gap:var(--e-3)}
+.st-icone-app{display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:14px;background:var(--hero);color:var(--hero-ink);font:800 24px/1 var(--font);letter-spacing:-.06em;box-shadow:var(--ombre-douce)}
+.st-icone-app.petite{width:42px;height:42px;border-radius:11px;font-size:20px}
+.st-appel__tete b{display:block;font:800 20px/1.1 var(--font);letter-spacing:-.03em}
+.st-appel__tete small{display:block;margin-top:3px;font:550 14px/1.3 var(--font);color:var(--ink-2)}
+.st-coches{display:grid;gap:10px;margin:var(--e-5) 0 var(--e-6);padding:0;list-style:none}
+.st-coches li{display:grid;grid-template-columns:22px 1fr;gap:10px;font:600 15px/1.35 var(--font)}
+.st-coches i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--choix)}
+.st-appel .st-store{width:100%;justify-content:center}
+
+/* Badge App Store, repris de la page d'accueil du site (forme officielle, à remplacer par le fichier d'Apple en production) */
+.st-store{display:inline-flex;align-items:center;gap:9px;height:54px;padding:0 18px 0 14px;border-radius:10px;background:#000;color:#fff;text-decoration:none;box-shadow:inset 0 0 0 1px #a6a6a6;font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;transition:transform var(--duree-rapide) var(--courbe-douce)}
+.st-store:active{transform:scale(.97)}
+.st-store svg{flex:none;width:28px;height:28px}
+.st-store span{display:grid;text-align:left;line-height:1}
+.st-store small{font-size:12px;font-weight:500}
+.st-store b{margin-top:2px;font-size:22px;font-weight:500;letter-spacing:-.02em}
+
+/* ---------- 7. Appel à l'action fixe : barre du bas (téléphone), sous le pouce ---------- */
+.st-barre-appel{display:none}
+@container page (max-width:899px){
+  .st-barre-appel{position:sticky;bottom:0;z-index:25;display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:var(--e-3);padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-radius:var(--r-l) var(--r-l) 0 0;background:var(--surface);box-shadow:0 -1px 0 var(--line),0 -12px 30px -18px rgba(42,26,20,.45);transition:transform var(--duree-moyenne) var(--courbe-douce)}
+  .st-barre-appel.cache{transform:translateY(110%)}
+}
+.st-barre-appel b{display:block;font:800 16px/1.1 var(--font);letter-spacing:-.02em}
+.st-barre-appel small{display:block;margin-top:2px;font:550 13px/1.25 var(--font);color:var(--ink-2)}
+.st-barre-appel .bouton{min-width:0;height:var(--cible);padding:0 18px;font-size:15px}
+
+/* ---------- 8. Corps de l'article ---------- */
+.st-texte{margin-top:var(--e-10);font-size:var(--st-texte);line-height:var(--st-interligne);font-weight:450}
+.st-texte > p,.st-texte > ul,.st-texte > ol{margin:0 0 1.1em}
+.st-texte h2{margin:2.1em 0 .55em;font-size:var(--st-titre-partie);font-weight:800;letter-spacing:-.03em;line-height:1.12;text-wrap:balance;scroll-margin-top:var(--st-haut-fixe)}
+.st-texte h3{margin:1.6em 0 .4em;font-size:var(--st-titre-sous);font-weight:750;letter-spacing:-.02em;line-height:1.2}
+.st-texte a:not(.bouton,.st-store){text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px;font-weight:600}
+.st-texte a:not(.bouton,.st-store):hover{text-decoration-color:var(--ink)}
+.st-texte strong{font-weight:700}
+.st-texte ul{padding:0;list-style:none}
+.st-texte ul li{position:relative;padding-left:1.4em;margin-bottom:.5em}
+.st-texte ul li::before{content:"";position:absolute;left:.3em;top:.68em;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+
+/* Tableau de repères : lignes sur ordinateur, cartes sur téléphone */
+.st-tableau{margin:var(--e-6) 0 var(--e-8);border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;font-size:16px;line-height:1.45}
+.st-tableau table{width:100%;border-collapse:collapse}
+.st-tableau th{padding:14px 18px;background:var(--sommeil-bg);color:var(--sommeil);font:750 14px/1.3 var(--font);text-align:left}
+.st-tableau td{padding:14px 18px;border-top:1px solid var(--line);vertical-align:top}
+.st-tableau td:first-child{font-weight:750;white-space:nowrap}
+.st-tableau td:nth-child(2){font-weight:800;font-size:18px;letter-spacing:-.01em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.st-tableau td:last-child{color:var(--ink-2)}
+@container page (max-width:639px){
+  .st-tableau{background:none;box-shadow:none;border-radius:0}
+  .st-tableau thead{display:none}
+  .st-tableau tr{display:grid;grid-template-columns:1fr auto;gap:2px 12px;margin-bottom:var(--e-2);padding:14px 16px;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+  .st-tableau td{padding:0;border:0}
+  .st-tableau td:nth-child(2){color:var(--sommeil);text-align:right}
+  .st-tableau td:last-child{grid-column:1/-1;font-size:15px}
+}
+
+/* ---------- 9. Encadrés : à retenir, quand consulter, sources ---------- */
+.st-encadre{--ef:var(--choix-bg);--et:var(--choix);display:grid;grid-template-columns:40px 1fr;gap:var(--e-4);margin:var(--e-6) 0 var(--e-8);padding:var(--e-5) var(--e-6) var(--e-5) var(--e-5);border-radius:var(--r-xl);background:var(--ef)}
+.st-encadre.consulter{--ef:var(--alerte-bg);--et:var(--alerte)}
+.st-encadre__icone{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:color-mix(in srgb,var(--et) 14%,transparent);color:var(--et)}
+.st-encadre__titre{margin:6px 0 var(--e-2);font:800 18px/1.2 var(--font);letter-spacing:-.015em;color:var(--et)}
+.st-encadre p,.st-encadre li{margin:0;font-size:calc(var(--st-texte) - 2px);line-height:1.6;color:var(--ink)}
+.st-encadre ul{margin:0;padding:0;list-style:none}
+.st-encadre li{position:relative;padding-left:1.2em;margin-top:.4em}
+.st-encadre li::before{content:"";position:absolute;left:0;top:.7em;width:6px;height:6px;border-radius:50%;background:var(--et)}
+.st-encadre .bouton{margin-top:var(--e-4);min-width:0;height:44px;padding:0 18px;font-size:15px;background:var(--et);color:var(--creme-clair)}
+@container page (max-width:639px){.st-encadre{grid-template-columns:1fr;gap:var(--e-2);padding:var(--e-5)}}
+
+.st-sources{margin:var(--e-8) 0;padding:var(--e-5) var(--e-6);border-radius:var(--r-xl);background:var(--surface-2)}
+.st-sources h3{display:flex;align-items:center;gap:8px;margin:0 0 var(--e-2);font:800 16px/1.2 var(--font)}
+.st-sources ol{margin:0;padding-left:1.3em;font:500 15px/1.55 var(--font);color:var(--ink-2)}
+.st-sources li{margin-top:4px}
+.st-sources p{margin:var(--e-3) 0 0;font:500 13px/1.45 var(--font);color:var(--ink-2)}
+
+/* ---------- 10. Encart de l'app dans le texte ---------- */
+.st-encart-app{position:relative;display:grid;grid-template-columns:1fr 190px;gap:var(--e-6);margin:var(--e-8) 0;padding:var(--e-8) var(--e-8) 0;border-radius:var(--r-xl);background:var(--hero);color:var(--hero-ink);overflow:hidden}
+.st-encart-app__texte{padding-bottom:var(--e-8)}
+.st-encart-app .pastille{--pf:rgba(255,255,255,.2);--pt:var(--hero-ink)}
+.st-encart-app h3{margin:var(--e-3) 0 0;font:800 27px/1.1 var(--font);letter-spacing:-.03em;text-wrap:balance}
+.st-encart-app p{margin:var(--e-3) 0 var(--e-5);font:550 17px/1.45 var(--font);opacity:.92}
+.st-encart-app__tel{align-self:end;height:250px;padding:9px 9px 0;border-radius:34px 34px 0 0;background:#1c1210;box-shadow:0 -10px 30px -10px rgba(40,18,12,.5)}
+.st-encart-app__tel img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;border-radius:26px 26px 0 0}
+@container page (max-width:639px){
+  .st-encart-app{grid-template-columns:1fr;gap:0;padding:var(--e-6) var(--e-6) 0;text-align:left}
+  .st-encart-app__texte{padding-bottom:var(--e-5)}
+  .st-encart-app h3{font-size:23px}
+  .st-encart-app__tel{justify-self:center;width:170px;height:170px}
+}
+
+/* ---------- 11. Encart ressource, et sa variante en une ligne ---------- */
+.st-ressource{display:grid;grid-template-columns:170px 1fr;gap:var(--e-8);align-items:center;margin:var(--e-8) 0;padding:var(--e-8);border-radius:var(--r-xl);background:var(--surface-2)}
+.st-vignette{position:relative;justify-self:center;width:140px;aspect-ratio:3/4;padding:14px 12px;border-radius:var(--r-s);background:var(--surface);box-shadow:var(--ombre-levee);transform:rotate(-4deg)}
+.st-vignette__bande{display:flex;align-items:center;gap:6px;margin:-14px -12px 10px;padding:12px;border-radius:var(--r-s) var(--r-s) 0 0;background:var(--sommeil-bg);color:var(--sommeil);font:800 12px/1.15 var(--font);letter-spacing:-.01em}
+.st-vignette__ligne{display:grid;grid-template-columns:34px 1fr;gap:6px;align-items:center;margin-top:9px}
+.st-vignette__ligne b{font:800 9px/1 var(--font);color:var(--sommeil)}
+.st-vignette__ligne i{display:block;height:6px;border-radius:3px;background:var(--lin)}
+.st-vignette__ligne i.court{width:60%}
+.st-ressource h3{margin:var(--e-2) 0 0;font:800 30px/1.08 var(--font);letter-spacing:-.035em;text-wrap:balance}
+.st-ressource > div > p{margin:var(--e-3) 0 0;font:550 17px/1.45 var(--font);color:var(--ink-2)}
+.st-ressource .st-coches{grid-template-columns:1fr 1fr;margin:var(--e-5) 0 var(--e-6)}
+.st-ressource .st-coches i{background:var(--accent);color:var(--accent-ink)}
+.st-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--e-3) var(--e-5)}
+.st-actions .bouton{min-width:0}
+@container page (max-width:639px){
+  .st-ressource{grid-template-columns:1fr;gap:var(--e-6);padding:var(--e-6)}
+  .st-ressource h3{font-size:24px}
+  .st-ressource .st-coches{grid-template-columns:1fr}
+  .st-actions .bouton:not(.lien){width:100%}
+}
+.st-lien-ressource{display:flex;justify-content:center;margin:var(--e-6) 0}
+.st-lien-ressource a{display:inline-flex;align-items:baseline;gap:10px;font:750 20px/1.35 var(--font);letter-spacing:-.015em;text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2.5px;text-underline-offset:6px}
+.st-lien-ressource svg{flex:none;align-self:center;color:var(--accent)}
+@container page (max-width:639px){.st-lien-ressource{justify-content:flex-start}.st-lien-ressource a{font-size:18px}}
+
+/* ---------- 12. Auteur, en fin d'article ---------- */
+.st-auteur{display:grid;grid-template-columns:64px 1fr;gap:var(--e-4);margin:var(--e-8) 0;padding-top:var(--e-6);border-top:1px solid var(--line)}
+.st-auteur .st-avatar{width:64px;height:64px;font-size:20px}
+.st-auteur b{display:block;font:800 18px/1.2 var(--font);letter-spacing:-.015em}
+.st-auteur small{display:block;margin-top:2px;font:600 14px/1.3 var(--font);color:var(--ink-2)}
+.st-auteur p{margin:var(--e-2) 0 0;font:500 15px/1.55 var(--font);color:var(--ink-2)}
+
+/* ---------- 13. Questions fréquentes ---------- */
+.st-faq{margin:var(--e-4) 0 var(--e-8);border-top:1px solid var(--line-fort)}
+.st-faq details{border-bottom:1px solid var(--line-fort)}
+.st-faq summary{display:grid;grid-template-columns:1fr 32px;gap:var(--e-4);align-items:center;padding:var(--e-5) 0;font:750 calc(var(--st-texte) - 1px)/1.35 var(--font);letter-spacing:-.01em;list-style:none;cursor:pointer}
+.st-faq summary::-webkit-details-marker{display:none}
+.st-faq summary i{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--surface-2);transition:transform var(--duree-moyenne) var(--courbe-douce),background var(--duree-rapide)}
+.st-faq details[open] summary i{transform:rotate(45deg);background:var(--accent-soft)}
+.st-faq details p{margin:-6px 0 var(--e-5);padding-right:48px;font-size:calc(var(--st-texte) - 2px);line-height:1.65;color:var(--ink-2)}
+
+/* ---------- 14. Articles de la même rubrique, et carte d'article ---------- */
+.st-suite{padding:var(--e-10) var(--st-gouttiere) var(--e-10);margin-top:var(--e-10);background:var(--surface-2)}
+.st-suite__tete{display:flex;align-items:baseline;justify-content:space-between;gap:var(--e-4);max-width:1220px;margin:0 auto var(--e-6)}
+.st-suite__tete h2{margin:0;font:800 30px/1.1 var(--font);letter-spacing:-.03em}
+.st-suite__tete a{font:700 15px/1 var(--font);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px}
+.st-cartes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--e-6);max-width:1220px;margin:0 auto}
+@container page (max-width:899px){.st-cartes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container page (max-width:639px){.st-cartes{grid-template-columns:1fr;gap:var(--e-4)}.st-suite__tete h2{font-size:24px}}
+.st-carte{display:flex;flex-direction:column;border-radius:var(--r-xl);background:var(--surface);box-shadow:var(--ombre-douce);text-decoration:none;overflow:hidden;transition:transform var(--duree-moyenne) var(--courbe-douce),box-shadow var(--duree-moyenne)}
+.st-carte:hover{transform:translateY(-3px);box-shadow:var(--ombre-levee)}
+.st-carte__visuel{display:grid;place-items:center;aspect-ratio:16/9;background:var(--cf,var(--lilas-pale))}
+.st-carte__corps{display:flex;flex-direction:column;gap:var(--e-2);padding:var(--e-4) var(--e-5) var(--e-5)}
+.st-carte h3{margin:2px 0 0;font:800 20px/1.18 var(--font);letter-spacing:-.025em;text-wrap:balance}
+.st-carte p{margin:0;font:500 15px/1.45 var(--font);color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.st-carte small{display:flex;align-items:center;gap:6px;margin-top:auto;padding-top:var(--e-2);font:600 13px/1 var(--font);color:var(--ink-2)}
+@container page (max-width:639px){.st-carte{flex-direction:row}.st-carte__visuel{flex:none;width:112px;aspect-ratio:auto}.st-carte__visuel svg{width:64px;height:64px}.st-carte__corps{padding:var(--e-3) var(--e-4)}.st-carte h3{font-size:17px}.st-carte p{display:none}}
+
+/* ---------- 15. Pied de page ---------- */
+.st-pied{padding:var(--e-10) var(--st-gouttiere) var(--e-8);background:var(--brun);color:var(--creme-clair)}
+.st-pied__grille{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:var(--e-8);max-width:1220px;margin:0 auto}
+.st-pied .st-marque{color:var(--creme-clair);font-size:30px}
+.st-pied p{margin:var(--e-3) 0 var(--e-5);font:500 15px/1.5 var(--font);color:color-mix(in srgb,var(--creme-clair) 70%,transparent)}
+.st-pied h4{margin:0 0 var(--e-3);font:750 13px/1 var(--font);color:color-mix(in srgb,var(--creme-clair) 60%,transparent)}
+.st-pied ul{margin:0;padding:0;list-style:none}
+.st-pied li a{display:block;padding:6px 0;font:600 15px/1.3 var(--font);text-decoration:none}
+.st-pied li a:hover{text-decoration:underline}
+.st-pied__bas{max-width:1220px;margin:var(--e-8) auto 0;padding-top:var(--e-5);border-top:1px solid color-mix(in srgb,var(--creme-clair) 16%,transparent);font:500 13px/1.5 var(--font);color:color-mix(in srgb,var(--creme-clair) 60%,transparent)}
+.st-pied .st-store{box-shadow:inset 0 0 0 1px #6b6b6b}
+@container page (max-width:899px){.st-pied__grille{grid-template-columns:1fr 1fr}.st-pied__grille > div:first-child{grid-column:1/-1}}
+
+/* ---------- 16. Fenêtre d'inscription (ordinateur seulement) ---------- */
+.st-voile{position:absolute;inset:0;z-index:60;display:grid;place-items:center;padding:var(--e-6);background:var(--scrim);animation:st-fondu var(--duree-moyenne) var(--courbe-douce) both}
+.st-voile[hidden]{display:none}
+@keyframes st-fondu{from{opacity:0}}
+.st-fenetre{width:min(540px,100%);border-radius:var(--r-xl);background:var(--bg);box-shadow:var(--ombre-levee);overflow:hidden;font-family:var(--font);color:var(--ink);animation:st-monte var(--duree-lente) var(--courbe-douce) both}
+@keyframes st-monte{from{opacity:0;transform:translateY(18px) scale(.98)}}
+.st-fenetre a:not(.bouton){color:inherit}
+.st-fenetre__tete{display:grid;grid-template-columns:1fr var(--cible);align-items:center;gap:var(--e-4);padding:var(--e-5) var(--e-4) var(--e-5) var(--e-6);background:var(--hero);color:var(--hero-ink)}
+.st-fenetre__tete h2{margin:0;font:800 24px/1.1 var(--font);letter-spacing:-.03em}
+.st-fermer{display:grid;place-items:center;width:var(--cible);height:var(--cible);border:0;border-radius:50%;background:rgba(255,255,255,.18);color:inherit;cursor:pointer}
+.st-fenetre__corps{padding:var(--e-6)}
+.st-fenetre__corps > p{margin:0;font:550 17px/1.5 var(--font)}
+.st-inscription{display:grid;grid-template-columns:1fr auto;gap:var(--e-2);align-items:end;margin-top:var(--e-5)}
+.st-inscription .champ{margin:0}
+.st-inscription .bouton{min-width:0;height:50px;padding:0 20px;font-size:15px}
+.st-mention{margin:var(--e-3) 0 0;font:500 13px/1.5 var(--font);color:var(--ink-2)}
+.st-mention a{font-weight:650;text-underline-offset:3px}
+.st-fenetre__pied{display:flex;align-items:center;gap:var(--e-3);padding:var(--e-4) var(--e-6);border-top:1px solid var(--line);font:600 15px/1.3 var(--font)}
+.st-fenetre__pied a{font-weight:750;text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px}
+
+/* ---------- 17. Page de rubrique : tête, onglets, à la une ---------- */
+.st-tete-rubrique{position:relative;padding:var(--e-10) var(--st-gouttiere) 0;background:linear-gradient(180deg,var(--lait-caramel),var(--bg))}
+.st-tete-rubrique__ligne{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--e-6);max-width:1220px;margin:0 auto}
+.st-tete-rubrique h1{margin:0;font:800 52px/1 var(--font);letter-spacing:-.045em}
+.st-tete-rubrique p{margin:var(--e-3) 0 0;max-width:46ch;font:550 19px/1.45 var(--font);color:var(--ink-2)}
+.st-recherche{display:flex;align-items:center;gap:10px;width:340px;height:52px;padding:0 18px;border-radius:var(--r-pilule);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-fort);color:var(--ink-2);font:550 16px/1 var(--font)}
+.st-tete-rubrique .onglets{max-width:1220px;margin:var(--e-8) auto 0}
+.st-une{display:grid;grid-template-columns:1fr 1fr;max-width:1220px;margin:var(--e-8) auto 0;border-radius:var(--r-xl);background:var(--surface);box-shadow:var(--ombre-levee);overflow:hidden;text-decoration:none}
+.st-une__texte{display:flex;flex-direction:column;justify-content:center;gap:var(--e-4);padding:var(--e-10)}
+.st-une h2{margin:0;font:800 40px/1.05 var(--font);letter-spacing:-.04em;text-wrap:balance}
+.st-une p{margin:0;font:550 18px/1.45 var(--font);color:var(--ink-2)}
+.st-une__visuel{display:grid;place-items:center;min-height:360px;background:linear-gradient(160deg,var(--lilas-pale),var(--rose-the))}
+.st-rubrique-corps{padding:var(--e-10) var(--st-gouttiere)}
+.st-rubrique-corps h2.st-intertitre{max-width:1220px;margin:0 auto var(--e-6);font:800 28px/1.1 var(--font);letter-spacing:-.03em}
+@container page (max-width:899px){.st-tete-rubrique__ligne{flex-direction:column;align-items:stretch}.st-recherche{width:100%}.st-une{grid-template-columns:1fr}.st-une__visuel{min-height:200px;order:-1}.st-une__texte{padding:var(--e-6)}.st-une h2{font-size:28px}.st-tete-rubrique h1{font-size:38px}}

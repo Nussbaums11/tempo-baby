@@ -1,0 +1,1 @@
+Copie du design system de Tempo (5ee276e du 24/11/2026). Ne pas modifier : proposer dans le dépôt tempo-design-system.

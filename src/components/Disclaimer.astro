@@ -1,9 +1,13 @@
 ---
-// Bloc disclaimer médical, réutilisable dans le corps de n'importe quel
-// article MDX : <Disclaimer>Ton texte ici.</Disclaimer>
-// Changer le style ici (couleurs, bordure, radius) le change PARTOUT.
+// Bloc « À savoir » médical, présent dans les 84 articles : <Disclaimer>…</Disclaimer>.
+// Refonte 24/11/2026 : rendu par l'encadré « Quand consulter » du design system
+// (st-encadre.consulter, section 23), car il porte les signes qui justifient un avis.
+import { icone } from '../lib/tempo';
 ---
-<div class="bg-[#FCF6EC] border-l-4 border-terracotta rounded-lg px-5 py-4 my-7 text-sm text-[#6B5B44]">
-  <p class="mt-0 mb-1 font-semibold text-ink">⚠️ À savoir</p>
-  <slot />
-</div>
+<aside class="st-encadre consulter">
+  <span class="st-encadre__icone" set:html={icone('tel', 20, 2)} />
+  <div>
+    <p class="st-encadre__titre">À savoir</p>
+    <slot />
+  </div>
+</aside>

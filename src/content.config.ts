@@ -32,6 +32,9 @@ const articles = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/articles' }),
   schema: z.object({
     title: z.string(),
+    // H1 affiché, facultatif (24/11/2026). Absent = le H1 reprend `title`. Permet
+    // de raccourcir la balise title sans toucher au H1, ou l'inverse.
+    h1: z.string().optional(),
     description: z.string(),
     cocon: z.string(),
     pilier: z.boolean().default(false),

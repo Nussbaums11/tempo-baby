@@ -21,7 +21,8 @@ export default defineConfig({
       // défaut — remonté par l'audit Ahrefs du 08/07/2026. Une redirection ne
       // doit jamais apparaître dans le sitemap (seules les URLs canoniques à
       // indexer doivent y figurer).
-      filter: (page) => !page.includes('/notre-methode'),
+      // /application/ et /tarifs/ : supprimées le 24/11/2026, redirigées vers l'accueil.
+      filter: (page) => !['/notre-methode', '/application', '/tarifs'].some((r) => page.includes(r)),
     }),
   ],
   markdown: {

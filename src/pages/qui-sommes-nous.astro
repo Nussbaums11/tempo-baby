@@ -2,54 +2,51 @@
 // Manifeste Tempo (anciennement "Notre méthode", renommé le 07/07/2026
 // pour correspondre au libellé de nav "Qui sommes-nous"). L'ancienne URL
 // /notre-methode/ redirige ici (voir notre-methode.astro).
-import BaseLayout from '../layouts/BaseLayout.astro';
+// Refonte du 24/11/2026 : gabarit du design system, texte inchangé (tirets longs retirés).
+import SiteLayout from '../layouts/SiteLayout.astro';
+import TetePage from '../components/site/TetePage.astro';
+import { icone } from '../lib/tempo';
 ---
-
-<BaseLayout
+<SiteLayout
   title="Qui sommes-nous — Tempo"
   description="Pourquoi Tempo existe, notre approche du sourcing, et qui est derrière le projet."
   path="/qui-sommes-nous/"
+  actif="qui"
 >
-  <div class="bg-ink text-white pt-12 pb-10">
-    <div class="max-w-3xl mx-auto px-6">
-      <div class="text-sm text-white/60 mb-3"><a href="/" class="hover:text-terracotta">Accueil</a> / Qui sommes-nous</div>
-      <h1 class="text-3xl md:text-4xl text-white">Qui sommes-nous ?</h1>
-    </div>
-  </div>
-
-  <div class="bg-white py-10">
-    <div class="max-w-3xl mx-auto px-6 prose-tempo">
+  <div class="page-simple">
+    <TetePage titre="Qui sommes-nous ?" ariane="Qui sommes-nous" />
+    <div class="st-texte">
       <p>
         On a créé Tempo après avoir vécu, comme beaucoup de parents, le même problème : naviguer entre cinq ou six
-        sources différentes pour trouver une info fiable sur son bébé — une appli pour le sommeil, un blog pour la
+        sources différentes pour trouver une info fiable sur son bébé : une appli pour le sommeil, un blog pour la
         diversification, des comptes glanés au fil des recommandations. Et au bout du compte, des conseils qui ne
         collent jamais vraiment à son bébé.
       </p>
-
       <h2>Notre approche</h2>
       <p>
-        Pas de fiches génériques "à tel âge, bébé fait ceci". Pas de promesse de remplacer un pédiatre, une
-        sage-femme ou un médecin — sur la santé, Tempo aide à poser les bonnes questions, jamais à poser un
+        Pas de fiches génériques « à tel âge, bébé fait ceci ». Pas de promesse de remplacer un pédiatre, une
+        sage-femme ou un médecin : sur la santé, Tempo aide à poser les bonnes questions, jamais à poser un
         diagnostic. Concrètement :
       </p>
       <ul>
         <li><strong>On source.</strong> Chaque recommandation cite l'organisme ou l'étude derrière (OMS, Santé publique France, sociétés savantes de pédiatrie).</li>
-        <li><strong>On donne des fourchettes, pas des couperets.</strong> "La plupart des bébés de cet âge..." plutôt que "votre bébé doit...".</li>
+        <li><strong>On donne des fourchettes, pas des couperets.</strong> « La plupart des bébés de cet âge… » plutôt que « votre bébé doit… ».</li>
         <li><strong>On construit pour être vérifié.</strong> Chaque source est traçable.</li>
       </ul>
-
-      <div class="bg-[#FCF6EC] border-l-4 border-terracotta rounded-lg px-5 py-4 my-7 text-sm text-[#6B5B44]">
-        Le contenu de ce site est fourni à titre informatif et éducatif. Il ne remplace pas une consultation médicale.
-        En cas de doute sur la santé ou le développement de votre enfant, consultez un professionnel de santé.
-      </div>
-
+      <aside class="st-encadre consulter">
+        <span class="st-encadre__icone" set:html={icone('tel', 20, 2)} />
+        <div>
+          <p class="st-encadre__titre">À savoir</p>
+          <p>Le contenu de ce site est fourni à titre informatif et éducatif. Il ne remplace pas une consultation médicale. En cas de doute sur la santé ou le développement de votre enfant, consultez un professionnel de santé.</p>
+        </div>
+      </aside>
       <h2>Qui est derrière Tempo</h2>
       <p>
         Tempo est construit par Hugo (produit &amp; développement) et Sandra (produit, contenu &amp; acquisition),
-        tous deux parents — sans formation médicale, ce qui explique justement notre exigence sur les sources : on
+        tous deux parents, sans formation médicale, ce qui explique justement notre exigence sur les sources : on
         cite la recherche, on ne l'invente pas. Notre ambition : rendre une information de qualité accessible, sans
         jargon et sans culpabilisation.
       </p>
     </div>
   </div>
-</BaseLayout>
+</SiteLayout>

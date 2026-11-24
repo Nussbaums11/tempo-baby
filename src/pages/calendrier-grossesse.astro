@@ -8,7 +8,12 @@
 // le 08/11/2026.
 // Contenus tirés des sources officielles citées sous chaque étape, non
 // relus médicalement (à faire).
-import BaseLayout from '../layouts/BaseLayout.astro';
+// Refonte du 24/11/2026 : gabarit et composants du design system (tête de page,
+// champs, tuiles, pastilles, tableau, FAQ, encart de l'app) ; calcul et textes inchangés.
+import SiteLayout from '../layouts/SiteLayout.astro';
+import TetePage from '../components/site/TetePage.astro';
+import Tableau from '../components/site/Tableau.astro';
+import { icone } from '../lib/tempo';
 import Disclaimer from '../components/Disclaimer.astro';
 import { phases } from '../data/calendrier-grossesse';
 
@@ -65,185 +70,115 @@ const faqSchema = {
 const ext = { target: '_blank', rel: 'nofollow noopener noreferrer' };
 ---
 
-<BaseLayout title={title} description={description} path="/calendrier-grossesse/">
+<SiteLayout title={title} description={description} path="/calendrier-grossesse/">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
-  <section class="pt-10 pb-6">
-    <div class="max-w-3xl mx-auto px-6">
-      <nav class="text-sm text-ink/50 mb-4">
-        <a href="/" class="hover:text-terracotta">Accueil</a> / Calendrier de grossesse
-      </nav>
-      <h1 class="font-display text-3xl md:text-4xl mb-3">Calendrier de grossesse : toutes vos dates, SA par SA</h1>
-      <p class="text-ink/70 text-lg">
-        Entrez une date, on calcule le reste : où vous en êtes, votre date présumée d’accouchement, et chaque étape
-        de la grossesse à sa place, des examens aux préparatifs.
-      </p>
-    </div>
-  </section>
+  <div class="page-simple calendrier">
+    <TetePage
+      titre="Calendrier de grossesse : toutes vos dates, SA par SA"
+      chapeau="Entrez une date, on calcule le reste : où vous en êtes, votre date présumée d’accouchement, et chaque étape de la grossesse à sa place, des examens aux préparatifs."
+      ariane="Calendrier de grossesse"
+      pastille={{ texte: 'Futurs parents', nature: 'choix' }}
+    />
 
-  <section class="pb-10">
-    <div class="max-w-3xl mx-auto px-6">
-      <form id="cal-form" class="bg-white rounded-2xl border border-border p-5 md:p-7 shadow-sm">
-        <fieldset>
-          <legend class="font-semibold mb-3">Je connais…</legend>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" role="radiogroup">
-            <label class="cal-mode">
-              <input type="radio" name="mode" value="ddr" checked class="sr-only" />
-              <span>La date de mes dernières règles</span>
-            </label>
-            <label class="cal-mode">
-              <input type="radio" name="mode" value="conception" class="sr-only" />
-              <span>La date de conception</span>
-            </label>
-            <label class="cal-mode">
-              <input type="radio" name="mode" value="terme" class="sr-only" />
-              <span>Mon terme</span>
-            </label>
-          </div>
-        </fieldset>
-
-        <p id="mode-hint" class="text-sm text-ink/60 mt-3">
-          Le premier jour de vos dernières règles. Si vos cycles ne font pas 28 jours, indiquez leur durée : le
-          calcul se recale. Si vos cycles sont irréguliers et que vous connaissez la date de conception, choisissez
-          « La date de conception » : c’est encore plus fiable.
-        </p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          <label class="block">
-            <span id="date-label" class="block text-sm font-semibold mb-1">Premier jour des dernières règles</span>
-            <input
-              id="cal-date"
-              type="date"
-              required
-              class="w-full border border-border rounded-lg px-3 py-2.5 bg-white"
-            />
-          </label>
-          <label id="cycle-field" class="block">
-            <span class="block text-sm font-semibold mb-1">Durée de mes cycles (jours)</span>
-            <input
-              id="cal-cycle"
-              type="number"
-              min="20"
-              max="45"
-              value="28"
-              inputmode="numeric"
-              class="w-full border border-border rounded-lg px-3 py-2.5 bg-white"
-            />
-          </label>
-          <label class="block">
-            <span class="block text-sm font-semibold mb-1">Vous attendez…</span>
-            <select id="cal-type" class="w-full border border-border rounded-lg px-3 py-2.5 bg-white">
-              <option value="1">Un bébé</option>
-              <option value="2">Des jumeaux</option>
-            </select>
-          </label>
-          <label class="block">
-            <span class="block text-sm font-semibold mb-1">Ce bébé est votre…</span>
-            <select id="cal-rank" class="w-full border border-border rounded-lg px-3 py-2.5 bg-white">
-              <option value="1">1er ou 2e enfant</option>
-              <option value="3">3e enfant ou plus</option>
-            </select>
-          </label>
+    <form id="cal-form" class="cal-form">
+      <fieldset>
+        <legend class="champ__nom">Je connais…</legend>
+        <div class="cal-modes" role="radiogroup">
+          <label class="cal-mode"><input type="radio" name="mode" value="ddr" checked /><span>La date de mes dernières règles</span></label>
+          <label class="cal-mode"><input type="radio" name="mode" value="conception" /><span>La date de conception</span></label>
+          <label class="cal-mode"><input type="radio" name="mode" value="terme" /><span>Mon terme</span></label>
         </div>
+      </fieldset>
 
-        <button
-          type="submit"
-          class="mt-5 w-full sm:w-auto bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-3 rounded-lg"
-        >
-          Voir mon calendrier
-        </button>
-        <p id="cal-error" class="text-sm text-terracotta-dark mt-3 hidden" role="alert"></p>
-      </form>
+      <p id="mode-hint" class="champ__note">
+        Le premier jour de vos dernières règles. Si vos cycles ne font pas 28 jours, indiquez leur durée : le
+        calcul se recale. Si vos cycles sont irréguliers et que vous connaissez la date de conception, choisissez
+        « La date de conception » : c’est encore plus fiable.
+      </p>
 
-      <div id="cal-summary" class="hidden mt-6 grid grid-cols-2 md:grid-cols-3 gap-3" aria-live="polite">
-        <div class="cal-stat"><span class="cal-stat-label">Aujourd’hui</span><span id="s-sa" class="cal-stat-value"></span></div>
-        <div class="cal-stat"><span class="cal-stat-label">Mois de grossesse</span><span id="s-mois" class="cal-stat-value"></span></div>
-        <div class="cal-stat"><span class="cal-stat-label">Trimestre</span><span id="s-trim" class="cal-stat-value"></span></div>
-        <div class="cal-stat"><span class="cal-stat-label">Début de grossesse</span><span id="s-debut" class="cal-stat-value"></span></div>
-        <div class="cal-stat"><span class="cal-stat-label">Terme présumé</span><span id="s-terme" class="cal-stat-value"></span></div>
-        <div class="cal-stat"><span class="cal-stat-label">Congé maternité</span><span id="s-conge" class="cal-stat-value cal-stat-small"></span></div>
+      <div class="cal-champs">
+        <label class="champ"><span id="date-label" class="champ__nom">Premier jour des dernières règles</span><input id="cal-date" type="date" required /></label>
+        <label id="cycle-field" class="champ"><span class="champ__nom">Durée de mes cycles (jours)</span><input id="cal-cycle" type="number" min="20" max="45" value="28" inputmode="numeric" /></label>
+        <label class="champ"><span class="champ__nom">Vous attendez…</span>
+          <select id="cal-type"><option value="1">Un bébé</option><option value="2">Des jumeaux</option></select>
+        </label>
+        <label class="champ"><span class="champ__nom">Ce bébé est votre…</span>
+          <select id="cal-rank"><option value="1">1er ou 2e enfant</option><option value="3">3e enfant ou plus</option></select>
+        </label>
       </div>
-    </div>
-  </section>
 
-  <section class="pb-12">
-    <div class="max-w-3xl mx-auto px-6">
-      <h2 class="text-2xl md:text-3xl mb-2">Les étapes de la grossesse</h2>
-      <p class="text-ink/60 text-sm mb-6">
-        <span class="cal-tag cal-tag-officiel">Officiel</span> = daté par une source officielle, citée sous l’étape.
-        <span class="cal-tag cal-tag-repere ml-2">Repère</span> = ce que font la plupart des parents, sans obligation.
+      <button type="submit" class="bouton">Voir mon calendrier</button>
+      <p id="cal-error" class="cal-erreur hidden" role="alert"></p>
+    </form>
+
+    <div id="cal-summary" class="tuiles cal-tuiles hidden" aria-live="polite">
+      <div class="tuile choix"><span class="tuile__tete">Aujourd’hui</span><span id="s-sa" class="tuile__valeur"></span></div>
+      <div class="tuile choix"><span class="tuile__tete">Mois de grossesse</span><span id="s-mois" class="tuile__valeur"></span></div>
+      <div class="tuile choix"><span class="tuile__tete">Trimestre</span><span id="s-trim" class="tuile__valeur"></span></div>
+      <div class="tuile rdv"><span class="tuile__tete">Début de grossesse</span><span id="s-debut" class="tuile__valeur petite"></span></div>
+      <div class="tuile rdv"><span class="tuile__tete">Terme présumé</span><span id="s-terme" class="tuile__valeur petite"></span></div>
+      <div class="tuile rdv"><span class="tuile__tete">Congé maternité</span><span id="s-conge" class="tuile__valeur petite"></span></div>
+    </div>
+
+    <div class="st-texte">
+      <h2>Les étapes de la grossesse</h2>
+      <p class="cal-legende">
+        <span class="pastille petite sante">Officiel</span> = daté par une source officielle, citée sous l’étape.
+        <span class="pastille petite">Repère</span> = ce que font la plupart des parents, sans obligation.
       </p>
-
-      <details id="cal-past" class="cal-past hidden mb-8">
-        <summary id="cal-past-summary">Déjà passé</summary>
-        <ol class="space-y-3 mt-3"></ol>
-      </details>
-
-      {phases.map((phase) => (
-        <div class="mb-8" data-phase={phase.id}>
-          <h3 class="text-xl mb-3">{phase.title}</h3>
-          <ol class="space-y-3">
-            {phase.steps.map((step) => (
-              <li
-                class="cal-step"
-                data-id={step.id}
-                data-from={step.from ?? ''}
-                data-to={step.to ?? ''}
-                data-from-term={step.fromTerm ?? ''}
-                data-to-term={step.toTerm ?? ''}
-                data-deadline={step.deadline ? '1' : ''}
-                data-since={step.since ? '1' : ''}
-              >
-                <div class="flex flex-wrap items-center gap-2 mb-1">
-                  <span class={`cal-tag cal-tag-${step.kind}`}>{step.kind === 'officiel' ? 'Officiel' : 'Repère'}</span>
-                  <span class="cal-status hidden"></span>
-                  <span class="text-sm text-ink/60">
-                    <span class="cal-when">{step.when}</span>
-                    <span class="cal-dates font-semibold text-ink"></span>
-                  </span>
-                </div>
-                <p class="font-semibold text-ink">
-                  {step.article && !step.articleLabel ? (
-                    <a href={`/${step.article}/`} class="text-ink underline decoration-terracotta underline-offset-4 hover:text-terracotta">{step.title}</a>
-                  ) : step.title}
-                </p>
-                <p class="text-sm text-ink/70 mt-1">{step.text}</p>
-                {step.article && step.articleLabel && (
-                  <p class="text-sm mt-1"><a href={`/${step.article}/`} class="font-semibold text-terracotta hover:underline">{step.articleLabel} →</a></p>
-                )}
-                {step.source && (
-                  <p class="text-xs text-ink/50 mt-1">
-                    Source : <a href={step.source.url} {...ext} class="underline hover:text-terracotta">{step.source.label}</a>
-                  </p>
-                )}
-              </li>
-            ))}
-          </ol>
-        </div>
-      ))}
     </div>
-  </section>
 
-  <section class="pb-12">
-    <div class="max-w-3xl mx-auto px-6 prose-tempo">
+    <details id="cal-past" class="cal-past hidden">
+      <summary id="cal-past-summary">Déjà passé</summary>
+      <ol class="cal-etapes"></ol>
+    </details>
+
+    {phases.map((phase) => (
+      <div class="cal-phase" data-phase={phase.id}>
+        <h3>{phase.title}</h3>
+        <ol class="cal-etapes">
+          {phase.steps.map((step) => (
+            <li
+              class="cal-step"
+              data-id={step.id}
+              data-from={step.from ?? ''}
+              data-to={step.to ?? ''}
+              data-from-term={step.fromTerm ?? ''}
+              data-to-term={step.toTerm ?? ''}
+              data-deadline={step.deadline ? '1' : ''}
+              data-since={step.since ? '1' : ''}
+            >
+              <div class="cal-step__tete">
+                <span class={`pastille petite ${step.kind === 'officiel' ? 'sante' : ''}`}>{step.kind === 'officiel' ? 'Officiel' : 'Repère'}</span>
+                <span class="cal-status pastille petite aujourdhui hidden"></span>
+                <span class="cal-quand"><span class="cal-when">{step.when}</span><b class="cal-dates"></b></span>
+              </div>
+              <p class="cal-step__titre">
+                {step.article && !step.articleLabel ? <a href={`/${step.article}/`}>{step.title}</a> : step.title}
+              </p>
+              <p class="cal-step__texte">{step.text}</p>
+              {step.article && step.articleLabel && <p class="cal-step__lien"><a href={`/${step.article}/`}>{step.articleLabel}</a></p>}
+              {step.source && <p class="cal-step__source">Source : <a href={step.source.url} {...ext}>{step.source.label}</a></p>}
+            </li>
+          ))}
+        </ol>
+      </div>
+    ))}
+
+    <div class="st-texte">
       <h2>Le calendrier semaine par semaine</h2>
       <p>
         Les professionnels comptent en semaines d’aménorrhée (SA), à partir du premier jour des dernières règles.
         Les proches comptent en mois. Ce tableau fait le lien, et affiche vos dates une fois le calendrier calculé.
       </p>
-      <table id="cal-weeks">
-        <thead>
-          <tr><th>SA</th><th>Mois de grossesse</th><th>Vos dates</th></tr>
-        </thead>
-        <tbody>
-          {weeks.map((w) => (
-            <tr data-sa={w.sa}><td>{w.sa} SA</td><td>{w.month}</td><td class="cal-week-dates">–</td></tr>
-          ))}
+      <Tableau>
+        <thead><tr><th>SA</th><th>Mois de grossesse</th><th>Vos dates</th></tr></thead>
+        <tbody id="cal-weeks">
+          {weeks.map((w) => <tr data-sa={w.sa}><td>{w.sa} SA</td><td>{w.month}</td><td class="cal-week-dates">–</td></tr>)}
         </tbody>
-      </table>
-      <p class="text-sm">
-        Correspondance mois et SA : <a href="https://www.sante.fr/le-calendrier-de-grossesse" {...ext}>santé.fr, le calendrier de grossesse</a>.
-      </p>
+      </Tableau>
+      <p>Correspondance mois et SA : <a href="https://www.sante.fr/le-calendrier-de-grossesse" {...ext}>santé.fr, le calendrier de grossesse</a>.</p>
 
       <h2>Comment le calendrier est calculé</h2>
       <ul>
@@ -259,118 +194,66 @@ const ext = { target: '_blank', rel: 'nofollow noopener noreferrer' };
       </Disclaimer>
 
       <h2>Questions fréquentes</h2>
-      {faq.map((f) => (
-        <div>
-          <h3>{f.question}</h3>
-          <p>{f.answer}</p>
+      <div class="st-faq">
+        {faq.map((f, k) => <details open={k === 0}><summary>{f.question}<i set:html={icone('plus', 16, 2.4)} /></summary><p>{f.answer}</p></details>)}
+      </div>
+
+      <aside class="st-encart-app">
+        <div class="st-encart-app__texte">
+          <span class="pastille"><Fragment set:html={icone('etoile', 13, 2.2)} /> L'app Tempo</span>
+          <h3>Ce calendrier, semaine après semaine</h3>
+          <p>Tempo prépare une app qui vous montre seulement ce qui compte maintenant, et vous rappelle le reste au bon moment.</p>
+          <a class="bouton secondaire" href="#liste-attente" data-ouvrir-inscription>Rejoindre la liste d'attente</a>
         </div>
-      ))}
+        <div class="st-encart-app__tel"><img src="/images/app/calendrier.jpg" alt="L'écran Calendrier de l'app Tempo" loading="lazy" /></div>
+      </aside>
     </div>
-  </section>
+  </div>
+</SiteLayout>
 
-  <section class="bg-ink py-12">
-    <div class="max-w-2xl mx-auto px-6 text-center">
-      <h2 class="font-display text-2xl md:text-3xl text-white mb-3">Ce calendrier, semaine après semaine</h2>
-      <p class="text-white/70 mb-6">
-        Tempo prépare une app qui vous montre seulement ce qui compte maintenant, et vous rappelle le reste au bon
-        moment.
-      </p>
-      <a href="/application/" class="inline-block bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-3 rounded-lg">
-        Découvrir l’app Tempo
-      </a>
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .cal-mode {
-    display: block;
-    cursor: pointer;
-    border: 1px solid var(--color-border);
-    border-radius: 0.6rem;
-    padding: 0.7rem 0.9rem;
-    font-size: 0.95rem;
-    background: var(--color-cream);
-  }
-  .cal-mode:has(input:checked) {
-    border-color: var(--color-terracotta);
-    background: hsl(16 62% 54% / 0.08);
-    font-weight: 600;
-  }
-  .cal-mode:has(input:focus-visible) {
-    outline: 2px solid var(--color-terracotta);
-    outline-offset: 2px;
-  }
-  .cal-stat {
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 0.8rem;
-    padding: 0.8rem 1rem;
-  }
-  .cal-stat-label {
-    font-size: 0.8rem;
-    color: hsl(240 22% 16% / 0.6);
-  }
-  .cal-stat-value {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    color: var(--color-ink);
-  }
-  .cal-stat-small {
-    font-size: 1rem;
-    line-height: 1.35;
-  }
-  #cal-weeks tr.is-now-row td {
-    background: hsl(16 62% 54% / 0.12);
-    font-weight: 600;
-  }
-  .cal-step {
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 0.8rem;
-    padding: 0.9rem 1.1rem;
-  }
-  .cal-step.is-past {
-    opacity: 0.55;
-  }
-  .cal-step.is-now {
-    border-color: var(--color-terracotta);
-    box-shadow: 0 0 0 1px var(--color-terracotta);
-  }
-  .cal-tag {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.1rem 0.55rem;
-    border-radius: 999px;
-  }
-  .cal-tag-officiel {
-    background: hsl(150 22% 42% / 0.12);
-    color: var(--color-sage);
-  }
-  .cal-tag-repere {
-    background: hsl(40 20% 88%);
-    color: hsl(240 22% 16% / 0.7);
-  }
-  .cal-past {
-    background: hsl(40 20% 88% / 0.45);
-    border-radius: 0.8rem;
-    padding: 0.8rem 1.1rem;
-  }
-  .cal-past > summary {
-    cursor: pointer;
-    font-weight: 600;
-    color: hsl(240 22% 16% / 0.7);
-  }
-  .cal-status {
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.1rem 0.55rem;
-    border-radius: 999px;
-    background: var(--color-terracotta);
-    color: white;
+<style is:global>
+  /* Calendrier de grossesse : mise en page propre à l'outil, valeurs du catalogue uniquement. */
+  .calendrier .hidden { display: none !important; }
+  .cal-form { margin: var(--e-6) 0; padding: var(--e-6); border-radius: var(--r-xl); background: var(--surface); box-shadow: var(--ombre-douce); }
+  .cal-form fieldset { margin: 0; padding: 0; border: 0; }
+  .cal-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--e-2); }
+  .cal-mode { position: relative; display: flex; align-items: center; min-height: var(--cible); padding: var(--e-3) var(--e-4); border-radius: var(--r-m); background: var(--bg); box-shadow: inset 0 0 0 1px var(--line-fort); font: 600 15px/1.3 var(--font); cursor: pointer; }
+  .cal-mode input { position: absolute; opacity: 0; pointer-events: none; }
+  .cal-mode:has(input:checked) { background: var(--choix-bg); color: var(--choix); box-shadow: inset 0 0 0 2px var(--choix); }
+  .cal-mode:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .cal-form > .champ__note { margin: var(--e-3) 0 0; }
+  .cal-champs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-4); margin: var(--e-4) 0 var(--e-6); }
+  .cal-champs .champ { margin: 0; }
+  .champ select { display: block; width: 100%; height: 50px; margin: 0; padding: 0 14px; border: 0; border-radius: var(--r-m); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line-fort); color: var(--ink); font: 600 16px/1.3 var(--font); }
+  .cal-erreur { margin: var(--e-3) 0 0; color: var(--alerte); font: 650 14px/1.4 var(--font); }
+  .cal-tuiles { grid-template-columns: repeat(3, 1fr); margin: 0 0 var(--e-8); }
+  .cal-tuiles .tuile { min-height: 104px; cursor: default; }
+  .cal-tuiles .tuile:active { transform: none; }
+  .cal-tuiles .tuile__valeur.petite { font-size: 19px; line-height: 1.25; letter-spacing: -.01em; }
+  .cal-legende { font-size: 15px; }
+  .cal-phase { margin: 0 0 var(--e-8); }
+  .cal-phase h3 { margin: 0 0 var(--e-3); font: 800 22px/1.2 var(--font); letter-spacing: -.03em; }
+  .cal-etapes { display: grid; gap: var(--e-3); margin: 0; padding: 0; list-style: none; }
+  .cal-step { padding: var(--e-4) var(--e-5); border-radius: var(--r-l); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+  .cal-step.is-past { opacity: .55; }
+  .cal-step.is-now { box-shadow: inset 0 0 0 2px var(--accent); }
+  .cal-step__tete { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2); margin-bottom: var(--e-2); }
+  .cal-quand { font: 550 14px/1.3 var(--font); color: var(--ink-2); }
+  .cal-quand b { color: var(--ink); }
+  .cal-step__titre { margin: 0; font: 750 17px/1.35 var(--font); }
+  .cal-step__titre a, .cal-step__lien a { color: var(--ink); text-decoration-color: var(--accent); text-underline-offset: 4px; }
+  .cal-step__texte { margin: var(--e-1) 0 0; font: 500 15px/1.5 var(--font); color: var(--ink-2); }
+  .cal-step__lien { margin: var(--e-2) 0 0; font: 700 15px/1.4 var(--font); }
+  .cal-step__source { margin: var(--e-2) 0 0; font: 500 13px/1.4 var(--font); color: var(--ink-2); }
+  .cal-step__source a { color: inherit; }
+  .cal-past { margin: 0 0 var(--e-8); padding: var(--e-4) var(--e-5); border-radius: var(--r-l); background: var(--surface-2); }
+  .cal-past > summary { cursor: pointer; font: 700 15px/1.4 var(--font); color: var(--ink-2); }
+  .cal-past .cal-etapes { margin-top: var(--e-3); }
+  #cal-weeks tr.is-now-row td { background: var(--choix-bg); font-weight: 750; }
+  @media (max-width: 640px) {
+    .cal-modes, .cal-champs { grid-template-columns: 1fr; }
+    .cal-tuiles { grid-template-columns: 1fr 1fr; }
+    .cal-form { padding: var(--e-4); }
   }
 </style>
 
@@ -542,7 +425,7 @@ const ext = { target: '_blank', rel: 'nofollow noopener noreferrer' };
     });
 
     // Tableau semaine par semaine
-    document.querySelectorAll<HTMLElement>('#cal-weeks tbody tr').forEach((tr) => {
+    document.querySelectorAll<HTMLElement>('#cal-weeks tr').forEach((tr) => {
       const w = Number(tr.dataset.sa);
       const a = addDays(ddr, w * 7);
       const b = addDays(a, 6);

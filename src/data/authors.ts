@@ -57,8 +57,8 @@ export const authors: Author[] = [
   {
     slug: 'sandra-nussbaum',
     name: 'Sandra Nussbaum',
-    role: 'Cofondatrice de Tempo, consultante SEO',
-    bio: "Consultante SEO indépendante et cofondatrice de Tempo. Elle conçoit les contenus du site, cherche et vérifie les sources, et confronte chaque affirmation médicale à la littérature officielle avant publication. Parent, comme les lecteurs de ces pages.",
+    role: 'Cofondatrice de Tempo',
+    bio: "Cofondatrice de Tempo. Elle conçoit les contenus du site, cherche et vérifie les sources, et confronte chaque affirmation médicale à la littérature officielle avant publication. Parent, comme les lecteurs de ces pages.",
     initials: 'SN',
     sameAs: ['https://www.linkedin.com/in/sandra-nussbaum/'],
   },
