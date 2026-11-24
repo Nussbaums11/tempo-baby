@@ -54,7 +54,7 @@ const hub = cocons.find((c) => c.slug === cocon);
           <span class="st-carte__visuel" style={`--cf:var(${r.fond})`} set:html={illustration(illustrationPour(a.id, cocon), 96)} />
           <span class="st-carte__corps">
             <span><span class={`pastille petite ${r.nature}`}>{a.data.pilier ? `${r.nom} · Le guide complet` : r.nom}</span></span>
-            <h3>{a.data.title}</h3>
+            <p class="carte-titre">{a.data.title}</p>
             {a.data.description && <p>{a.data.description}</p>}
           </span>
         </a>

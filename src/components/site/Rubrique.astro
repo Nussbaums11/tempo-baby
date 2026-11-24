@@ -47,7 +47,7 @@ const LOUPE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" strok
     <a class="st-une" href={`/${une.id}/`}>
       <span class="st-une__texte">
         <span><span class={`pastille ${ru.nature}`}><Fragment set:html={icone(ru.icone, 13, 2.2)} /> {ru.nom} · À la une</span></span>
-        <h2>{une.data.title}</h2>
+        <p class="une-titre">{une.data.title}</p>
         <p>{une.data.description}</p>
         <span class="st-signature"><span class="st-avatar">SN</span><span><b>Sandra Nussbaum</b><small>Cofondatrice de Tempo</small></span></span>
       </span>
@@ -65,7 +65,7 @@ const LOUPE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" strok
           <span class="st-carte__visuel" style={`--cf:var(${r.fond})`} set:html={illustration(illustrationPour(a.id, a.data.cocon), 96)} />
           <span class="st-carte__corps">
             <span><span class={`pastille petite ${r.nature}`}>{r.nom}</span></span>
-            <h3>{a.data.title}</h3>
+            <p class="carte-titre">{a.data.title}</p>
             <p>{a.data.description}</p>
                       </span>
         </a>

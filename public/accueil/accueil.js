@@ -178,17 +178,17 @@ const FAQ = {
     "Tempo ne garde que ce qui sert à t'accompagner : ta date de terme, ce que vous avez fait, tes questions. Rien n'est vendu, rien n'est partagé à des fins publicitaires.",
     "Tu peux télécharger ou supprimer toutes tes données à tout moment depuis ton profil, ou en écrivant à l'équipe de Tempo : ce sont tes droits, au titre du règlement européen sur les données (RGPD)."] }
 };
-const pageFaq = nom => { const f = FAQ[nom]; return `${pmTete()}<div class="pm-corps"><span class="carre pm-faq-icone">${ic(f.i, 24)}</span><h2 class="pm-titre">${f.q}</h2>${f.r.map(x => `<p class="pm-reponse">${x}</p>`).join("")}<div class="pm-doute"><p>Une autre question sur Mezzo ?</p><button type="button" class="bouton" data-page-retour>Retour aux questions</button></div><p class="exemple">Engagement retenu par Hugo le 17/11 ; pas encore en place.</p></div>`; };
+const pageFaq = nom => { const f = FAQ[nom]; return `${pmTete()}<div class="pm-corps"><span class="carre pm-faq-icone">${ic(f.i, 24)}</span><p class="pm-titre">${f.q}</p>${f.r.map(x => `<p class="pm-reponse">${x}</p>`).join("")}<div class="pm-doute"><p>Une autre question sur Mezzo ?</p><button type="button" class="bouton" data-page-retour>Retour aux questions</button></div><p class="exemple">Engagement retenu par Hugo le 17/11 ; pas encore en place.</p></div>`; };
 const ERREURS = `<button type="button" class="ch-erreurs" data-page="surete">Mezzo peut se tromper${ic("info", 15, 2)}</button>`;
 const pmTete = () => `<div class="pm-tete"><button type="button" class="ch-retour" data-page-retour aria-label="Retour">${RETOUR}</button></div>`;
 const faq = nom => `<button type="button" class="proposition" data-page="${nom}">${carre(ic(FAQ[nom].i, 20))}<span><span class="proposition__titre">${FAQ[nom].q}</span></span>${ic("chevron", 16, 2)}</button>`;
 const pageSurete = () => `${pmTete()}<div class="pm-corps">
-  <h2 class="pm-titre">Mezzo est-il sûr pour ta santé ?</h2>
+  <p class="pm-titre">Mezzo est-il sûr pour ta santé ?</p>
   <ul class="pm-puces"><li>Mezzo répond à partir de sources françaises : Ameli, Santé publique France, la Haute Autorité de santé, les maternités.</li><li>Les fiches sur lesquelles il s'appuie sont relues par des sages-femmes.</li></ul>
-  <h3 class="pm-sous">Mezzo peut se tromper</h3>
+  <p class="pm-sous">Mezzo peut se tromper</p>
   <p>Mezzo est une intelligence artificielle (IA) : il peut faire des erreurs ou donner une information incomplète. Pour ta sécurité :</p>
   <ul class="pm-puces"><li><mark>Il oriente, il ne diagnostique pas.</mark> Il ne remplace ni ta sage-femme ni ton médecin.</li><li><mark>Au moindre signe d'alerte</mark>, il te dit d'abord qui appeler : ta maternité, le 15, ou le 3114 si le moral flanche.</li><li><mark>Chaque réponse montre sa source</mark> : tu peux la vérifier.</li></ul>
-  <h3 class="pm-sous">Un doute ?</h3>
+  <p class="pm-sous">Un doute ?</p>
   <ul class="pm-puces"><li>Une réponse te semble bizarre ? Pose la question à ta sage-femme.</li><li>Signale une réponse en appuyant longtemps dessus : l'équipe de Tempo la relit.</li></ul>
   <p class="titre-discret">Mezzo</p>
   <button type="button" class="proposition" data-page="mezzo"><span class="carre mezzo"></span><span><span class="proposition__titre">En savoir plus sur Mezzo</span></span>${ic("chevron", 16, 2)}</button>

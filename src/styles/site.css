@@ -53,3 +53,13 @@ body{margin:0}
 .inscription-piege{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 [data-retour]:empty{display:none}
 [data-retour]{color:var(--ink);font-weight:650}
+/* Titres d'habillage sortis du plan de la page (24/11/2026, retour SEO de Sandra) : les cartes,
+   l'encart de l'app, le pied, la fenêtre et l'article à la une ne sont plus des h2/h3/h4,
+   pour que seuls les titres du contenu structurent la page. Même rendu que le catalogue. */
+.st-carte .carte-titre{margin:2px 0 0;font:800 20px/1.18 var(--font);letter-spacing:-.025em;text-wrap:balance;color:var(--ink)}
+.st-encart-app .encart-titre{margin:var(--e-3) 0 0;font:800 27px/1.1 var(--font);letter-spacing:-.03em;text-wrap:balance;color:inherit}
+.st-pied .pied-titre{margin:0 0 var(--e-3);font:750 13px/1 var(--font);color:color-mix(in srgb,var(--creme-clair) 60%,transparent)}
+.st-fenetre__tete .fenetre-titre{margin:0;font:800 24px/1.1 var(--font);letter-spacing:-.03em}
+.st-une .une-titre{margin:0;font:800 40px/1.05 var(--font);letter-spacing:-.04em;text-wrap:balance;color:var(--ink)}
+@container page (max-width:899px){.st-une .une-titre{font-size:28px}}
+@container page (max-width:639px){.st-carte .carte-titre{font-size:17px}.st-encart-app .encart-titre{font-size:23px}}

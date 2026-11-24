@@ -341,3 +341,5 @@ body.fige{overflow:hidden}
 /* Burger de l'accueil : visible sur téléphone seulement, comme dans l'en-tête du site. */
 .accueil-burger{display:none;margin-left:0}
 @media (max-width:899px){.accueil-burger{display:grid}}
+/* La fin de l’accueil répète l’accroche : plus un titre (doublon du h1), même rendu. */
+.s-fin .s-fin__titre{max-width:13ch;margin:0 auto;font-size:clamp(40px,6vw,72px);font-weight:800;letter-spacing:-.045em;line-height:1;color:var(--ink)}

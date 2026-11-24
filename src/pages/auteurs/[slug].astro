@@ -77,7 +77,7 @@ const personSchema = {
               <span class="st-carte__visuel" style={`--cf:var(${r.fond})`} set:html={illustration(illustrationPour(a.id, a.data.cocon), 96)} />
               <span class="st-carte__corps">
                 <span><span class={`pastille petite ${r.nature}`}>{r.nom}</span></span>
-                <h3>{a.data.title}</h3>
+                <p class="carte-titre">{a.data.title}</p>
                 <p>{a.data.description}</p>
               </span>
             </a>
