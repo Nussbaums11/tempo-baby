@@ -23,7 +23,8 @@ export const rubrique = (cocon: string): Rubrique => rubriques[cocon] ?? parDefa
 // Le dessin d'une carte, selon le sujet de l'article (24/11/2026, demande de
 // Sandra : les cartes tournaient sur 2-3 dessins par rubrique). Règles lues dans
 // l'ordre sur le slug ; la première qui correspond gagne. Dessins : catalogue de
-// Hugo (Tempo.illustration, 27 au 24/11).
+// Hugo (Tempo.illustration, 27 au 24/11, + veilleuse, doudou, ventre, echographie,
+// valise validés par Hugo le 26/11).
 // Séries par âge (sommeil et siestes, une trentaine d'articles publiés ensemble) :
 // un petit groupe de dessins par tranche d'âge, tourné selon le mois, pour que
 // deux cartes voisines ne portent pas le même dessin.
@@ -40,9 +41,9 @@ const regles: [RegExp, string][] = [
   [/assistante-maternelle/, 'assmat'],
   [/halte-garderie|mode-de-garde/, 'creche'],
   [/liste-de-naissance/, 'cadeau'],
-  [/valise-maternite/, 'bodies'],
-  [/projet-de-naissance/, 'livre'],
-  [/preparer-l-arrivee|calendrier-grossesse/, 'poussette'],
+  [/valise-maternite/, 'valise'],
+  [/projet-de-naissance/, 'echographie'],
+  [/preparer-l-arrivee|calendrier-grossesse/, 'ventre'],
   [/diversification/, 'mais'],
   [/biberon|tete-toutes|frein-de-langue/, 'biberon'],
   [/temperature|apnee|sirop|homeopathie/, 'thermo'],
@@ -51,15 +52,17 @@ const regles: [RegExp, string][] = [
   [/sieste-nordique/, 'poussette'],
   [/coussin|position|dort-sur|grenouille|bouche-ouverte/, 'matelas'],
   [/pleure|rigole|sursaut|reflexe|agite|sommeil-leger|trouble/, 'bebe'],
-  [/cycle|phase|paradoxal|train-du-sommeil|lumiere|bruit-blanc|terreur|peur/, 'mobile'],
+  [/lumiere|terreur/, 'veilleuse'],
+  [/peur-de-l-abandon|aide-sommeil/, 'doudou'],
+  [/cycle|phase|paradoxal|train-du-sommeil|bruit-blanc/, 'mobile'],
   [/tableau-sieste|faut-il-reveiller|ne-dort-pas-la-journee/, 'transat'],
-  [/coucher|ne-dort-pas|aide-sommeil/, 'cododo'],
+  [/coucher|ne-dort-pas/, 'cododo'],
   [/regression|dette|temps-de-sommeil/, 'gigoteuse'],
 ];
 
 export const illustrationPour = (slug: string, cocon: string): string => {
-  if (slug.startsWith('sieste-bebe')) return parAge(slug, ['echarpe', 'nacelle'], ['transat', 'bebe'], ['matelas', 'mobile', 'cododo']) ?? 'transat';
-  if (slug.startsWith('sommeil-bebe')) return parAge(slug, ['nacelle', 'bebe', 'echarpe'], ['gigoteuse', 'mobile'], ['cododo', 'gigoteuse', 'matelas']) ?? 'cododo';
+  if (slug.startsWith('sieste-bebe')) return parAge(slug, ['echarpe', 'nacelle'], ['transat', 'bebe'], ['matelas', 'mobile', 'cododo', 'doudou']) ?? 'transat';
+  if (slug.startsWith('sommeil-bebe')) return parAge(slug, ['nacelle', 'bebe', 'echarpe'], ['gigoteuse', 'mobile'], ['cododo', 'gigoteuse', 'matelas', 'veilleuse']) ?? 'cododo';
   for (const [re, nom] of regles) if (re.test(slug)) return nom;
   return rubrique(cocon).scene[0];
 };
